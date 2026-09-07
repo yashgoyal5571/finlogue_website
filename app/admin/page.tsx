@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { CaseFile } from "@/content/events";
+import { CaseFile, events as defaultEventsData } from "@/content/events";
 import { SpeakerItem } from "@/app/api/admin/speakers/route";
 import { TeamMemberItem } from "@/app/api/admin/team/route";
 import { gallery as defaultGalleryData, GalleryItem } from "@/content/gallery";
+import { AttendeeItem, dynamicAttendeesCache } from "@/app/api/admin/attendees/route";
 
 export default function AdminPortalPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -16,10 +17,10 @@ export default function AdminPortalPage() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Main Section Navigation
-  const [activeSection, setActiveSection] = useState<"events" | "speakers" | "team" | "gallery">("events");
+  const [activeSection, setActiveSection] = useState<"events" | "speakers" | "team" | "gallery" | "attendees">("events");
 
   // --- 1. EVENTS STATE ---
-  const [eventsList, setEventsList] = useState<CaseFile[]>([]);
+  const [eventsList, setEventsList] = useState<CaseFile[]>(defaultEventsData.caseFiles);
   const [isLoadingEvents, setIsLoadingEvents] = useState(false);
   const [eventFilterStatus, setEventFilterStatus] = useState<string>("ALL");
   const [eventSearch, setEventSearch] = useState("");
@@ -40,6 +41,7 @@ export default function AdminPortalPage() {
   // --- 2. SPEAKERS STATE ---
   const [speakersList, setSpeakersList] = useState<SpeakerItem[]>([]);
   const [isLoadingSpeakers, setIsLoadingSpeakers] = useState(false);
+  const [speakerCategoryFilter, setSpeakerCategoryFilter] = useState<string>("ALL");
   const [isSpeakerModalOpen, setIsSpeakerModalOpen] = useState(false);
   const [editingSpeaker, setEditingSpeaker] = useState<SpeakerItem | null>(null);
   const [isSavingSpeaker, setIsSavingSpeaker] = useState(false);
@@ -48,7 +50,7 @@ export default function AdminPortalPage() {
     name: "",
     title: "",
     firm: "",
-    category: "Venture Capital",
+    category: "POTR Conclave Jury",
     quote: "",
     image: "/assets/gallery/summit-keynote.jpg",
   });
@@ -88,6 +90,26 @@ export default function AdminPortalPage() {
     tag: "CONCLAVE DISPATCH",
     description: "",
     image: "/assets/gallery/celebrating-success.jpg",
+  });
+
+  // --- 5. ATTENDEES & REGISTRATIONS STATE ---
+  const [attendeesList, setAttendeesList] = useState<AttendeeItem[]>(dynamicAttendeesCache);
+  const [isLoadingAttendees, setIsLoadingAttendees] = useState(false);
+  const [attendeeStatusFilter, setAttendeeStatusFilter] = useState<string>("ALL");
+  const [attendeeEventFilter, setAttendeeEventFilter] = useState<string>("ALL");
+  const [attendeeSearch, setAttendeeSearch] = useState("");
+  const [isAttendeeModalOpen, setIsAttendeeModalOpen] = useState(false);
+  const [editingAttendee, setEditingAttendee] = useState<AttendeeItem | null>(null);
+  const [isSavingAttendee, setIsSavingAttendee] = useState(false);
+
+  const [attendeeForm, setAttendeeForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    institution: "The LNM Institute of Information Technology",
+    event: "PITCH ON THE ROCKS (POTR)",
+    status: "CONFIRMED" as AttendeeItem["status"],
+    notes: "",
   });
 
   // Check initial session
@@ -144,6 +166,7 @@ export default function AdminPortalPage() {
     fetchSpeakers();
     fetchTeam();
     fetchGallery();
+    fetchAttendees();
   };
 
   // --- FETCHERS ---
@@ -205,6 +228,22 @@ export default function AdminPortalPage() {
       console.error(err);
     } finally {
       setIsLoadingGallery(false);
+    }
+  };
+
+  const fetchAttendees = async () => {
+    setIsLoadingAttendees(true);
+    try {
+      const res = await fetch("/api/admin/attendees");
+      const data = await res.json();
+      const list = data.attendees || data.items;
+      if (Array.isArray(list) && list.length > 0) {
+        setAttendeesList(list);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoadingAttendees(false);
     }
   };
 
@@ -300,7 +339,7 @@ export default function AdminPortalPage() {
         name: "",
         title: "",
         firm: "",
-        category: "Venture Capital",
+        category: "POTR Conclave Jury",
         quote: "",
         image: "/assets/gallery/summit-keynote.jpg",
       });
@@ -330,7 +369,7 @@ export default function AdminPortalPage() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        showToast(editingSpeaker ? "Speaker updated!" : "New speaker added!");
+        showToast(editingSpeaker ? "Speaker profile updated!" : "New keynote/mentor added!");
         setIsSpeakerModalOpen(false);
         fetchSpeakers();
       } else {
@@ -514,6 +553,130 @@ export default function AdminPortalPage() {
     }
   };
 
+  // --- ATTENDEE ACTIONS ---
+  const handleToggleAttendeeStatus = async (id: string, newStatus: AttendeeItem["status"]) => {
+    setAttendeesList((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a))
+    );
+
+    try {
+      const res = await fetch("/api/admin/attendees", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: newStatus }),
+      });
+      if (res.ok) {
+        showToast(`Attendee status updated to ${newStatus}`);
+      } else {
+        fetchAttendees();
+      }
+    } catch {
+      fetchAttendees();
+    }
+  };
+
+  const handleOpenAttendeeModal = (att?: AttendeeItem) => {
+    if (att) {
+      setEditingAttendee(att);
+      setAttendeeForm({
+        name: att.name,
+        email: att.email,
+        phone: att.phone || "",
+        institution: att.institution,
+        event: att.event,
+        status: att.status,
+        notes: att.notes || "",
+      });
+    } else {
+      setEditingAttendee(null);
+      setAttendeeForm({
+        name: "",
+        email: "",
+        phone: "",
+        institution: "The LNM Institute of Information Technology",
+        event: "PITCH ON THE ROCKS (POTR)",
+        status: "CONFIRMED",
+        notes: "",
+      });
+    }
+    setIsAttendeeModalOpen(true);
+  };
+
+  const handleSaveAttendee = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingAttendee(true);
+
+    const payload: AttendeeItem = {
+      id: editingAttendee ? editingAttendee.id : `att-${Date.now()}`,
+      token: editingAttendee ? editingAttendee.token : `REG-${Math.floor(100000 + Math.random() * 900000)}`,
+      name: attendeeForm.name,
+      email: attendeeForm.email,
+      phone: attendeeForm.phone,
+      institution: attendeeForm.institution || "Independent Participant",
+      event: attendeeForm.event,
+      status: attendeeForm.status,
+      registeredAt: editingAttendee ? editingAttendee.registeredAt : new Date().toISOString().replace("T", " ").slice(0, 16),
+      notes: attendeeForm.notes,
+    };
+
+    try {
+      const res = await fetch("/api/admin/attendees", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ attendee: payload }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(editingAttendee ? "Attendee details updated!" : "Attendee registered successfully!");
+        setIsAttendeeModalOpen(false);
+        fetchAttendees();
+      } else {
+        alert(data.error || "Failed to save attendee.");
+      }
+    } catch {
+      alert("Error saving attendee.");
+    } finally {
+      setIsSavingAttendee(false);
+    }
+  };
+
+  const handleDeleteAttendee = async (id: string, name: string) => {
+    if (!window.confirm(`Delete registration for "${name}"?`)) return;
+    try {
+      const res = await fetch(`/api/admin/attendees?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      if (res.ok) {
+        showToast(`Registration removed.`);
+        setAttendeesList((prev) => prev.filter((a) => a.id !== id));
+      }
+    } catch {
+      alert("Error deleting attendee.");
+    }
+  };
+
+  const handleExportAttendeesCSV = () => {
+    const headers = ["Token", "Name", "Email", "Phone", "Institution", "Event", "Status", "Registered At", "Notes"];
+    const rows = attendeesList.map((a) => [
+      `"${a.token}"`,
+      `"${a.name.replace(/"/g, '""')}"`,
+      `"${a.email}"`,
+      `"${a.phone || ""}"`,
+      `"${a.institution.replace(/"/g, '""')}"`,
+      `"${a.event.replace(/"/g, '""')}"`,
+      `"${a.status}"`,
+      `"${a.registeredAt}"`,
+      `"${(a.notes || "").replace(/"/g, '""')}"`,
+    ]);
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Finlogue_Attendees_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("Attendee CSV Exported!");
+  };
+
   // --- FILTERS ---
   const filteredEvents = eventsList.filter((ev) => {
     const matchesFilter = eventFilterStatus === "ALL" ? true : ev.status === eventFilterStatus;
@@ -521,6 +684,11 @@ export default function AdminPortalPage() {
       ev.title.toLowerCase().includes(eventSearch.toLowerCase()) ||
       ev.category.toLowerCase().includes(eventSearch.toLowerCase());
     return matchesFilter && matchesQuery;
+  });
+
+  const filteredSpeakers = speakersList.filter((s) => {
+    if (speakerCategoryFilter === "ALL") return true;
+    return s.category.toLowerCase().includes(speakerCategoryFilter.toLowerCase());
   });
 
   const filteredTeam = teamList.filter((m) => {
@@ -533,9 +701,21 @@ export default function AdminPortalPage() {
     return g.category.toLowerCase() === galleryCategoryFilter.toLowerCase();
   });
 
+  const filteredAttendees = attendeesList.filter((a) => {
+    const matchesStatus = attendeeStatusFilter === "ALL" ? true : a.status === attendeeStatusFilter;
+    const matchesEvent = attendeeEventFilter === "ALL" ? true : a.event.toLowerCase().includes(attendeeEventFilter.toLowerCase());
+    const matchesQuery =
+      a.name.toLowerCase().includes(attendeeSearch.toLowerCase()) ||
+      a.email.toLowerCase().includes(attendeeSearch.toLowerCase()) ||
+      a.token.toLowerCase().includes(attendeeSearch.toLowerCase()) ||
+      a.institution.toLowerCase().includes(attendeeSearch.toLowerCase());
+    return matchesStatus && matchesEvent && matchesQuery;
+  });
+
   const liveCount = eventsList.filter((e) => e.status === "ACTIVE").length;
   const upcomingCount = eventsList.filter((e) => e.status === "UPCOMING").length;
   const closedCount = eventsList.filter((e) => e.status === "CLOSED").length;
+  const potrEvent = eventsList.find((e) => e.id === "potr");
 
   // Unauthenticated Gate
   if (!isAuthenticated) {
@@ -553,7 +733,7 @@ export default function AdminPortalPage() {
             Coordinator Portal
           </h1>
           <p style={{ fontSize: "13.5px", color: "var(--ink-body)", marginBottom: "28px", lineHeight: 1.5 }}>
-            Access the institutional control desk to manage live events, speakers, team hierarchy, photo archives, and Google Sheets synchronization.
+            Access the institutional control desk to manage live events, POTR conclave, keynote speakers, attendee rosters, and Google Sheets synchronization.
           </p>
 
           <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -660,14 +840,16 @@ export default function AdminPortalPage() {
                   handleOpenSpeakerModal();
                 } else if (activeSection === "team") {
                   handleOpenTeamModal();
-                } else {
+                } else if (activeSection === "gallery") {
                   handleOpenGalleryModal();
+                } else {
+                  handleOpenAttendeeModal();
                 }
               }}
               className="stamp-button stamp-button-primary"
               style={{ fontSize: "12px", padding: "8px 18px", backgroundColor: "var(--gold-oxford)", color: "var(--navy-deep)", borderColor: "var(--gold-oxford)", fontWeight: 700 }}
             >
-              + ADD NEW {activeSection === "events" ? "EVENT" : activeSection === "speakers" ? "SPEAKER" : activeSection === "team" ? "MEMBER" : "PHOTO ARCHIVE"}
+              + ADD NEW {activeSection === "events" ? "EVENT" : activeSection === "speakers" ? "SPEAKER" : activeSection === "team" ? "MEMBER" : activeSection === "gallery" ? "PHOTO ARCHIVE" : "ATTENDEE"}
             </button>
             <button type="button" onClick={() => setIsAuthenticated(false)} style={{ fontSize: "12px", color: "var(--platinum-muted)", marginLeft: "8px" }}>
               Sign Out
@@ -676,17 +858,17 @@ export default function AdminPortalPage() {
         </div>
       </header>
 
-      {/* Main Section Navigation Strip */}
+      {/* Main Section Navigation Strip (5 Tabs) */}
       <section style={{ backgroundColor: "var(--white-pure)", borderBottom: "1px solid var(--white-border)", padding: "16px 0" }}>
         <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
-          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             <button
               type="button"
               onClick={() => setActiveSection("events")}
               className="stamp-button"
               style={{
-                fontSize: "13px",
-                padding: "8px 20px",
+                fontSize: "12.5px",
+                padding: "8px 16px",
                 backgroundColor: activeSection === "events" ? "var(--navy-hero)" : "var(--white-pure)",
                 color: activeSection === "events" ? "#FFFFFF" : "var(--ink-title)",
                 borderColor: activeSection === "events" ? "var(--navy-hero)" : "var(--white-border)",
@@ -701,8 +883,8 @@ export default function AdminPortalPage() {
               onClick={() => setActiveSection("speakers")}
               className="stamp-button"
               style={{
-                fontSize: "13px",
-                padding: "8px 20px",
+                fontSize: "12.5px",
+                padding: "8px 16px",
                 backgroundColor: activeSection === "speakers" ? "var(--navy-hero)" : "var(--white-pure)",
                 color: activeSection === "speakers" ? "#FFFFFF" : "var(--ink-title)",
                 borderColor: activeSection === "speakers" ? "var(--navy-hero)" : "var(--white-border)",
@@ -714,11 +896,27 @@ export default function AdminPortalPage() {
 
             <button
               type="button"
+              onClick={() => setActiveSection("attendees")}
+              className="stamp-button"
+              style={{
+                fontSize: "12.5px",
+                padding: "8px 16px",
+                backgroundColor: activeSection === "attendees" ? "var(--navy-hero)" : "var(--white-pure)",
+                color: activeSection === "attendees" ? "#FFFFFF" : "var(--ink-title)",
+                borderColor: activeSection === "attendees" ? "var(--navy-hero)" : "var(--white-border)",
+                fontWeight: 700,
+              }}
+            >
+              📋 ATTENDEES & REGISTRATIONS ({attendeesList.length})
+            </button>
+
+            <button
+              type="button"
               onClick={() => setActiveSection("team")}
               className="stamp-button"
               style={{
-                fontSize: "13px",
-                padding: "8px 20px",
+                fontSize: "12.5px",
+                padding: "8px 16px",
                 backgroundColor: activeSection === "team" ? "var(--navy-hero)" : "var(--white-pure)",
                 color: activeSection === "team" ? "#FFFFFF" : "var(--ink-title)",
                 borderColor: activeSection === "team" ? "var(--navy-hero)" : "var(--white-border)",
@@ -733,8 +931,8 @@ export default function AdminPortalPage() {
               onClick={() => setActiveSection("gallery")}
               className="stamp-button"
               style={{
-                fontSize: "13px",
-                padding: "8px 20px",
+                fontSize: "12.5px",
+                padding: "8px 16px",
                 backgroundColor: activeSection === "gallery" ? "var(--navy-hero)" : "var(--white-pure)",
                 color: activeSection === "gallery" ? "#FFFFFF" : "var(--ink-title)",
                 borderColor: activeSection === "gallery" ? "var(--navy-hero)" : "var(--white-border)",
@@ -756,9 +954,134 @@ export default function AdminPortalPage() {
         </div>
       </section>
 
-      {/* ================= SECTION 1: EVENTS MANAGER ================= */}
+      {/* ================= SECTION 1: EVENTS & POTR MANAGER ================= */}
       {activeSection === "events" && (
         <section className="container" style={{ marginTop: "32px" }}>
+          {/* POTR Flagship Conclave Dedicated Spotlight Banner */}
+          {potrEvent && (
+            <div
+              style={{
+                backgroundColor: "var(--navy-hero)",
+                border: "2px solid var(--gold-oxford)",
+                padding: "26px 30px",
+                color: "#FFFFFF",
+                marginBottom: "32px",
+                boxShadow: "0 12px 32px rgba(7, 13, 30, 0.25)",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: "24px",
+              }}
+            >
+              <div style={{ flex: 1, minWidth: "300px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+                  <span
+                    style={{
+                      backgroundColor: "var(--gold-oxford)",
+                      color: "var(--navy-deep)",
+                      fontSize: "10.5px",
+                      padding: "3px 10px",
+                      fontWeight: 800,
+                      fontFamily: "var(--font-mono)",
+                      letterSpacing: "0.1em",
+                      borderRadius: "2px",
+                    }}
+                  >
+                    ★ FLAGSHIP ANNUAL VENTURE CONCLAVE
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "10.5px",
+                      padding: "3px 8px",
+                      backgroundColor: potrEvent.status === "ACTIVE" ? "rgba(21, 128, 61, 0.3)" : "rgba(197, 168, 128, 0.2)",
+                      color: potrEvent.status === "ACTIVE" ? "var(--emerald-bright)" : "var(--gold-oxford)",
+                      fontFamily: "var(--font-mono)",
+                      border: "1px solid currentColor",
+                      borderRadius: "2px",
+                    }}
+                  >
+                    ● {potrEvent.status === "ACTIVE" ? "LIVE ON PORTAL" : potrEvent.status}
+                  </span>
+                </div>
+
+                <h2 className="font-display-serif" style={{ fontSize: "26px", margin: "0 0 8px", color: "#FFFFFF" }}>
+                  PITCH ON THE ROCKS (POTR)
+                </h2>
+                <p style={{ fontSize: "13.5px", color: "var(--platinum-muted)", lineHeight: 1.55, maxWidth: "720px", margin: "0 0 16px" }}>
+                  {potrEvent.description}
+                </p>
+
+                <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--gold-oxford)" }}>
+                  <span>🏆 {potrEvent.prizeOrOutput}</span>
+                  <span>📅 {potrEvent.date}</span>
+                  <span>👥 {potrEvent.eligibility}</span>
+                </div>
+              </div>
+
+              {/* Quick Actions for POTR */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", alignItems: "flex-end" }}>
+                <div style={{ display: "inline-flex", border: "1px solid rgba(255,255,255,0.2)", borderRadius: "4px", overflow: "hidden" }}>
+                  <button
+                    type="button"
+                    onClick={() => handleToggleEventStatus("potr", "ACTIVE")}
+                    style={{ padding: "6px 14px", fontSize: "11px", fontFamily: "var(--font-mono)", backgroundColor: potrEvent.status === "ACTIVE" ? "var(--emerald)" : "transparent", color: "#FFFFFF" }}
+                  >
+                    ● LIVE
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleToggleEventStatus("potr", "UPCOMING")}
+                    style={{ padding: "6px 14px", fontSize: "11px", fontFamily: "var(--font-mono)", backgroundColor: potrEvent.status === "UPCOMING" ? "var(--gold-oxford)" : "transparent", color: potrEvent.status === "UPCOMING" ? "var(--navy-deep)" : "#FFFFFF" }}
+                  >
+                    ● UPCOMING
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleToggleEventStatus("potr", "CLOSED")}
+                    style={{ padding: "6px 14px", fontSize: "11px", fontFamily: "var(--font-mono)", backgroundColor: potrEvent.status === "CLOSED" ? "var(--burgundy-crest)" : "transparent", color: "#FFFFFF" }}
+                  >
+                    ● ARCHIVED
+                  </button>
+                </div>
+
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingEvent(potrEvent);
+                      setEventForm({
+                        title: potrEvent.title,
+                        category: potrEvent.category,
+                        status: potrEvent.status,
+                        date: potrEvent.date,
+                        prizeOrOutput: potrEvent.prizeOrOutput,
+                        eligibility: potrEvent.eligibility,
+                        description: potrEvent.description,
+                      });
+                      setIsEventModalOpen(true);
+                    }}
+                    className="stamp-button"
+                    style={{ fontSize: "11.5px", padding: "6px 14px", backgroundColor: "var(--gold-oxford)", color: "var(--navy-deep)", borderColor: "var(--gold-oxford)", fontWeight: 700 }}
+                  >
+                    ✎ Edit POTR Dossier
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveSection("attendees");
+                      setAttendeeEventFilter("POTR");
+                    }}
+                    className="stamp-button"
+                    style={{ fontSize: "11.5px", padding: "6px 12px", borderColor: "rgba(255,255,255,0.3)", color: "#FFFFFF" }}
+                  >
+                    View POTR Attendees →
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Quick Metrics */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px", marginBottom: "28px" }}>
             <div style={{ padding: "16px", backgroundColor: "var(--white-pure)", border: "1px solid var(--white-border)" }}>
@@ -817,13 +1140,14 @@ export default function AdminPortalPage() {
               const isLive = ev.status === "ACTIVE";
               const isUpcoming = ev.status === "UPCOMING";
               const isArchived = ev.status === "CLOSED";
+              const isPOTR = ev.id === "potr";
 
               return (
                 <div
                   key={ev.id}
                   style={{
                     backgroundColor: "var(--white-pure)",
-                    border: "1px solid var(--white-border)",
+                    border: isPOTR ? "2px solid var(--gold-oxford)" : "1px solid var(--white-border)",
                     boxShadow: "var(--card-shadow)",
                     padding: "22px 26px",
                     display: "flex",
@@ -835,7 +1159,12 @@ export default function AdminPortalPage() {
                 >
                   <div style={{ flex: 1, minWidth: "280px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-                      <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--ink-muted)" }}>{ev.fileNumber}</span>
+                      {isPOTR && (
+                        <span style={{ fontSize: "10px", padding: "2px 8px", backgroundColor: "var(--gold-oxford)", color: "var(--navy-deep)", fontWeight: 800, textTransform: "uppercase" }}>
+                          ★ FLAGSHIP
+                        </span>
+                      )}
+                      <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--ink-muted)" }}>{ev.fileNumber || "LEAGUE"}</span>
                       <span style={{ fontSize: "10px", padding: "2px 6px", backgroundColor: "var(--white-alabaster)", border: "1px solid var(--white-border)", textTransform: "uppercase" }}>
                         {ev.category}
                       </span>
@@ -911,35 +1240,57 @@ export default function AdminPortalPage() {
         </section>
       )}
 
-      {/* ================= SECTION 2: SPEAKERS & MENTORS ================= */}
+      {/* ================= SECTION 2: SPEAKERS & POTR JURY ================= */}
       {activeSection === "speakers" && (
         <section className="container" style={{ marginTop: "32px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
             <div>
               <h2 className="font-display-serif" style={{ fontSize: "24px", color: "var(--ink-title)", margin: 0 }}>
-                Keynote Speakers & Conclave Mentors
+                Keynote Speakers & Conclave Mentors ({speakersList.length})
               </h2>
               <p style={{ fontSize: "13px", color: "var(--ink-muted)", marginTop: "4px" }}>
-                These profiles appear directly on the homepage in the fast Inspirational Speakers Carousel and POTR Conclave Jury.
+                Manage all profiles appearing on the homepage Inspirational Speakers carousel and POTR Conclave Jury. Click &ldquo;✎ Edit&rdquo; on any card to modify their details.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => handleOpenSpeakerModal()}
-              className="stamp-button stamp-button-primary"
-              style={{ fontSize: "12px", backgroundColor: "var(--navy-hero)", color: "#FFFFFF" }}
-            >
-              + ADD NEW SPEAKER
-            </button>
+
+            <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                {["ALL", "POTR Conclave Jury", "Venture Capital", "Private Equity", "Keynote"].map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setSpeakerCategoryFilter(c)}
+                    className="stamp-button"
+                    style={{
+                      fontSize: "11px",
+                      padding: "6px 12px",
+                      backgroundColor: speakerCategoryFilter === c ? "var(--navy-hero)" : "var(--white-pure)",
+                      color: speakerCategoryFilter === c ? "#FFFFFF" : "var(--ink-title)",
+                      borderColor: speakerCategoryFilter === c ? "var(--navy-hero)" : "var(--white-border)",
+                    }}
+                  >
+                    {c.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => handleOpenSpeakerModal()}
+                className="stamp-button stamp-button-primary"
+                style={{ fontSize: "12px", backgroundColor: "var(--navy-hero)", color: "#FFFFFF" }}
+              >
+                + ADD NEW SPEAKER
+              </button>
+            </div>
           </div>
 
           <div className="grid-3" style={{ gap: "20px" }}>
-            {speakersList.map((sp) => (
+            {filteredSpeakers.map((sp) => (
               <div
                 key={sp.id || sp.name}
                 style={{
                   backgroundColor: "var(--white-pure)",
-                  border: "1px solid var(--white-border)",
+                  border: sp.category === "POTR Conclave Jury" ? "1.5px solid var(--gold-oxford)" : "1px solid var(--white-border)",
                   boxShadow: "var(--card-shadow)",
                   padding: "24px",
                   display: "flex",
@@ -953,7 +1304,7 @@ export default function AdminPortalPage() {
                       <Image src={sp.image || "/assets/gallery/summit-keynote.jpg"} alt={sp.name} fill style={{ objectFit: "cover" }} />
                     </div>
                     <div>
-                      <span className="font-metadata-mono" style={{ fontSize: "10px", color: "var(--burgundy-crest)", textTransform: "uppercase" }}>
+                      <span className="font-metadata-mono" style={{ fontSize: "10px", color: sp.category === "POTR Conclave Jury" ? "var(--gold-oxford)" : "var(--burgundy-crest)", textTransform: "uppercase", fontWeight: 700 }}>
                         {sp.category}
                       </span>
                       <h4 className="font-display-serif" style={{ fontSize: "18px", color: "var(--ink-title)", margin: "2px 0 0" }}>
@@ -980,7 +1331,7 @@ export default function AdminPortalPage() {
                     className="stamp-button"
                     style={{ fontSize: "10.5px", padding: "4px 10px", borderColor: "var(--navy-hero)", color: "var(--navy-hero)" }}
                   >
-                    ✎ Edit
+                    ✎ Edit Speaker
                   </button>
                   <button
                     type="button"
@@ -997,13 +1348,207 @@ export default function AdminPortalPage() {
         </section>
       )}
 
-      {/* ================= SECTION 3: LEADERSHIP & TEAM ================= */}
+      {/* ================= SECTION 3: ATTENDEES & REGISTRATIONS ================= */}
+      {activeSection === "attendees" && (
+        <section className="container" style={{ marginTop: "32px" }}>
+          {/* Header & CSV Export */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "24px" }}>
+            <div>
+              <h2 className="font-display-serif" style={{ fontSize: "24px", color: "var(--ink-title)", margin: 0 }}>
+                Attendee Registrations & Delegations ({attendeesList.length})
+              </h2>
+              <p style={{ fontSize: "13px", color: "var(--ink-muted)", marginTop: "4px" }}>
+                Live intake from the portal registration desk and POTR founder submissions. Edit status, add remarks, or export for campus security check-in.
+              </p>
+            </div>
+
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              <button
+                type="button"
+                onClick={handleExportAttendeesCSV}
+                className="stamp-button"
+                style={{ fontSize: "12px", padding: "8px 16px", borderColor: "var(--emerald)", color: "var(--emerald)", fontWeight: 700 }}
+              >
+                📥 EXPORT CSV ROSTER
+              </button>
+              <button
+                type="button"
+                onClick={() => handleOpenAttendeeModal()}
+                className="stamp-button stamp-button-primary"
+                style={{ fontSize: "12px", backgroundColor: "var(--navy-hero)", color: "#FFFFFF" }}
+              >
+                + ADD ATTENDEE RECORD
+              </button>
+            </div>
+          </div>
+
+          {/* Filters Bar */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "20px" }}>
+            <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+              {["ALL", "CONFIRMED", "CHECKED-IN", "WAITLISTED", "REJECTED"].map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setAttendeeStatusFilter(s)}
+                  className="stamp-button"
+                  style={{
+                    fontSize: "11px",
+                    padding: "6px 12px",
+                    backgroundColor: attendeeStatusFilter === s ? "var(--navy-hero)" : "var(--white-pure)",
+                    color: attendeeStatusFilter === s ? "#FFFFFF" : "var(--ink-title)",
+                    borderColor: attendeeStatusFilter === s ? "var(--navy-hero)" : "var(--white-border)",
+                  }}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <select
+                value={attendeeEventFilter}
+                onChange={(e) => setAttendeeEventFilter(e.target.value)}
+                className="form-input"
+                style={{ fontSize: "12px", padding: "6px 12px", maxWidth: "220px" }}
+              >
+                <option value="ALL">All Events & Conclaves</option>
+                <option value="POTR">Pitch on the Rocks (POTR)</option>
+                <option value="CASE CRACKERS">National Case Crackers</option>
+                <option value="VALUATION LAB">Valuation & Equity Research</option>
+                <option value="M&A">M&A Boardroom Simulation</option>
+                <option value="CONSULTANTS">Consultants Got Talent</option>
+              </select>
+
+              <input
+                type="text"
+                placeholder="Search name, email, token..."
+                value={attendeeSearch}
+                onChange={(e) => setAttendeeSearch(e.target.value)}
+                className="form-input"
+                style={{ maxWidth: "240px", padding: "6px 12px", fontSize: "12px" }}
+              />
+            </div>
+          </div>
+
+          {/* Attendees Table */}
+          <div style={{ backgroundColor: "var(--white-pure)", border: "1px solid var(--white-border)", boxShadow: "var(--card-shadow)", overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+              <thead>
+                <tr style={{ backgroundColor: "var(--navy-hero)", color: "#FFFFFF", fontFamily: "var(--font-mono)", fontSize: "11px", textTransform: "uppercase" }}>
+                  <th style={{ padding: "14px 16px" }}>Token</th>
+                  <th style={{ padding: "14px 16px" }}>Participant Name</th>
+                  <th style={{ padding: "14px 16px" }}>Contact Info</th>
+                  <th style={{ padding: "14px 16px" }}>Institution</th>
+                  <th style={{ padding: "14px 16px" }}>Event Registered</th>
+                  <th style={{ padding: "14px 16px" }}>Status</th>
+                  <th style={{ padding: "14px 16px", textAlign: "right" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAttendees.map((att, idx) => {
+                  const isCheckedIn = att.status === "CHECKED-IN";
+                  const isConfirmed = att.status === "CONFIRMED";
+                  const isWaitlisted = att.status === "WAITLISTED";
+
+                  return (
+                    <tr
+                      key={att.id || att.token}
+                      style={{
+                        borderBottom: "1px solid var(--white-border)",
+                        backgroundColor: idx % 2 === 0 ? "var(--white-pure)" : "var(--white-alabaster)",
+                      }}
+                    >
+                      <td style={{ padding: "14px 16px", fontFamily: "var(--font-mono)", color: "var(--gold-oxford)", fontWeight: 700 }}>
+                        {att.token}
+                      </td>
+                      <td style={{ padding: "14px 16px", fontWeight: 600, color: "var(--ink-title)" }}>
+                        {att.name}
+                      </td>
+                      <td style={{ padding: "14px 16px" }}>
+                        <div style={{ color: "var(--ink-body)" }}>{att.email}</div>
+                        {att.phone && <div style={{ fontSize: "11.5px", color: "var(--ink-muted)", fontFamily: "var(--font-mono)" }}>{att.phone}</div>}
+                      </td>
+                      <td style={{ padding: "14px 16px", color: "var(--ink-muted)", maxWidth: "220px" }}>
+                        {att.institution}
+                      </td>
+                      <td style={{ padding: "14px 16px" }}>
+                        <span style={{ fontSize: "11px", padding: "2px 8px", backgroundColor: "rgba(10, 19, 41, 0.06)", border: "1px solid var(--white-border)", borderRadius: "4px", fontWeight: 600 }}>
+                          {att.event}
+                        </span>
+                      </td>
+                      <td style={{ padding: "14px 16px" }}>
+                        <div style={{ display: "inline-flex", gap: "4px", alignItems: "center" }}>
+                          <span
+                            style={{
+                              fontSize: "10.5px",
+                              fontFamily: "var(--font-mono)",
+                              padding: "2px 8px",
+                              borderRadius: "4px",
+                              fontWeight: 700,
+                              backgroundColor: isCheckedIn ? "rgba(21, 128, 61, 0.15)" : isConfirmed ? "rgba(10, 19, 41, 0.1)" : isWaitlisted ? "rgba(197, 168, 128, 0.15)" : "rgba(114, 47, 55, 0.15)",
+                              color: isCheckedIn ? "var(--emerald-bright)" : isConfirmed ? "var(--navy-hero)" : isWaitlisted ? "var(--gold-oxford)" : "var(--burgundy-crest)",
+                            }}
+                          >
+                            ● {att.status}
+                          </span>
+                        </div>
+                      </td>
+                      <td style={{ padding: "14px 16px", textAlign: "right" }}>
+                        <div style={{ display: "inline-flex", gap: "6px", alignItems: "center" }}>
+                          {/* Quick Check-in Toggle */}
+                          <button
+                            type="button"
+                            title="Mark as Checked-in"
+                            onClick={() => handleToggleAttendeeStatus(att.id, isCheckedIn ? "CONFIRMED" : "CHECKED-IN")}
+                            style={{
+                              padding: "4px 8px",
+                              fontSize: "11px",
+                              backgroundColor: isCheckedIn ? "var(--emerald)" : "transparent",
+                              color: isCheckedIn ? "#FFFFFF" : "var(--emerald)",
+                              border: "1px solid var(--emerald)",
+                              cursor: "pointer",
+                            }}
+                          >
+                            {isCheckedIn ? "✓ In" : "Check-in"}
+                          </button>
+
+                          {/* Full Edit Modal */}
+                          <button
+                            type="button"
+                            onClick={() => handleOpenAttendeeModal(att)}
+                            className="stamp-button"
+                            style={{ fontSize: "11px", padding: "4px 8px", borderColor: "var(--navy-hero)", color: "var(--navy-hero)" }}
+                          >
+                            ✎ Edit
+                          </button>
+
+                          {/* Delete */}
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteAttendee(att.id, att.name)}
+                            className="stamp-button"
+                            style={{ fontSize: "11px", padding: "4px 6px", borderColor: "var(--burgundy-border)", color: "var(--burgundy-text)" }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {/* ================= SECTION 4: LEADERSHIP & TEAM ================= */}
       {activeSection === "team" && (
         <section className="container" style={{ marginTop: "32px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
             <div>
               <h2 className="font-display-serif" style={{ fontSize: "24px", color: "var(--ink-title)", margin: 0 }}>
-                Organizational Hierarchy & Team Roster
+                Organizational Hierarchy & Team Roster ({teamList.length})
               </h2>
               <p style={{ fontSize: "13px", color: "var(--ink-muted)", marginTop: "4px" }}>
                 Add, edit, or remove Coordinators, Department Heads, and Core Associates displayed on the About page.
@@ -1120,13 +1665,13 @@ export default function AdminPortalPage() {
         </section>
       )}
 
-      {/* ================= SECTION 4: VISUAL VAULT & GALLERY ================= */}
+      {/* ================= SECTION 5: VISUAL VAULT & GALLERY ================= */}
       {activeSection === "gallery" && (
         <section className="container" style={{ marginTop: "32px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
             <div>
               <h2 className="font-display-serif" style={{ fontSize: "24px", color: "var(--ink-title)", margin: 0 }}>
-                Visual Vault & Photo Archives
+                Visual Vault & Photo Archives ({galleryList.length})
               </h2>
               <p style={{ fontSize: "13px", color: "var(--ink-muted)", marginTop: "4px" }}>
                 Add, preview, update, or remove photographic dispatches, award ceremonies, and keynote captures on the Gallery page.
@@ -1255,33 +1800,33 @@ export default function AdminPortalPage() {
         </section>
       )}
 
-      {/* MODAL 1: ADD/EDIT EVENT */}
+      {/* MODAL 1: ADD/EDIT EVENT (Includes POTR) */}
       {isEventModalOpen && (
         <div className="lightbox-overlay" role="dialog" aria-modal="true">
           <div style={{ position: "fixed", inset: 0 }} onClick={() => setIsEventModalOpen(false)} />
           <div className="lightbox-dialog" style={{ maxWidth: "580px", padding: "30px", backgroundColor: "var(--white-pure)", color: "var(--ink-title)" }}>
             <h3 className="font-display-serif" style={{ fontSize: "22px", marginBottom: "16px" }}>
-              {editingEvent ? "Edit Initiative" : "Add New Event"}
+              {editingEvent ? `Edit Event — ${editingEvent.title}` : "Add New Event"}
             </h3>
             <form onSubmit={handleSaveEvent} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
               <div>
                 <label className="form-label">EVENT TITLE *</label>
-                <input type="text" required value={eventForm.title} onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })} className="form-input" placeholder="e.g. NATIONAL STRATEGY SPRINT" />
+                <input type="text" required value={eventForm.title} onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })} className="form-input" placeholder="e.g. PITCH ON THE ROCKS (POTR)" />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                 <div>
                   <label className="form-label">CATEGORY</label>
                   <select value={eventForm.category} onChange={(e) => setEventForm({ ...eventForm, category: e.target.value })} className="form-input">
+                    <option value="Venture">Venture & Conclave</option>
                     <option value="Consulting">Consulting</option>
                     <option value="Finance">Finance</option>
                     <option value="Strategy">Strategy</option>
-                    <option value="Venture">Venture</option>
                   </select>
                 </div>
                 <div>
                   <label className="form-label">STATUS</label>
                   <select value={eventForm.status} onChange={(e) => setEventForm({ ...eventForm, status: e.target.value as any })} className="form-input">
-                    <option value="ACTIVE">ACTIVE (Live)</option>
+                    <option value="ACTIVE">ACTIVE (Live on Portal)</option>
                     <option value="UPCOMING">UPCOMING</option>
                     <option value="CLOSED">CLOSED (Archived)</option>
                   </select>
@@ -1293,8 +1838,8 @@ export default function AdminPortalPage() {
                   <input type="text" value={eventForm.date} onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })} className="form-input" placeholder="SPRING 2026" />
                 </div>
                 <div>
-                  <label className="form-label">PRIZE POOL</label>
-                  <input type="text" value={eventForm.prizeOrOutput} onChange={(e) => setEventForm({ ...eventForm, prizeOrOutput: e.target.value })} className="form-input" placeholder="₹50,000 & Citation" />
+                  <label className="form-label">PRIZE / DILIGENCE POOL</label>
+                  <input type="text" value={eventForm.prizeOrOutput} onChange={(e) => setEventForm({ ...eventForm, prizeOrOutput: e.target.value })} className="form-input" placeholder="₹25CR+ & Mentorship" />
                 </div>
               </div>
               <div>
@@ -1316,23 +1861,23 @@ export default function AdminPortalPage() {
         </div>
       )}
 
-      {/* MODAL 2: ADD/EDIT SPEAKER */}
+      {/* MODAL 2: ADD/EDIT SPEAKER (Includes POTR Jury & Mentors) */}
       {isSpeakerModalOpen && (
         <div className="lightbox-overlay" role="dialog" aria-modal="true">
           <div style={{ position: "fixed", inset: 0 }} onClick={() => setIsSpeakerModalOpen(false)} />
           <div className="lightbox-dialog" style={{ maxWidth: "540px", padding: "30px", backgroundColor: "var(--white-pure)", color: "var(--ink-title)" }}>
             <h3 className="font-display-serif" style={{ fontSize: "22px", marginBottom: "16px" }}>
-              {editingSpeaker ? "Edit Speaker / Mentor" : "Add Keynote Speaker / Mentor"}
+              {editingSpeaker ? `Edit Speaker — ${editingSpeaker.name}` : "Add Keynote Speaker / Conclave Mentor"}
             </h3>
             <form onSubmit={handleSaveSpeaker} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
               <div>
                 <label className="form-label">FULL NAME *</label>
-                <input type="text" required value={speakerForm.name} onChange={(e) => setSpeakerForm({ ...speakerForm, name: e.target.value })} className="form-input" placeholder="e.g. Radhika Iyer" />
+                <input type="text" required value={speakerForm.name} onChange={(e) => setSpeakerForm({ ...speakerForm, name: e.target.value })} className="form-input" placeholder="e.g. Ninad Karpe / Radhika Iyer" />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                 <div>
-                  <label className="form-label">ROLE / TITLE</label>
-                  <input type="text" required value={speakerForm.title} onChange={(e) => setSpeakerForm({ ...speakerForm, title: e.target.value })} className="form-input" placeholder="Partner / Managing Director" />
+                  <label className="form-label">ROLE / DESIGNATION</label>
+                  <input type="text" required value={speakerForm.title} onChange={(e) => setSpeakerForm({ ...speakerForm, title: e.target.value })} className="form-input" placeholder="Partner / Keynote Jury" />
                 </div>
                 <div>
                   <label className="form-label">FIRM / FUND / SPECIALTY</label>
@@ -1340,15 +1885,21 @@ export default function AdminPortalPage() {
                 </div>
               </div>
               <div>
-                <label className="form-label">CATEGORY TAG</label>
-                <input type="text" value={speakerForm.category} onChange={(e) => setSpeakerForm({ ...speakerForm, category: e.target.value })} className="form-input" placeholder="Venture Capital, Angel Investment, Private Equity" />
+                <label className="form-label">CATEGORY / TRACK</label>
+                <select value={speakerForm.category} onChange={(e) => setSpeakerForm({ ...speakerForm, category: e.target.value })} className="form-input">
+                  <option value="POTR Conclave Jury">POTR Conclave Jury (Flagship Investor Panel)</option>
+                  <option value="Venture Capital">Venture Capital & Angel Syndicate</option>
+                  <option value="Private Equity">Private Equity & M&A</option>
+                  <option value="Keynote">Annual Keynote Speaker</option>
+                  <option value="Strategy & Leadership">Strategy & Leadership</option>
+                </select>
               </div>
               <div>
                 <label className="form-label">ENDORSEMENT / QUOTE</label>
-                <textarea rows={3} required value={speakerForm.quote} onChange={(e) => setSpeakerForm({ ...speakerForm, quote: e.target.value })} className="form-textarea" placeholder="Quote or endorsement about Finlogue..." />
+                <textarea rows={3} required value={speakerForm.quote} onChange={(e) => setSpeakerForm({ ...speakerForm, quote: e.target.value })} className="form-textarea" placeholder="Official quote or jury endorsement..." />
               </div>
               <div>
-                <label className="form-label">IMAGE PATH / URL</label>
+                <label className="form-label">PORTRAIT IMAGE PATH / URL</label>
                 <input type="text" value={speakerForm.image} onChange={(e) => setSpeakerForm({ ...speakerForm, image: e.target.value })} className="form-input" />
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "8px" }}>
@@ -1362,7 +1913,75 @@ export default function AdminPortalPage() {
         </div>
       )}
 
-      {/* MODAL 3: ADD/EDIT TEAM MEMBER */}
+      {/* MODAL 3: ADD/EDIT ATTENDEE & REGISTRATION */}
+      {isAttendeeModalOpen && (
+        <div className="lightbox-overlay" role="dialog" aria-modal="true">
+          <div style={{ position: "fixed", inset: 0 }} onClick={() => setIsAttendeeModalOpen(false)} />
+          <div className="lightbox-dialog" style={{ maxWidth: "560px", padding: "30px", backgroundColor: "var(--white-pure)", color: "var(--ink-title)" }}>
+            <h3 className="font-display-serif" style={{ fontSize: "22px", marginBottom: "16px" }}>
+              {editingAttendee ? `Edit Registration — ${editingAttendee.token}` : "Add Attendee / Manual Registration"}
+            </h3>
+            <form onSubmit={handleSaveAttendee} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <div>
+                  <label className="form-label">PARTICIPANT NAME *</label>
+                  <input type="text" required value={attendeeForm.name} onChange={(e) => setAttendeeForm({ ...attendeeForm, name: e.target.value })} className="form-input" placeholder="e.g. Aarav Khandelwal" />
+                </div>
+                <div>
+                  <label className="form-label">EMAIL ADDRESS *</label>
+                  <input type="email" required value={attendeeForm.email} onChange={(e) => setAttendeeForm({ ...attendeeForm, email: e.target.value })} className="form-input" placeholder="name@domain.edu" />
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <div>
+                  <label className="form-label">PHONE NUMBER</label>
+                  <input type="text" value={attendeeForm.phone} onChange={(e) => setAttendeeForm({ ...attendeeForm, phone: e.target.value })} className="form-input" placeholder="+91 98..." />
+                </div>
+                <div>
+                  <label className="form-label">STATUS</label>
+                  <select value={attendeeForm.status} onChange={(e) => setAttendeeForm({ ...attendeeForm, status: e.target.value as any })} className="form-input">
+                    <option value="CONFIRMED">CONFIRMED (Approved)</option>
+                    <option value="CHECKED-IN">CHECKED-IN (On Campus)</option>
+                    <option value="WAITLISTED">WAITLISTED</option>
+                    <option value="REJECTED">REJECTED / WITHDRAWN</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="form-label">COLLEGE / INSTITUTION *</label>
+                <input type="text" required value={attendeeForm.institution} onChange={(e) => setAttendeeForm({ ...attendeeForm, institution: e.target.value })} className="form-input" placeholder="e.g. The LNM Institute of Information Technology" />
+              </div>
+
+              <div>
+                <label className="form-label">EVENT REGISTERED FOR</label>
+                <select value={attendeeForm.event} onChange={(e) => setAttendeeForm({ ...attendeeForm, event: e.target.value })} className="form-input">
+                  <option value="PITCH ON THE ROCKS (POTR)">PITCH ON THE ROCKS (POTR) — Flagship Conclave</option>
+                  <option value="NATIONAL CASE CRACKERS">NATIONAL CASE CRACKERS — Consulting League</option>
+                  <option value="VALUATION & EQUITY RESEARCH LAB">VALUATION & EQUITY RESEARCH LAB</option>
+                  <option value="M&A BOARDROOM SIMULATION">M&A BOARDROOM SIMULATION</option>
+                  <option value="CONSULTANTS GOT TALENT">CONSULTANTS GOT TALENT</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="form-label">REMARKS / FOUNDER STATEMENT / NOTES</label>
+                <textarea rows={3} value={attendeeForm.notes} onChange={(e) => setAttendeeForm({ ...attendeeForm, notes: e.target.value })} className="form-textarea" placeholder="e.g. Pitch deck reviewed; assigned Syndicate 03..." />
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "8px" }}>
+                <button type="button" onClick={() => setIsAttendeeModalOpen(false)} style={{ padding: "8px 16px", color: "var(--ink-muted)" }}>Cancel</button>
+                <button type="submit" disabled={isSavingAttendee} className="stamp-button stamp-button-primary" style={{ backgroundColor: "var(--navy-hero)", color: "#FFFFFF" }}>
+                  {isSavingAttendee ? "SAVING..." : "SAVE ATTENDEE →"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 4: ADD/EDIT TEAM MEMBER */}
       {isTeamModalOpen && (
         <div className="lightbox-overlay" role="dialog" aria-modal="true">
           <div style={{ position: "fixed", inset: 0 }} onClick={() => setIsTeamModalOpen(false)} />
@@ -1424,7 +2043,7 @@ export default function AdminPortalPage() {
         </div>
       )}
 
-      {/* MODAL 4: ADD/EDIT GALLERY ARCHIVE */}
+      {/* MODAL 5: ADD/EDIT GALLERY ARCHIVE */}
       {isGalleryModalOpen && (
         <div className="lightbox-overlay" role="dialog" aria-modal="true">
           <div style={{ position: "fixed", inset: 0 }} onClick={() => setIsGalleryModalOpen(false)} />

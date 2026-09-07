@@ -122,6 +122,18 @@ export const events: EventsContent = {
   },
   caseFiles: [
     {
+      id: "potr",
+      fileNumber: "FLAGSHIP",
+      title: "PITCH ON THE ROCKS (POTR)",
+      status: "ACTIVE",
+      category: "Venture",
+      date: "SPRING 2026 · ANNUAL CONCLAVE",
+      description:
+        "Finlogue's marquee annual venture summit bringing together visionary student founders, angel syndicates, and institutional venture capital partners for live pitch deliberation, financial diligence, and direct capital commitments.",
+      prizeOrOutput: "₹25CR+ Diligence Window & Direct Angel Commitments",
+      eligibility: "Student Startups & Collegiate Founders Pan-India",
+    },
+    {
       id: "case-crackers",
       fileNumber: "",
       title: "NATIONAL CASE CRACKERS",

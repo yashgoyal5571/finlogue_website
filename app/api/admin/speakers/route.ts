@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { home } from "@/content/home";
+import { events } from "@/content/events";
 
 export const runtime = "nodejs";
 
@@ -13,10 +14,23 @@ export interface SpeakerItem {
   image?: string;
 }
 
-let dynamicSpeakersCache: SpeakerItem[] = home.speakersMentors.map((s, idx) => ({
-  id: `speaker-${idx + 1}`,
-  ...s,
+const potrMentors: SpeakerItem[] = events.flagship.investorsMentors.map((m, idx) => ({
+  id: `potr-mentor-${idx + 1}`,
+  name: m.name,
+  title: m.role,
+  firm: m.credential,
+  category: "POTR Conclave Jury",
+  quote: "Official diligence & investment panel judge for Pitch on the Rocks Flagship Conclave.",
+  image: "/assets/gallery/summit-keynote.jpg",
 }));
+
+let dynamicSpeakersCache: SpeakerItem[] = [
+  ...home.speakersMentors.map((s, idx) => ({
+    id: `speaker-${idx + 1}`,
+    ...s,
+  })),
+  ...potrMentors,
+];
 
 export async function GET() {
   const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;

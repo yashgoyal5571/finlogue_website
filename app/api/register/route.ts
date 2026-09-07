@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { dynamicAttendeesCache } from "@/app/api/admin/attendees/route";
 
 export const runtime = "nodejs";
 
@@ -39,7 +40,21 @@ export async function POST(request: Request) {
     }
 
     const registrationToken = `REG-${Date.now().toString().slice(-6)}`;
-    const eventTitle = event || body.eventTitle || "Flagship Conclave";
+    const eventTitle = event || body.eventTitle || "PITCH ON THE ROCKS (POTR)";
+
+    // Append to live attendees roster for admin visibility
+    dynamicAttendeesCache.unshift({
+      id: `att-${Date.now()}`,
+      token: registrationToken,
+      name,
+      email,
+      phone: body.phone || "",
+      institution: institution || "Independent Participant",
+      event: eventTitle,
+      status: "CONFIRMED",
+      registeredAt: new Date().toISOString().replace("T", " ").slice(0, 16),
+      notes: statement ? `Statement: ${statement}` : "Direct Portal Registration",
+    });
 
     console.log(`[FINLOGUE NODE.JS EVENT REGISTRATION #${registrationToken}]`, {
       timestamp: new Date().toISOString(),
