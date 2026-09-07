@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { events, CaseFile } from "@/content/events";
+import InitiativesFlipGrid from "@/components/InitiativesFlipGrid";
 
 export default function EventsPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -346,108 +347,7 @@ export default function EventsPage() {
             </p>
           </div>
 
-          <div className="grid-2">
-            {filteredCaseFiles.map((cf) => {
-              const isClosed = cf.status === "CLOSED";
-              const isActive = cf.status === "ACTIVE";
-
-              return (
-                <div
-                  key={cf.id || cf.fileNumber}
-                  id={cf.id}
-                  style={{
-                    backgroundColor: "var(--white-pure)",
-                    border: "1px solid var(--white-border)",
-                    boxShadow: "var(--card-shadow)",
-                    padding: "32px",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    transition: "transform 0.25s ease, box-shadow 0.25s ease, outline 0.25s ease",
-                    scrollMarginTop: "120px",
-                  }}
-                >
-                  <div>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        paddingBottom: "14px",
-                        borderBottom: "1px solid var(--white-border)",
-                        marginBottom: "16px",
-                      }}
-                    >
-                      <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--ink-muted)" }}>
-                        {cf.fileNumber}
-                      </span>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--ink-body)", textTransform: "uppercase" }}>
-                          {cf.category}
-                        </span>
-                        <span
-                          className={`status-badge ${
-                            isClosed
-                              ? "status-badge-closed"
-                              : isActive
-                              ? "status-badge-active"
-                              : "status-badge-upcoming"
-                          }`}
-                        >
-                          {isClosed ? "ARCHIVED" : isActive ? "LIVE" : "UPCOMING"}
-                        </span>
-                      </div>
-                    </div>
-
-                    <h3 className="font-display-serif" style={{ fontSize: "26px", color: "var(--ink-title)", marginBottom: "8px" }}>
-                      {cf.title}
-                    </h3>
-                    <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--burgundy-crest)", display: "block", marginBottom: "16px" }}>
-                      TIMELINE: {cf.date}
-                    </span>
-
-                    <p style={{ fontSize: "14.5px", color: "var(--ink-body)", lineHeight: 1.6, marginBottom: "24px" }}>
-                      {cf.description}
-                    </p>
-                  </div>
-
-                  <div style={{ paddingTop: "20px", borderTop: "1px solid var(--white-border)", display: "flex", flexDirection: "column", gap: "16px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12.5px", flexWrap: "wrap", gap: "8px" }}>
-                      <span style={{ color: "var(--emerald)", fontWeight: 600 }}>🏆 {cf.prizeOrOutput}</span>
-                      <span style={{ color: "var(--ink-muted)" }}>👥 {cf.eligibility}</span>
-                    </div>
-
-                    {!isClosed ? (
-                      <button
-                        type="button"
-                        onClick={() => handleRegisterClick(cf.title)}
-                        className="stamp-button stamp-button-block"
-                        style={{ backgroundColor: "var(--navy-hero)", color: "#FFFFFF", borderColor: "var(--navy-hero)" }}
-                      >
-                        REGISTER FOR CASE BRIEF →
-                      </button>
-                    ) : (
-                      <div
-                        style={{
-                          padding: "10px",
-                          textAlign: "center",
-                          border: "1px solid var(--burgundy-border)",
-                          backgroundColor: "var(--burgundy-tint)",
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "11px",
-                          color: "var(--burgundy-text)",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.08em",
-                        }}
-                      >
-                        ARCHIVED CASE FILE
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <InitiativesFlipGrid items={filteredCaseFiles} onRegisterClick={handleRegisterClick} />
         </div>
       </section>
 

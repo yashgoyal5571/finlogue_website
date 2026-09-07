@@ -1380,3 +1380,152 @@ img {
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), outline 0.3s ease;
 }
 
+/* 17. IIT Bombay E-Cell Inspired 3D Flip Card System & Double Border Frames */
+.ecell-card-container {
+  perspective: 1200px;
+  height: 480px;
+  width: 100%;
+  position: relative;
+  cursor: pointer;
+  scroll-margin-top: 120px;
+}
+
+.ecell-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.7s cubic-bezier(0.34, 1.4, 0.64, 1);
+  transform-style: preserve-3d;
+  border-radius: 24px;
+}
+
+/* Hover or clicked flipped state */
+.ecell-card-container:hover .ecell-card-inner,
+.ecell-card-container.is-flipped .ecell-card-inner {
+  transform: rotateY(180deg);
+}
+
+.ecell-card-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #0F1D3C 0%, #070E20 100%);
+  border: 1.5px solid rgba(197, 168, 128, 0.38);
+  box-shadow: 0 16px 36px -4px rgba(4, 9, 22, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  justifyContent: space-between;
+  align-items: center;
+  padding: 32px 24px;
+  overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ecell-card-container:hover .ecell-card-face {
+  border-color: var(--gold-oxford);
+  box-shadow: 0 20px 42px -4px rgba(4, 9, 22, 0.8), 0 0 24px rgba(197, 168, 128, 0.25);
+}
+
+.ecell-card-face-front {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.ecell-card-face-back {
+  transform: rotateY(180deg);
+  z-index: 1;
+  background: linear-gradient(180deg, #112247 0%, #081228 100%);
+}
+
+/* Distinctive Inset Double-Line Border Frame (Matching E-Cell Screenshot) */
+.ecell-card-frame {
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(197, 168, 128, 0.28);
+  border-radius: 16px;
+  pointer-events: none;
+  z-index: 1;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  transition: border-color 0.25s ease;
+}
+
+.ecell-card-container:hover .ecell-card-frame {
+  border-color: rgba(197, 168, 128, 0.6);
+}
+
+/* Card Content Container inside the inner frame */
+.ecell-card-body {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justifyContent: space-between;
+  align-items: center;
+}
+
+/* Signature "Know More ➔" Pill Button (Matching E-Cell Screenshot) */
+.ecell-know-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #D4AF37 0%, #C5A880 100%);
+  color: #070D1E;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 10px 24px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(197, 168, 128, 0.35);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.ecell-know-more-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 20px rgba(197, 168, 128, 0.55);
+  background: linear-gradient(135deg, #E2C582 0%, #D4AF37 100%);
+}
+
+.ecell-know-more-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.ecell-know-more-btn:hover svg {
+  transform: translateX(3px);
+}
+
+/* Dossier Modal Tab Styling */
+.dossier-tab-btn {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 10px 18px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--platinum-muted);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.dossier-tab-btn:hover {
+  color: #FFFFFF;
+}
+
+.dossier-tab-btn.active {
+  color: var(--gold-oxford);
+  border-bottom-color: var(--gold-oxford);
+  background-color: rgba(197, 168, 128, 0.08);
+}
+

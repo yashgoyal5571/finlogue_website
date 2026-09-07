@@ -2,8 +2,10 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { home } from "@/content/home";
+import { events } from "@/content/events";
 import StatsCounter from "@/components/StatsCounter";
 import InspirationalSpeakers from "@/components/InspirationalSpeakers";
+import InitiativesFlipGrid from "@/components/InitiativesFlipGrid";
 
 export const metadata = {
   title: "FINLOGUE — Finance & Strategy Cell | LNMIIT",
@@ -374,54 +376,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid-2">
-            {home.initiatives.map((item) => {
-              const accentMap: Record<string, string> = {
-                potr: "accent-venture",
-                "case-crackers": "accent-consulting",
-                "valuation-lab": "accent-finance",
-                "market-watch": "accent-consulting",
-                "ma-simulation": "accent-venture",
-              };
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`initiative-card ${accentMap[item.id] ?? ""}`}
-                  style={{
-                    textDecoration: "none",
-                    color: "inherit",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    cursor: "pointer",
-                    transition: "transform 0.2s ease, box-shadow 0.2s ease",
-                  }}
-                >
-                  <div>
-                    <div className="initiative-header">
-                      <span className="initiative-tag">{item.tag}</span>
-                      <span className="initiative-badge-tag">{item.highlight}</span>
-                    </div>
-
-                    <h3 className="initiative-title">{item.title}</h3>
-                    <p className="initiative-desc">{item.description}</p>
-                  </div>
-
-                  <div className="initiative-footer" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
-                    <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--burgundy-crest)" }}>
-                      {item.metrics}
-                    </span>
-                    <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--navy-hero)", fontWeight: 700 }}>
-                      EXPLORE EVENT →
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+          <InitiativesFlipGrid items={events.caseFiles} />
 
           <div style={{ marginTop: "44px", textAlign: "center" }}>
             <Link
