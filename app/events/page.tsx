@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { events } from "@/content/events";
+import { events, CaseFile } from "@/content/events";
 
 export default function EventsPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [caseFiles, setCaseFiles] = useState<CaseFile[]>(events.caseFiles);
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
   const [registeredEvent, setRegisteredEvent] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,6 +54,21 @@ export default function EventsPage() {
   };
 
   useEffect(() => {
+    const loadDynamicEvents = async () => {
+      try {
+        const res = await fetch("/api/admin/events");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.events) && data.events.length > 0) {
+          setCaseFiles(data.events);
+        }
+      } catch {
+        // Fallback to static default
+      }
+    };
+    loadDynamicEvents();
+  }, []);
+
+  useEffect(() => {
     const handleHash = () => {
       if (typeof window === "undefined") return;
       const rawHash = window.location.hash.replace("#", "");
@@ -78,7 +94,7 @@ export default function EventsPage() {
     return () => window.removeEventListener("hashchange", handleHash);
   }, []);
 
-  const filteredCaseFiles = events.caseFiles.filter((cf) => {
+  const filteredCaseFiles = caseFiles.filter((cf) => {
     if (selectedCategory === "All") return true;
     if (selectedCategory === "Case Competitions")
       return cf.category === "Consulting" || cf.category === "Strategy";

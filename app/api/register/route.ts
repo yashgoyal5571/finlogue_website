@@ -39,20 +39,44 @@ export async function POST(request: Request) {
     }
 
     const registrationToken = `REG-${Date.now().toString().slice(-6)}`;
+    const eventTitle = event || body.eventTitle || "Flagship Conclave";
 
     console.log(`[FINLOGUE NODE.JS EVENT REGISTRATION #${registrationToken}]`, {
       timestamp: new Date().toISOString(),
-      event: event || "Flagship Conclave",
+      event: eventTitle,
       name,
       email,
       institution: institution || "N/A",
       statementPreview: statement ? statement.slice(0, 80) : "N/A",
     });
 
+    // Forward to Google Sheets Webhook if configured
+    const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
+    if (webhookUrl) {
+      try {
+        await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "register",
+            token: registrationToken,
+            eventTitle,
+            name,
+            email,
+            institution: institution || "N/A",
+            statement: statement || "",
+          }),
+        });
+      } catch (err) {
+        console.error("[REGISTER API] Google Sheets forwarding error:", err);
+      }
+    }
+
     return NextResponse.json({
       success: true,
+      token: registrationToken,
       registrationToken,
-      message: `Registration confirmed for ${event || "the event"}.`,
+      message: `Registration confirmed for ${eventTitle}.`,
     });
   } catch (error: any) {
     console.error("[NODE.JS API ERROR - REGISTER]", error);

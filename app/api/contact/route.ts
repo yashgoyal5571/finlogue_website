@@ -50,6 +50,28 @@ export async function POST(request: Request) {
       messagePreview: message.slice(0, 100),
     });
 
+    // Forward to Google Sheets Webhook if configured
+    const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
+    if (webhookUrl) {
+      try {
+        await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "contact",
+            ticketId,
+            name,
+            email,
+            organization: organization || "N/A",
+            inquiryType: inquiryType || "General",
+            message: message || "",
+          }),
+        });
+      } catch (err) {
+        console.error("[CONTACT API] Google Sheets forwarding error:", err);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       ticketId,

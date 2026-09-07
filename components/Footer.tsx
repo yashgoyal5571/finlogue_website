@@ -339,6 +339,11 @@ export default function Footer() {
                   Contact Secretariat
                 </Link>
               </li>
+              <li>
+                <Link href="/admin" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--gold-oxford)", transition: "color 0.15s" }}>
+                  Coordinator Desk ↗
+                </Link>
+              </li>
             </ul>
           </div>
 
