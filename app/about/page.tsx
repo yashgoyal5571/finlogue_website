@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { about } from "@/content/about";
 import LeadershipSection from "@/components/LeadershipSection";
+import AboutHashScroll from "@/components/AboutHashScroll";
 
 export const metadata = {
   title: "About Us — FINLOGUE | Institutional Charter & Leadership",
@@ -13,6 +14,7 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <main style={{ flex: 1, width: "100%", overflow: "hidden" }}>
+      <AboutHashScroll />
       {/* 1. Page Hero Header — Deep Executive Midnight Navy (#0A1329) */}
       <section className="page-hero-navy">
         <div className="hero-architectural-grid" />

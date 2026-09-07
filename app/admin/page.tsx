@@ -6,6 +6,7 @@ import Image from "next/image";
 import { CaseFile } from "@/content/events";
 import { SpeakerItem } from "@/app/api/admin/speakers/route";
 import { TeamMemberItem } from "@/app/api/admin/team/route";
+import { GalleryItem } from "@/content/gallery";
 
 export default function AdminPortalPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -15,7 +16,7 @@ export default function AdminPortalPage() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Main Section Navigation
-  const [activeSection, setActiveSection] = useState<"events" | "speakers" | "team">("events");
+  const [activeSection, setActiveSection] = useState<"events" | "speakers" | "team" | "gallery">("events");
 
   // --- 1. EVENTS STATE ---
   const [eventsList, setEventsList] = useState<CaseFile[]>([]);
@@ -71,6 +72,24 @@ export default function AdminPortalPage() {
     image: "/assets/team/aditya-tiwari.jpg",
   });
 
+  // --- 4. GALLERY / VISUAL VAULT STATE ---
+  const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
+  const [isLoadingGallery, setIsLoadingGallery] = useState(false);
+  const [galleryCategoryFilter, setGalleryCategoryFilter] = useState<string>("ALL");
+  const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
+  const [editingGalleryItem, setEditingGalleryItem] = useState<GalleryItem | null>(null);
+  const [isSavingGallery, setIsSavingGallery] = useState(false);
+
+  const [galleryForm, setGalleryForm] = useState({
+    title: "",
+    category: "Summits" as GalleryItem["category"],
+    date: "SPRING 2026",
+    location: "Main Auditorium, LNMIIT",
+    tag: "CONCLAVE DISPATCH",
+    description: "",
+    image: "/assets/gallery/celebrating-success.jpg",
+  });
+
   // Check initial session
   useEffect(() => {
     const checkSession = async () => {
@@ -124,6 +143,7 @@ export default function AdminPortalPage() {
     fetchEvents();
     fetchSpeakers();
     fetchTeam();
+    fetchGallery();
   };
 
   // --- FETCHERS ---
@@ -169,6 +189,21 @@ export default function AdminPortalPage() {
       console.error(err);
     } finally {
       setIsLoadingTeam(false);
+    }
+  };
+
+  const fetchGallery = async () => {
+    setIsLoadingGallery(true);
+    try {
+      const res = await fetch("/api/admin/gallery");
+      const data = await res.json();
+      if (data.success && Array.isArray(data.items)) {
+        setGalleryList(data.items);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoadingGallery(false);
     }
   };
 
@@ -262,10 +297,10 @@ export default function AdminPortalPage() {
       setEditingSpeaker(null);
       setSpeakerForm({
         name: "",
-        title: "Partner / Founder",
-        firm: "Venture Syndicate / Advisory",
+        title: "",
+        firm: "",
         category: "Venture Capital",
-        quote: "Finlogue sets the institutional standard for practical financial modeling.",
+        quote: "",
         image: "/assets/gallery/summit-keynote.jpg",
       });
     }
@@ -313,7 +348,7 @@ export default function AdminPortalPage() {
       const res = await fetch(`/api/admin/speakers?id=${encodeURIComponent(id)}`, { method: "DELETE" });
       if (res.ok) {
         showToast(`Speaker removed.`);
-        setSpeakersList((prev) => prev.filter((s) => s.id !== id));
+        setSpeakersList((prev) => prev.filter((s) => s.id !== id && s.name !== name));
       }
     } catch {
       alert("Error deleting speaker.");
@@ -330,9 +365,9 @@ export default function AdminPortalPage() {
         tier: member.tier,
         dept: member.dept || "",
         batch: member.batch || "Y25",
-        email: member.email,
-        linkedin: member.linkedin,
-        image: member.image,
+        email: member.email || "24uec533@lnmiit.ac.in",
+        linkedin: member.linkedin || "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+        image: member.image || "/assets/team/aditya-tiwari.jpg",
       });
     } else {
       setEditingMember(null);
@@ -401,6 +436,83 @@ export default function AdminPortalPage() {
     }
   };
 
+  // --- GALLERY ACTIONS ---
+  const handleOpenGalleryModal = (item?: GalleryItem) => {
+    if (item) {
+      setEditingGalleryItem(item);
+      setGalleryForm({
+        title: item.title,
+        category: item.category,
+        date: item.date,
+        location: item.location,
+        tag: item.tag,
+        description: item.description,
+        image: item.image,
+      });
+    } else {
+      setEditingGalleryItem(null);
+      setGalleryForm({
+        title: "",
+        category: "Summits",
+        date: "SPRING 2026",
+        location: "Main Auditorium, LNMIIT",
+        tag: "CONCLAVE DISPATCH",
+        description: "",
+        image: "/assets/gallery/celebrating-success.jpg",
+      });
+    }
+    setIsGalleryModalOpen(true);
+  };
+
+  const handleSaveGalleryItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingGallery(true);
+
+    const payload: GalleryItem = {
+      id: editingGalleryItem ? editingGalleryItem.id : `moment-${Date.now()}`,
+      title: galleryForm.title,
+      category: galleryForm.category as any,
+      date: galleryForm.date,
+      location: galleryForm.location,
+      tag: galleryForm.tag || "CONCLAVE DISPATCH",
+      description: galleryForm.description,
+      image: galleryForm.image || "/assets/gallery/celebrating-success.jpg",
+    };
+
+    try {
+      const res = await fetch("/api/admin/gallery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ item: payload }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(editingGalleryItem ? "Gallery archive updated!" : "New photo capture published to Visual Vault!");
+        setIsGalleryModalOpen(false);
+        fetchGallery();
+      } else {
+        alert(data.error || "Failed to save gallery item.");
+      }
+    } catch {
+      alert("Error saving gallery item.");
+    } finally {
+      setIsSavingGallery(false);
+    }
+  };
+
+  const handleDeleteGalleryItem = async (id: string, title: string) => {
+    if (!window.confirm(`Delete photo archive "${title}"?`)) return;
+    try {
+      const res = await fetch(`/api/admin/gallery?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      if (res.ok) {
+        showToast(`Archive record removed.`);
+        setGalleryList((prev) => prev.filter((g) => g.id !== id));
+      }
+    } catch {
+      alert("Error deleting gallery item.");
+    }
+  };
+
   // --- FILTERS ---
   const filteredEvents = eventsList.filter((ev) => {
     const matchesFilter = eventFilterStatus === "ALL" ? true : ev.status === eventFilterStatus;
@@ -413,6 +525,11 @@ export default function AdminPortalPage() {
   const filteredTeam = teamList.filter((m) => {
     if (teamTierFilter === "ALL") return true;
     return m.tier === teamTierFilter;
+  });
+
+  const filteredGallery = galleryList.filter((g) => {
+    if (galleryCategoryFilter === "ALL") return true;
+    return g.category.toLowerCase() === galleryCategoryFilter.toLowerCase();
   });
 
   const liveCount = eventsList.filter((e) => e.status === "ACTIVE").length;
@@ -435,7 +552,7 @@ export default function AdminPortalPage() {
             Coordinator Portal
           </h1>
           <p style={{ fontSize: "13.5px", color: "var(--ink-body)", marginBottom: "28px", lineHeight: 1.5 }}>
-            Access the institutional control desk to manage live events, speakers, team hierarchy, and Google Sheets synchronization.
+            Access the institutional control desk to manage live events, speakers, team hierarchy, photo archives, and Google Sheets synchronization.
           </p>
 
           <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -540,14 +657,16 @@ export default function AdminPortalPage() {
                   setIsEventModalOpen(true);
                 } else if (activeSection === "speakers") {
                   handleOpenSpeakerModal();
-                } else {
+                } else if (activeSection === "team") {
                   handleOpenTeamModal();
+                } else {
+                  handleOpenGalleryModal();
                 }
               }}
               className="stamp-button stamp-button-primary"
               style={{ fontSize: "12px", padding: "8px 18px", backgroundColor: "var(--gold-oxford)", color: "var(--navy-deep)", borderColor: "var(--gold-oxford)", fontWeight: 700 }}
             >
-              + ADD NEW {activeSection === "events" ? "EVENT" : activeSection === "speakers" ? "SPEAKER" : "MEMBER"}
+              + ADD NEW {activeSection === "events" ? "EVENT" : activeSection === "speakers" ? "SPEAKER" : activeSection === "team" ? "MEMBER" : "PHOTO ARCHIVE"}
             </button>
             <button type="button" onClick={() => setIsAuthenticated(false)} style={{ fontSize: "12px", color: "var(--platinum-muted)", marginLeft: "8px" }}>
               Sign Out
@@ -559,7 +678,7 @@ export default function AdminPortalPage() {
       {/* Main Section Navigation Strip */}
       <section style={{ backgroundColor: "var(--white-pure)", borderBottom: "1px solid var(--white-border)", padding: "16px 0" }}>
         <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
             <button
               type="button"
               onClick={() => setActiveSection("events")}
@@ -606,6 +725,22 @@ export default function AdminPortalPage() {
               }}
             >
               👥 LEADERSHIP & TEAM ({teamList.length})
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveSection("gallery")}
+              className="stamp-button"
+              style={{
+                fontSize: "13px",
+                padding: "8px 20px",
+                backgroundColor: activeSection === "gallery" ? "var(--navy-hero)" : "var(--white-pure)",
+                color: activeSection === "gallery" ? "#FFFFFF" : "var(--ink-title)",
+                borderColor: activeSection === "gallery" ? "var(--navy-hero)" : "var(--white-border)",
+                fontWeight: 700,
+              }}
+            >
+              🖼️ VISUAL VAULT / GALLERY ({galleryList.length})
             </button>
           </div>
 
@@ -984,6 +1119,141 @@ export default function AdminPortalPage() {
         </section>
       )}
 
+      {/* ================= SECTION 4: VISUAL VAULT & GALLERY ================= */}
+      {activeSection === "gallery" && (
+        <section className="container" style={{ marginTop: "32px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
+            <div>
+              <h2 className="font-display-serif" style={{ fontSize: "24px", color: "var(--ink-title)", margin: 0 }}>
+                Visual Vault & Photo Archives
+              </h2>
+              <p style={{ fontSize: "13px", color: "var(--ink-muted)", marginTop: "4px" }}>
+                Add, preview, update, or remove photographic dispatches, award ceremonies, and keynote captures on the Gallery page.
+              </p>
+            </div>
+
+            <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                {["ALL", "Summits", "Pitch Sessions", "Keynotes", "Workshops", "Community"].map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setGalleryCategoryFilter(c)}
+                    className="stamp-button"
+                    style={{
+                      fontSize: "11px",
+                      padding: "6px 12px",
+                      backgroundColor: galleryCategoryFilter === c ? "var(--navy-hero)" : "var(--white-pure)",
+                      color: galleryCategoryFilter === c ? "#FFFFFF" : "var(--ink-title)",
+                      borderColor: galleryCategoryFilter === c ? "var(--navy-hero)" : "var(--white-border)",
+                    }}
+                  >
+                    {c.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => handleOpenGalleryModal()}
+                className="stamp-button stamp-button-primary"
+                style={{ fontSize: "12px", backgroundColor: "var(--navy-hero)", color: "#FFFFFF" }}
+              >
+                + ADD PHOTO ARCHIVE
+              </button>
+            </div>
+          </div>
+
+          <div className="grid-3" style={{ gap: "20px" }}>
+            {filteredGallery.map((item) => (
+              <div
+                key={item.id}
+                style={{
+                  backgroundColor: "var(--white-pure)",
+                  border: "1px solid var(--white-border)",
+                  boxShadow: "var(--card-shadow)",
+                  overflow: "hidden",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div>
+                  <div style={{ position: "relative", height: "180px", backgroundColor: "var(--navy-deep)" }}>
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      style={{ objectFit: "cover" }}
+                    />
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "10px",
+                        left: "10px",
+                        backgroundColor: "rgba(7, 13, 30, 0.85)",
+                        color: "var(--gold-oxford)",
+                        fontSize: "9.5px",
+                        padding: "3px 8px",
+                        borderRadius: "2px",
+                        fontFamily: "var(--font-mono)",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                        border: "1px solid rgba(197, 168, 128, 0.3)",
+                      }}
+                    >
+                      {item.tag || item.category}
+                    </span>
+                  </div>
+
+                  <div style={{ padding: "16px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                      <span style={{ fontSize: "11px", color: "var(--burgundy-crest)", fontWeight: 600, fontFamily: "var(--font-mono)", textTransform: "uppercase" }}>
+                        {item.category}
+                      </span>
+                      <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--ink-muted)" }}>
+                        {item.date}
+                      </span>
+                    </div>
+
+                    <h4 className="font-display-serif" style={{ fontSize: "17px", color: "var(--ink-title)", margin: "0 0 8px", lineHeight: 1.3 }}>
+                      {item.title}
+                    </h4>
+
+                    <p style={{ fontSize: "12.5px", color: "var(--ink-body)", margin: "0 0 10px", lineHeight: 1.5 }}>
+                      {item.description}
+                    </p>
+
+                    <div style={{ fontSize: "11px", color: "var(--ink-muted)", fontFamily: "var(--font-mono)" }}>
+                      📍 {item.location}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "6px", borderTop: "1px solid var(--white-border)", padding: "12px 16px", backgroundColor: "var(--white-alabaster)" }}>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenGalleryModal(item)}
+                    className="stamp-button"
+                    style={{ fontSize: "10.5px", padding: "4px 10px", borderColor: "var(--navy-hero)", color: "var(--navy-hero)" }}
+                  >
+                    ✎ Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteGalleryItem(item.id, item.title)}
+                    className="stamp-button"
+                    style={{ fontSize: "10.5px", padding: "4px 8px", borderColor: "var(--burgundy-border)", color: "var(--burgundy-text)" }}
+                  >
+                    ✕ Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* MODAL 1: ADD/EDIT EVENT */}
       {isEventModalOpen && (
         <div className="lightbox-overlay" role="dialog" aria-modal="true">
@@ -1146,6 +1416,128 @@ export default function AdminPortalPage() {
                 <button type="button" onClick={() => setIsTeamModalOpen(false)} style={{ padding: "8px 16px", color: "var(--ink-muted)" }}>Cancel</button>
                 <button type="submit" disabled={isSavingMember} className="stamp-button stamp-button-primary" style={{ backgroundColor: "var(--navy-hero)", color: "#FFFFFF" }}>
                   {isSavingMember ? "SAVING..." : "SAVE MEMBER →"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 4: ADD/EDIT GALLERY ARCHIVE */}
+      {isGalleryModalOpen && (
+        <div className="lightbox-overlay" role="dialog" aria-modal="true">
+          <div style={{ position: "fixed", inset: 0 }} onClick={() => setIsGalleryModalOpen(false)} />
+          <div className="lightbox-dialog" style={{ maxWidth: "560px", padding: "30px", backgroundColor: "var(--white-pure)", color: "var(--ink-title)" }}>
+            <h3 className="font-display-serif" style={{ fontSize: "22px", marginBottom: "16px" }}>
+              {editingGalleryItem ? "Edit Photo Archive" : "Add New Capture to Visual Vault"}
+            </h3>
+            <form onSubmit={handleSaveGalleryItem} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+              <div>
+                <label className="form-label">ARCHIVE TITLE *</label>
+                <input
+                  type="text"
+                  required
+                  value={galleryForm.title}
+                  onChange={(e) => setGalleryForm({ ...galleryForm, title: e.target.value })}
+                  className="form-input"
+                  placeholder="e.g. Grand Stage Winners — National Conclave"
+                />
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <div>
+                  <label className="form-label">CATEGORY</label>
+                  <select
+                    value={galleryForm.category}
+                    onChange={(e) => setGalleryForm({ ...galleryForm, category: e.target.value as any })}
+                    className="form-input"
+                  >
+                    <option value="Summits">Summits</option>
+                    <option value="Pitch Sessions">Pitch Sessions</option>
+                    <option value="Keynotes">Keynotes</option>
+                    <option value="Workshops">Workshops</option>
+                    <option value="Community">Community</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="form-label">BADGE / TAG</label>
+                  <input
+                    type="text"
+                    value={galleryForm.tag}
+                    onChange={(e) => setGalleryForm({ ...galleryForm, tag: e.target.value })}
+                    className="form-input"
+                    placeholder="e.g. PODIUM FINISH"
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <div>
+                  <label className="form-label">TIMELINE / DATE</label>
+                  <input
+                    type="text"
+                    required
+                    value={galleryForm.date}
+                    onChange={(e) => setGalleryForm({ ...galleryForm, date: e.target.value })}
+                    className="form-input"
+                    placeholder="SPRING 2026"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">CAMPUS VENUE / LOCATION</label>
+                  <input
+                    type="text"
+                    required
+                    value={galleryForm.location}
+                    onChange={(e) => setGalleryForm({ ...galleryForm, location: e.target.value })}
+                    className="form-input"
+                    placeholder="Main Auditorium, LNMIIT"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="form-label">IMAGE ASSET PATH OR URL *</label>
+                <input
+                  type="text"
+                  required
+                  value={galleryForm.image}
+                  onChange={(e) => setGalleryForm({ ...galleryForm, image: e.target.value })}
+                  className="form-input"
+                  placeholder="/assets/gallery/celebrating-success.jpg or https://..."
+                />
+                <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--ink-muted)", marginTop: "4px", display: "block" }}>
+                  Presets: /assets/gallery/celebrating-success.jpg · /assets/gallery/award-ceremony.jpg · /assets/gallery/pitch-session.jpg
+                </span>
+              </div>
+
+              <div>
+                <label className="form-label">CAPTION & DISPATCH SUMMARY *</label>
+                <textarea
+                  rows={3}
+                  required
+                  value={galleryForm.description}
+                  onChange={(e) => setGalleryForm({ ...galleryForm, description: e.target.value })}
+                  className="form-textarea"
+                  placeholder="Official record and details describing the moment..."
+                />
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "8px" }}>
+                <button
+                  type="button"
+                  onClick={() => setIsGalleryModalOpen(false)}
+                  style={{ padding: "8px 16px", color: "var(--ink-muted)" }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingGallery}
+                  className="stamp-button stamp-button-primary"
+                  style={{ backgroundColor: "var(--navy-hero)", color: "#FFFFFF" }}
+                >
+                  {isSavingGallery ? "SAVING..." : "SAVE ARCHIVE →"}
                 </button>
               </div>
             </form>

@@ -277,17 +277,12 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/about#competition" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
-                  Competitive Arenas
-                </Link>
-              </li>
-              <li>
-                <Link href="/about#finance" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
-                  Equity Valuation Practical
+                  National Competitions
                 </Link>
               </li>
               <li>
                 <Link href="/about#community" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
-                  Corporate Diligence Desk
+                  Ecosystem & Venture
                 </Link>
               </li>
             </ul>

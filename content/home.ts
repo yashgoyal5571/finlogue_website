@@ -166,16 +166,16 @@ export const home: HomeContent = {
       blurb: "Structured problem solving, market sizing, and corporate advisory frameworks.",
     },
     {
-      id: "competitions",
+      id: "competition",
       number: "03",
       title: "COMPETITIVE ARENAS",
       blurb: "High-stakes inter-collegiate case championships and financial challenges.",
     },
     {
-      id: "research",
+      id: "community",
       number: "04",
-      title: "EQUITY RESEARCH",
-      blurb: "Sector deep-dives, investment theses, and portfolio analysis practicals.",
+      title: "ECOSYSTEM & VENTURE",
+      blurb: "Startups, alumni mentorship, angel networks, and investor summits.",
     },
   ],
   speakersMentors: [

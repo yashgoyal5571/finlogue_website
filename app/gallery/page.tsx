@@ -1,16 +1,39 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { gallery, GalleryItem } from "@/content/gallery";
 import LightboxModal from "@/components/LightboxModal";
+import CelebratingSuccessShowcase from "@/components/CelebratingSuccessShowcase";
 
 export default function GalleryPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [activeModalItem, setActiveModalItem] = useState<GalleryItem | null>(null);
+  const [items, setItems] = useState<GalleryItem[]>(gallery.items);
 
-  const filteredItems = gallery.items.filter((item) => {
+  // Hydrate items dynamically from the Admin/Sheets API, fallback to default
+  useEffect(() => {
+    async function loadDynamicGallery() {
+      try {
+        const res = await fetch("/api/admin/gallery");
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.items) && data.items.length > 0) {
+            setItems(data.items);
+          }
+        }
+      } catch (err) {
+        console.warn("Using offline fallback gallery items:", err);
+      }
+    }
+    loadDynamicGallery();
+  }, []);
+
+  // Compute categories dynamically based on available items
+  const categories = ["All", ...Array.from(new Set(items.map((it) => it.category)))];
+
+  const filteredItems = items.filter((item) => {
     if (selectedCategory === "All") return true;
     return item.category === selectedCategory;
   });
@@ -44,22 +67,35 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* 2. Filter Bar & Media Archive Grid — Crisp Pure White (#FFFFFF) */}
-      <section className="section-pure-white">
+      {/* 2. CELEBRATING SUCCESS Showcase (Continuous Marquee + Rotating Stage Slider) */}
+      <CelebratingSuccessShowcase />
+
+      {/* 3. Filter Bar & Media Archive Grid — Crisp Pure White (#FFFFFF) */}
+      <section className="section-pure-white" style={{ paddingTop: "20px" }}>
         <div className="container">
+          <div style={{ marginBottom: "32px" }}>
+            <span className="section-eyebrow">CURATED VISUAL VAULT</span>
+            <h2 className="section-title" style={{ margin: "8px 0 0" }}>
+              Archival Conclave Dispatches
+            </h2>
+            <p className="section-description" style={{ margin: "10px 0 0" }}>
+              High-resolution photo records from historical negotiations, guest lectures, and institutional forums.
+            </p>
+          </div>
+
           {/* Category Filter Tabs */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
               gap: "10px",
-              paddingBottom: "28px",
+              paddingBottom: "24px",
               borderBottom: "1px solid var(--white-border)",
-              marginBottom: "48px",
+              marginBottom: "40px",
               flexWrap: "wrap",
             }}
           >
-            {gallery.categories.map((cat) => {
+            {categories.map((cat) => {
               const isSelected = selectedCategory === cat;
               return (
                 <button
@@ -92,9 +128,10 @@ export default function GalleryPage() {
                 key={item.id}
                 onClick={() => setActiveModalItem(item)}
                 className="gallery-card"
+                style={{ cursor: "pointer" }}
               >
                 {/* Image Frame */}
-                <div className="gallery-frame">
+                <div className="gallery-frame" style={{ position: "relative", height: "240px" }}>
                   <Image
                     src={item.image}
                     alt={item.title}
@@ -143,7 +180,7 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* 3. Bottom Submit Footage Box — Deep Midnight Navy (#070D1E) */}
+      {/* 4. Bottom Submit Footage Box — Deep Midnight Navy (#070D1E) */}
       <section className="section-navy-dark" style={{ padding: "80px 0" }}>
         <div className="container">
           <div

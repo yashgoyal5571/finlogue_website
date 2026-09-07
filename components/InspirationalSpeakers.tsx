@@ -51,14 +51,14 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
     setStartIndex((prev) => (prev - 1 + total) % total);
   }, [total]);
 
-  // Slides every 4 seconds, pauses on hover for smooth reading
+  // Auto-slides every 3.2 seconds reliably; pauses only when an individual card is hovered
   useEffect(() => {
-    if (isPaused || total <= 1) return;
+    if (hoveredIdx !== null || total <= 1) return;
     const timer = setInterval(() => {
-      nextSlide();
-    }, 4000);
+      setStartIndex((prev) => (prev + 1) % total);
+    }, 3200);
     return () => clearInterval(timer);
-  }, [isPaused, total, nextSlide]);
+  }, [hoveredIdx, total]);
 
   // Duplicate once for continuous sliding
   const displayItems = [...currentSpeakers, ...currentSpeakers];
@@ -70,11 +70,6 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
         width: "100%",
         position: "relative",
         padding: "10px 0 20px",
-      }}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => {
-        setIsPaused(false);
-        setHoveredIdx(null);
       }}
     >
       {/* Carousel Viewport (Static window, inner cards slide forward smoothly) */}
@@ -103,6 +98,7 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
               <div
                 key={`${speaker.name}-${idx}`}
                 onMouseEnter={() => setHoveredIdx(idx)}
+                onMouseLeave={() => setHoveredIdx(null)}
                 style={{
                   width: isMobile ? "240px" : "216px",
                   flexShrink: 0,
