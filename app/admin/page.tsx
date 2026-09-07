@@ -4,37 +4,74 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { CaseFile } from "@/content/events";
+import { SpeakerItem } from "@/app/api/admin/speakers/route";
+import { TeamMemberItem } from "@/app/api/admin/team/route";
 
 export default function AdminPortalPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passkeyInput, setPasskeyInput] = useState("");
   const [authError, setAuthError] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
-
-  // Events State
-  const [eventsList, setEventsList] = useState<CaseFile[]>([]);
-  const [isLoadingEvents, setIsLoadingEvents] = useState(false);
-  const [filterStatus, setFilterStatus] = useState<string>("ALL");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [dataSource, setDataSource] = useState<string>("local_cache");
-
-  // Modals & Forms
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingEvent, setEditingEvent] = useState<CaseFile | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
+  // Main Section Navigation
+  const [activeSection, setActiveSection] = useState<"events" | "speakers" | "team">("events");
+
+  // --- 1. EVENTS STATE ---
+  const [eventsList, setEventsList] = useState<CaseFile[]>([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(false);
+  const [eventFilterStatus, setEventFilterStatus] = useState<string>("ALL");
+  const [eventSearch, setEventSearch] = useState("");
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<CaseFile | null>(null);
+  const [isSavingEvent, setIsSavingEvent] = useState(false);
+
+  const [eventForm, setEventForm] = useState({
     title: "",
     category: "Strategy",
     status: "ACTIVE" as "ACTIVE" | "UPCOMING" | "CLOSED",
-    date: "",
-    prizeOrOutput: "",
+    date: "SPRING 2026",
+    prizeOrOutput: "₹50,000 & Citation",
     eligibility: "Open Pan-India",
     description: "",
   });
 
-  // Check existing session
+  // --- 2. SPEAKERS STATE ---
+  const [speakersList, setSpeakersList] = useState<SpeakerItem[]>([]);
+  const [isLoadingSpeakers, setIsLoadingSpeakers] = useState(false);
+  const [isSpeakerModalOpen, setIsSpeakerModalOpen] = useState(false);
+  const [editingSpeaker, setEditingSpeaker] = useState<SpeakerItem | null>(null);
+  const [isSavingSpeaker, setIsSavingSpeaker] = useState(false);
+
+  const [speakerForm, setSpeakerForm] = useState({
+    name: "",
+    title: "",
+    firm: "",
+    category: "Venture Capital",
+    quote: "",
+    image: "/assets/gallery/summit-keynote.jpg",
+  });
+
+  // --- 3. TEAM MEMBERS STATE ---
+  const [teamList, setTeamList] = useState<TeamMemberItem[]>([]);
+  const [isLoadingTeam, setIsLoadingTeam] = useState(false);
+  const [teamTierFilter, setTeamTierFilter] = useState<string>("ALL");
+  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+  const [editingMember, setEditingMember] = useState<TeamMemberItem | null>(null);
+  const [isSavingMember, setIsSavingMember] = useState(false);
+
+  const [teamForm, setTeamForm] = useState({
+    name: "",
+    role: "Associate",
+    tier: "coreTeam" as "coordinators" | "heads" | "coreTeam",
+    dept: "Equity Research",
+    batch: "Y25",
+    email: "24uec533@lnmiit.ac.in",
+    linkedin: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+    image: "/assets/team/aditya-tiwari.jpg",
+  });
+
+  // Check initial session
   useEffect(() => {
     const checkSession = async () => {
       try {
@@ -42,7 +79,7 @@ export default function AdminPortalPage() {
         const data = await res.json();
         if (data.authenticated) {
           setIsAuthenticated(true);
-          fetchEvents();
+          loadAllData();
         }
       } catch {
         // Not authenticated
@@ -71,7 +108,7 @@ export default function AdminPortalPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         setIsAuthenticated(true);
-        fetchEvents();
+        loadAllData();
         showToast("Access Authorized. Welcome, Coordinator.");
       } else {
         setAuthError(data.error || "Invalid passkey.");
@@ -83,6 +120,13 @@ export default function AdminPortalPage() {
     }
   };
 
+  const loadAllData = () => {
+    fetchEvents();
+    fetchSpeakers();
+    fetchTeam();
+  };
+
+  // --- FETCHERS ---
   const fetchEvents = async () => {
     setIsLoadingEvents(true);
     try {
@@ -90,18 +134,46 @@ export default function AdminPortalPage() {
       const data = await res.json();
       if (data.success && Array.isArray(data.events)) {
         setEventsList(data.events);
-        setDataSource(data.source || "local_cache");
       }
     } catch (err) {
-      console.error("Failed to load events:", err);
+      console.error(err);
     } finally {
       setIsLoadingEvents(false);
     }
   };
 
-  // Quick 1-Click Status Switcher (LIVE / UPCOMING / ARCHIVED)
-  const handleToggleStatus = async (id: string, newStatus: "ACTIVE" | "UPCOMING" | "CLOSED") => {
-    // Optimistic UI update
+  const fetchSpeakers = async () => {
+    setIsLoadingSpeakers(true);
+    try {
+      const res = await fetch("/api/admin/speakers");
+      const data = await res.json();
+      if (data.success && Array.isArray(data.speakers)) {
+        setSpeakersList(data.speakers);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoadingSpeakers(false);
+    }
+  };
+
+  const fetchTeam = async () => {
+    setIsLoadingTeam(true);
+    try {
+      const res = await fetch("/api/admin/team");
+      const data = await res.json();
+      if (data.success && Array.isArray(data.team)) {
+        setTeamList(data.team);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoadingTeam(false);
+    }
+  };
+
+  // --- EVENT ACTIONS ---
+  const handleToggleEventStatus = async (id: string, newStatus: "ACTIVE" | "UPCOMING" | "CLOSED") => {
     setEventsList((prev) =>
       prev.map((ev) => (ev.id === id ? { ...ev, status: newStatus } : ev))
     );
@@ -112,65 +184,34 @@ export default function AdminPortalPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, status: newStatus }),
       });
-      const data = await res.json();
       if (res.ok) {
-        showToast(`Status updated to ${newStatus === "ACTIVE" ? "LIVE" : newStatus}`);
+        showToast(`Event status set to ${newStatus === "ACTIVE" ? "LIVE" : newStatus}`);
       } else {
-        alert(data.error || "Failed to update status");
-        fetchEvents(); // rollback
+        fetchEvents();
       }
     } catch {
-      alert("Network error updating status.");
       fetchEvents();
     }
   };
 
-  const handleOpenAddModal = () => {
-    setEditingEvent(null);
-    setFormData({
-      title: "",
-      category: "Strategy",
-      status: "ACTIVE",
-      date: "SPRING 2026",
-      prizeOrOutput: "₹50,000 & Citation",
-      eligibility: "Open Pan-India",
-      description: "",
-    });
-    setIsAddModalOpen(true);
-  };
-
-  const handleOpenEditModal = (event: CaseFile) => {
-    setEditingEvent(event);
-    setFormData({
-      title: event.title,
-      category: event.category,
-      status: event.status,
-      date: event.date,
-      prizeOrOutput: event.prizeOrOutput,
-      eligibility: event.eligibility,
-      description: event.description,
-    });
-    setIsAddModalOpen(true);
-  };
-
   const handleSaveEvent = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaving(true);
+    setIsSavingEvent(true);
 
     const eventPayload: CaseFile = {
       id: editingEvent
         ? editingEvent.id
-        : formData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        : eventForm.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
       fileNumber: editingEvent
         ? editingEvent.fileNumber
         : `INITIATIVE 0${eventsList.length + 1}`,
-      title: formData.title.toUpperCase(),
-      category: formData.category as any,
-      status: formData.status,
-      date: formData.date || "UPCOMING",
-      prizeOrOutput: formData.prizeOrOutput,
-      eligibility: formData.eligibility,
-      description: formData.description,
+      title: eventForm.title.toUpperCase(),
+      category: eventForm.category as any,
+      status: eventForm.status,
+      date: eventForm.date || "UPCOMING",
+      prizeOrOutput: eventForm.prizeOrOutput,
+      eligibility: eventForm.eligibility,
+      description: eventForm.description,
     };
 
     try {
@@ -179,96 +220,224 @@ export default function AdminPortalPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ event: eventPayload }),
       });
-
       const data = await res.json();
       if (res.ok && data.success) {
-        showToast(editingEvent ? "Event updated successfully!" : "New event published live!");
-        setIsAddModalOpen(false);
+        showToast(editingEvent ? "Event updated!" : "New event published live!");
+        setIsEventModalOpen(false);
         fetchEvents();
       } else {
         alert(data.error || "Failed to save event.");
       }
     } catch {
-      alert("Error transmitting event payload.");
+      alert("Error saving event.");
     } finally {
-      setIsSaving(false);
+      setIsSavingEvent(false);
     }
   };
 
   const handleDeleteEvent = async (id: string, title: string) => {
-    if (!window.confirm(`Are you sure you want to remove "${title}" from the catalog?`)) {
-      return;
-    }
-
+    if (!window.confirm(`Delete "${title}"?`)) return;
     try {
-      const res = await fetch(`/api/admin/events?id=${encodeURIComponent(id)}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
+      const res = await fetch(`/api/admin/events?id=${encodeURIComponent(id)}`, { method: "DELETE" });
       if (res.ok) {
-        showToast(`Event "${title}" removed.`);
-        setEventsList((prev) => prev.filter((ev) => ev.id !== id));
-      } else {
-        alert(data.error || "Failed to delete event.");
+        showToast(`Event removed.`);
+        setEventsList((prev) => prev.filter((e) => e.id !== id));
       }
     } catch {
       alert("Error deleting event.");
     }
   };
 
+  // --- SPEAKER ACTIONS ---
+  const handleOpenSpeakerModal = (speaker?: SpeakerItem) => {
+    if (speaker) {
+      setEditingSpeaker(speaker);
+      setSpeakerForm({
+        name: speaker.name,
+        title: speaker.title,
+        firm: speaker.firm,
+        category: speaker.category,
+        quote: speaker.quote,
+        image: speaker.image || "/assets/gallery/summit-keynote.jpg",
+      });
+    } else {
+      setEditingSpeaker(null);
+      setSpeakerForm({
+        name: "",
+        title: "Partner / Founder",
+        firm: "Venture Syndicate / Advisory",
+        category: "Venture Capital",
+        quote: "Finlogue sets the institutional standard for practical financial modeling.",
+        image: "/assets/gallery/summit-keynote.jpg",
+      });
+    }
+    setIsSpeakerModalOpen(true);
+  };
+
+  const handleSaveSpeaker = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingSpeaker(true);
+
+    const payload: SpeakerItem = {
+      id: editingSpeaker ? editingSpeaker.id : `speaker-${Date.now()}`,
+      name: speakerForm.name,
+      title: speakerForm.title,
+      firm: speakerForm.firm,
+      category: speakerForm.category,
+      quote: speakerForm.quote,
+      image: speakerForm.image,
+    };
+
+    try {
+      const res = await fetch("/api/admin/speakers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ speaker: payload }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(editingSpeaker ? "Speaker updated!" : "New speaker added!");
+        setIsSpeakerModalOpen(false);
+        fetchSpeakers();
+      } else {
+        alert(data.error || "Failed to save speaker.");
+      }
+    } catch {
+      alert("Error saving speaker.");
+    } finally {
+      setIsSavingSpeaker(false);
+    }
+  };
+
+  const handleDeleteSpeaker = async (id: string, name: string) => {
+    if (!window.confirm(`Delete speaker "${name}"?`)) return;
+    try {
+      const res = await fetch(`/api/admin/speakers?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      if (res.ok) {
+        showToast(`Speaker removed.`);
+        setSpeakersList((prev) => prev.filter((s) => s.id !== id));
+      }
+    } catch {
+      alert("Error deleting speaker.");
+    }
+  };
+
+  // --- TEAM ACTIONS ---
+  const handleOpenTeamModal = (member?: TeamMemberItem) => {
+    if (member) {
+      setEditingMember(member);
+      setTeamForm({
+        name: member.name,
+        role: member.role,
+        tier: member.tier,
+        dept: member.dept || "",
+        batch: member.batch || "Y25",
+        email: member.email,
+        linkedin: member.linkedin,
+        image: member.image,
+      });
+    } else {
+      setEditingMember(null);
+      setTeamForm({
+        name: "",
+        role: "Associate",
+        tier: "coreTeam",
+        dept: "Equity Research",
+        batch: "Y25",
+        email: "24uec533@lnmiit.ac.in",
+        linkedin: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+        image: "/assets/team/aditya-tiwari.jpg",
+      });
+    }
+    setIsTeamModalOpen(true);
+  };
+
+  const handleSaveTeamMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingMember(true);
+
+    const payload: TeamMemberItem = {
+      id: editingMember ? editingMember.id : `team-${Date.now()}`,
+      name: teamForm.name,
+      role: teamForm.role,
+      tier: teamForm.tier,
+      dept: teamForm.dept,
+      batch: teamForm.batch,
+      focus: teamForm.dept,
+      email: teamForm.email,
+      linkedin: teamForm.linkedin,
+      image: teamForm.image,
+    };
+
+    try {
+      const res = await fetch("/api/admin/team", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ member: payload }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(editingMember ? "Team member updated!" : "Team member added!");
+        setIsTeamModalOpen(false);
+        fetchTeam();
+      } else {
+        alert(data.error || "Failed to save member.");
+      }
+    } catch {
+      alert("Error saving member.");
+    } finally {
+      setIsSavingMember(false);
+    }
+  };
+
+  const handleDeleteTeamMember = async (id: string, name: string) => {
+    if (!window.confirm(`Delete member "${name}"?`)) return;
+    try {
+      const res = await fetch(`/api/admin/team?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      if (res.ok) {
+        showToast(`Member removed.`);
+        setTeamList((prev) => prev.filter((m) => m.id !== id));
+      }
+    } catch {
+      alert("Error deleting member.");
+    }
+  };
+
+  // --- FILTERS ---
   const filteredEvents = eventsList.filter((ev) => {
-    const matchesFilter =
-      filterStatus === "ALL" ? true : ev.status === filterStatus;
+    const matchesFilter = eventFilterStatus === "ALL" ? true : ev.status === eventFilterStatus;
     const matchesQuery =
-      ev.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ev.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ev.description.toLowerCase().includes(searchQuery.toLowerCase());
+      ev.title.toLowerCase().includes(eventSearch.toLowerCase()) ||
+      ev.category.toLowerCase().includes(eventSearch.toLowerCase());
     return matchesFilter && matchesQuery;
+  });
+
+  const filteredTeam = teamList.filter((m) => {
+    if (teamTierFilter === "ALL") return true;
+    return m.tier === teamTierFilter;
   });
 
   const liveCount = eventsList.filter((e) => e.status === "ACTIVE").length;
   const upcomingCount = eventsList.filter((e) => e.status === "UPCOMING").length;
   const closedCount = eventsList.filter((e) => e.status === "CLOSED").length;
 
-  // 1. Unauthenticated Login Gate View
+  // Unauthenticated Gate
   if (!isAuthenticated) {
     return (
-      <main
-        style={{
-          minHeight: "100vh",
-          backgroundColor: "var(--navy-deep)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "24px",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "440px",
-            width: "100%",
-            backgroundColor: "var(--white-pure)",
-            border: "1px solid var(--white-border)",
-            boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
-            padding: "40px 32px",
-            textAlign: "center",
-          }}
-        >
+      <main style={{ minHeight: "100vh", backgroundColor: "var(--navy-deep)", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
+        <div style={{ maxWidth: "440px", width: "100%", backgroundColor: "var(--white-pure)", border: "1px solid var(--white-border)", boxShadow: "0 20px 40px rgba(0,0,0,0.5)", padding: "40px 32px", textAlign: "center" }}>
           <div style={{ marginBottom: "20px", display: "flex", justifyContent: "center" }}>
             <Image src="/logo.png" alt="Finlogue Crest" width={52} height={52} style={{ objectFit: "contain" }} />
           </div>
 
-          <span
-            className="font-metadata-mono"
-            style={{ fontSize: "11px", color: "var(--burgundy-crest)", textTransform: "uppercase", letterSpacing: "0.14em", fontWeight: 700 }}
-          >
+          <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--burgundy-crest)", textTransform: "uppercase", letterSpacing: "0.14em", fontWeight: 700 }}>
             FINLOGUE SECRETARIAT
           </span>
           <h1 className="font-display-serif" style={{ fontSize: "28px", color: "var(--ink-title)", margin: "8px 0 12px" }}>
             Coordinator Portal
           </h1>
           <p style={{ fontSize: "13.5px", color: "var(--ink-body)", marginBottom: "28px", lineHeight: 1.5 }}>
-            Access the institutional administrative desk to manage live events, announcements, and Google Sheets synchronization.
+            Access the institutional control desk to manage live events, speakers, team hierarchy, and Google Sheets synchronization.
           </p>
 
           <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -289,16 +458,7 @@ export default function AdminPortalPage() {
             </div>
 
             {authError && (
-              <div
-                style={{
-                  padding: "10px",
-                  backgroundColor: "var(--burgundy-tint)",
-                  border: "1px solid var(--burgundy-border)",
-                  color: "var(--burgundy-text)",
-                  fontSize: "12.5px",
-                  textAlign: "left",
-                }}
-              >
+              <div style={{ padding: "10px", backgroundColor: "var(--burgundy-tint)", border: "1px solid var(--burgundy-border)", color: "var(--burgundy-text)", fontSize: "12.5px", textAlign: "left" }}>
                 ⚠ {authError}
               </div>
             )}
@@ -307,27 +467,12 @@ export default function AdminPortalPage() {
               type="submit"
               disabled={isVerifying}
               className="stamp-button stamp-button-primary"
-              style={{
-                width: "100%",
-                padding: "12px",
-                backgroundColor: "var(--navy-hero)",
-                color: "#FFFFFF",
-                borderColor: "var(--navy-hero)",
-                marginTop: "4px",
-              }}
+              style={{ width: "100%", padding: "12px", backgroundColor: "var(--navy-hero)", color: "#FFFFFF", borderColor: "var(--navy-hero)" }}
             >
               {isVerifying ? "AUTHENTICATING..." : "AUTHORIZE ACCESS →"}
             </button>
 
-            <Link
-              href="/"
-              style={{
-                fontSize: "12.5px",
-                color: "var(--ink-muted)",
-                marginTop: "8px",
-                textDecoration: "none",
-              }}
-            >
+            <Link href="/" style={{ fontSize: "12.5px", color: "var(--ink-muted)", marginTop: "8px", textDecoration: "none" }}>
               ← Return to Public Portal
             </Link>
           </form>
@@ -336,10 +481,10 @@ export default function AdminPortalPage() {
     );
   }
 
-  // 2. Authenticated Admin Dashboard View
+  // Authenticated Portal
   return (
     <main style={{ minHeight: "100vh", backgroundColor: "var(--white-alabaster)", paddingBottom: "80px" }}>
-      {/* Toast Notification */}
+      {/* Toast Alert */}
       {toastMessage && (
         <div
           style={{
@@ -364,15 +509,8 @@ export default function AdminPortalPage() {
         </div>
       )}
 
-      {/* Admin Header Bar */}
-      <header
-        style={{
-          backgroundColor: "var(--navy-deep)",
-          color: "#FFFFFF",
-          borderBottom: "1px solid var(--navy-border)",
-          padding: "18px 0",
-        }}
-      >
+      {/* Header Bar */}
+      <header style={{ backgroundColor: "var(--navy-deep)", color: "#FFFFFF", borderBottom: "1px solid var(--navy-border)", padding: "18px 0" }}>
         <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
             <Image src="/logo.png" alt="Crest" width={36} height={36} style={{ objectFit: "contain" }} />
@@ -381,17 +519,7 @@ export default function AdminPortalPage() {
                 <span className="font-metadata-mono" style={{ fontSize: "10px", color: "var(--gold-oxford)", textTransform: "uppercase", letterSpacing: "0.14em" }}>
                   INTERNAL SECRETARIAT
                 </span>
-                <span
-                  style={{
-                    fontSize: "9.5px",
-                    padding: "2px 8px",
-                    backgroundColor: "rgba(21, 128, 61, 0.2)",
-                    color: "var(--emerald-bright)",
-                    border: "1px solid rgba(21, 128, 61, 0.4)",
-                    borderRadius: "4px",
-                    fontFamily: "var(--font-mono)",
-                  }}
-                >
+                <span style={{ fontSize: "9.5px", padding: "2px 8px", backgroundColor: "rgba(21, 128, 61, 0.2)", color: "var(--emerald-bright)", border: "1px solid rgba(21, 128, 61, 0.4)", borderRadius: "4px", fontFamily: "var(--font-mono)" }}>
                   LIVE SYNC ACTIVE
                 </span>
               </div>
@@ -402,213 +530,154 @@ export default function AdminPortalPage() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-            <Link
-              href="/events"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="stamp-button"
-              style={{
-                fontSize: "12px",
-                padding: "8px 16px",
-                borderColor: "rgba(255,255,255,0.2)",
-                color: "#FFFFFF",
-              }}
-            >
+            <Link href="/events" target="_blank" rel="noopener noreferrer" className="stamp-button" style={{ fontSize: "12px", padding: "8px 16px", borderColor: "rgba(255,255,255,0.2)", color: "#FFFFFF" }}>
               PREVIEW SITE ↗
             </Link>
-
             <button
               type="button"
-              onClick={handleOpenAddModal}
+              onClick={() => {
+                if (activeSection === "events") {
+                  setEditingEvent(null);
+                  setEventForm({ title: "", category: "Strategy", status: "ACTIVE", date: "SPRING 2026", prizeOrOutput: "₹50,000 & Citation", eligibility: "Open Pan-India", description: "" });
+                  setIsEventModalOpen(true);
+                } else if (activeSection === "speakers") {
+                  handleOpenSpeakerModal();
+                } else {
+                  handleOpenTeamModal();
+                }
+              }}
               className="stamp-button stamp-button-primary"
-              style={{
-                fontSize: "12px",
-                padding: "8px 18px",
-                backgroundColor: "var(--gold-oxford)",
-                color: "var(--navy-deep)",
-                borderColor: "var(--gold-oxford)",
-                fontWeight: 700,
-              }}
+              style={{ fontSize: "12px", padding: "8px 18px", backgroundColor: "var(--gold-oxford)", color: "var(--navy-deep)", borderColor: "var(--gold-oxford)", fontWeight: 700 }}
             >
-              + ADD NEW EVENT
+              + ADD NEW {activeSection === "events" ? "EVENT" : activeSection === "speakers" ? "SPEAKER" : "MEMBER"}
             </button>
-
-            <button
-              type="button"
-              onClick={() => setIsAuthenticated(false)}
-              style={{
-                fontSize: "12px",
-                color: "var(--platinum-muted)",
-                marginLeft: "8px",
-              }}
-            >
+            <button type="button" onClick={() => setIsAuthenticated(false)} style={{ fontSize: "12px", color: "var(--platinum-muted)", marginLeft: "8px" }}>
               Sign Out
             </button>
           </div>
         </div>
       </header>
 
-      {/* Metrics Banner */}
-      <section style={{ backgroundColor: "var(--white-pure)", borderBottom: "1px solid var(--white-border)", padding: "28px 0" }}>
-        <div className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px" }}>
-            <div style={{ padding: "18px", backgroundColor: "var(--white-alabaster)", border: "1px solid var(--white-border)" }}>
-              <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--ink-muted)" }}>TOTAL INITIATIVES</span>
-              <span className="font-display-serif" style={{ fontSize: "32px", color: "var(--ink-title)", display: "block", marginTop: "4px" }}>
-                {eventsList.length}
-              </span>
-            </div>
+      {/* Main Section Navigation Strip */}
+      <section style={{ backgroundColor: "var(--white-pure)", borderBottom: "1px solid var(--white-border)", padding: "16px 0" }}>
+        <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button
+              type="button"
+              onClick={() => setActiveSection("events")}
+              className="stamp-button"
+              style={{
+                fontSize: "13px",
+                padding: "8px 20px",
+                backgroundColor: activeSection === "events" ? "var(--navy-hero)" : "var(--white-pure)",
+                color: activeSection === "events" ? "#FFFFFF" : "var(--ink-title)",
+                borderColor: activeSection === "events" ? "var(--navy-hero)" : "var(--white-border)",
+                fontWeight: 700,
+              }}
+            >
+              📅 INITIATIVES & EVENTS ({eventsList.length})
+            </button>
 
-            <div style={{ padding: "18px", backgroundColor: "rgba(21, 128, 61, 0.04)", border: "1px solid rgba(21, 128, 61, 0.2)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "var(--emerald)" }} />
-                <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--emerald)" }}>LIVE / ACTIVE</span>
-              </div>
-              <span className="font-display-serif" style={{ fontSize: "32px", color: "var(--emerald)", display: "block", marginTop: "4px" }}>
-                {liveCount}
-              </span>
-            </div>
+            <button
+              type="button"
+              onClick={() => setActiveSection("speakers")}
+              className="stamp-button"
+              style={{
+                fontSize: "13px",
+                padding: "8px 20px",
+                backgroundColor: activeSection === "speakers" ? "var(--navy-hero)" : "var(--white-pure)",
+                color: activeSection === "speakers" ? "#FFFFFF" : "var(--ink-title)",
+                borderColor: activeSection === "speakers" ? "var(--navy-hero)" : "var(--white-border)",
+                fontWeight: 700,
+              }}
+            >
+              🎙️ SPEAKERS & MENTORS ({speakersList.length})
+            </button>
 
-            <div style={{ padding: "18px", backgroundColor: "rgba(197, 168, 128, 0.06)", border: "1px solid rgba(197, 168, 128, 0.3)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "var(--gold-oxford)" }} />
-                <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--gold-oxford)" }}>UPCOMING ARENAS</span>
-              </div>
-              <span className="font-display-serif" style={{ fontSize: "32px", color: "var(--gold-oxford)", display: "block", marginTop: "4px" }}>
-                {upcomingCount}
-              </span>
-            </div>
-
-            <div style={{ padding: "18px", backgroundColor: "rgba(114, 47, 55, 0.04)", border: "1px solid rgba(114, 47, 55, 0.2)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "var(--burgundy-crest)" }} />
-                <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--burgundy-crest)" }}>ARCHIVED CASES</span>
-              </div>
-              <span className="font-display-serif" style={{ fontSize: "32px", color: "var(--burgundy-crest)", display: "block", marginTop: "4px" }}>
-                {closedCount}
-              </span>
-            </div>
+            <button
+              type="button"
+              onClick={() => setActiveSection("team")}
+              className="stamp-button"
+              style={{
+                fontSize: "13px",
+                padding: "8px 20px",
+                backgroundColor: activeSection === "team" ? "var(--navy-hero)" : "var(--white-pure)",
+                color: activeSection === "team" ? "#FFFFFF" : "var(--ink-title)",
+                borderColor: activeSection === "team" ? "var(--navy-hero)" : "var(--white-border)",
+                fontWeight: 700,
+              }}
+            >
+              👥 LEADERSHIP & TEAM ({teamList.length})
+            </button>
           </div>
 
-          {/* Google Sheets Sync Banner */}
-          <div
-            style={{
-              marginTop: "20px",
-              padding: "16px 20px",
-              backgroundColor: "var(--navy-hero)",
-              color: "#FFFFFF",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: "12px",
-            }}
+          <Link
+            href="/docs/GOOGLE_SHEETS_SETUP.md"
+            target="_blank"
+            className="stamp-button"
+            style={{ fontSize: "11.5px", padding: "6px 14px", borderColor: "var(--navy-border)", color: "var(--navy-hero)" }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <span style={{ fontSize: "20px" }}>📊</span>
-              <div>
-                <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--gold-oxford)", textTransform: "uppercase" }}>
-                  GOOGLE SHEETS DATA DISPATCH
-                </span>
-                <p style={{ fontSize: "13px", color: "var(--platinum-muted)", margin: 0 }}>
-                  Event submissions and inquiries automatically sync to your LNMIIT Google Drive Sheet.
-                </p>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", gap: "10px" }}>
-              <Link
-                href="/docs/GOOGLE_SHEETS_SETUP.md"
-                target="_blank"
-                className="stamp-button"
-                style={{
-                  fontSize: "11px",
-                  padding: "6px 14px",
-                  borderColor: "rgba(255,255,255,0.3)",
-                  color: "#FFFFFF",
-                }}
-              >
-                SETUP GUIDE ↗
-              </Link>
-            </div>
-          </div>
+            📊 Google Sheets Setup Guide ↗
+          </Link>
         </div>
       </section>
 
-      {/* Main Events Manager Area */}
-      <section className="container" style={{ marginTop: "36px" }}>
-        {/* Filter & Search Bar */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "16px",
-            marginBottom: "24px",
-          }}
-        >
-          {/* Status Tabs */}
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-            {[
-              { key: "ALL", label: `ALL (${eventsList.length})` },
-              { key: "ACTIVE", label: `LIVE (${liveCount})` },
-              { key: "UPCOMING", label: `UPCOMING (${upcomingCount})` },
-              { key: "CLOSED", label: `ARCHIVED (${closedCount})` },
-            ].map((tab) => {
-              const isSelected = filterStatus === tab.key;
-              return (
+      {/* ================= SECTION 1: EVENTS MANAGER ================= */}
+      {activeSection === "events" && (
+        <section className="container" style={{ marginTop: "32px" }}>
+          {/* Quick Metrics */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px", marginBottom: "28px" }}>
+            <div style={{ padding: "16px", backgroundColor: "var(--white-pure)", border: "1px solid var(--white-border)" }}>
+              <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--ink-muted)" }}>TOTAL INITIATIVES</span>
+              <span className="font-display-serif" style={{ fontSize: "28px", color: "var(--ink-title)", display: "block" }}>{eventsList.length}</span>
+            </div>
+            <div style={{ padding: "16px", backgroundColor: "rgba(21, 128, 61, 0.05)", border: "1px solid rgba(21, 128, 61, 0.25)" }}>
+              <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--emerald)" }}>● LIVE EVENTS</span>
+              <span className="font-display-serif" style={{ fontSize: "28px", color: "var(--emerald)", display: "block" }}>{liveCount}</span>
+            </div>
+            <div style={{ padding: "16px", backgroundColor: "rgba(197, 168, 128, 0.08)", border: "1px solid rgba(197, 168, 128, 0.3)" }}>
+              <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--gold-oxford)" }}>● UPCOMING</span>
+              <span className="font-display-serif" style={{ fontSize: "28px", color: "var(--gold-oxford)", display: "block" }}>{upcomingCount}</span>
+            </div>
+            <div style={{ padding: "16px", backgroundColor: "rgba(114, 47, 55, 0.05)", border: "1px solid rgba(114, 47, 55, 0.2)" }}>
+              <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--burgundy-crest)" }}>● ARCHIVED</span>
+              <span className="font-display-serif" style={{ fontSize: "28px", color: "var(--burgundy-crest)", display: "block" }}>{closedCount}</span>
+            </div>
+          </div>
+
+          {/* Filter Bar */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
+            <div style={{ display: "flex", gap: "8px" }}>
+              {["ALL", "ACTIVE", "UPCOMING", "CLOSED"].map((s) => (
                 <button
-                  key={tab.key}
+                  key={s}
                   type="button"
-                  onClick={() => setFilterStatus(tab.key)}
+                  onClick={() => setEventFilterStatus(s)}
                   className="stamp-button"
                   style={{
-                    fontSize: "11.5px",
-                    padding: "6px 16px",
-                    backgroundColor: isSelected ? "var(--navy-hero)" : "var(--white-pure)",
-                    color: isSelected ? "#FFFFFF" : "var(--ink-title)",
-                    borderColor: isSelected ? "var(--navy-hero)" : "var(--white-border)",
-                    fontWeight: 600,
+                    fontSize: "11px",
+                    padding: "6px 14px",
+                    backgroundColor: eventFilterStatus === s ? "var(--navy-hero)" : "var(--white-pure)",
+                    color: eventFilterStatus === s ? "#FFFFFF" : "var(--ink-title)",
+                    borderColor: eventFilterStatus === s ? "var(--navy-hero)" : "var(--white-border)",
                   }}
                 >
-                  {tab.label}
+                  {s === "ALL" ? "ALL" : s === "ACTIVE" ? "LIVE" : s}
                 </button>
-              );
-            })}
-          </div>
+              ))}
+            </div>
 
-          {/* Search Input */}
-          <div style={{ minWidth: "260px" }}>
             <input
               type="text"
-              placeholder="Search initiatives, categories..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search events..."
+              value={eventSearch}
+              onChange={(e) => setEventSearch(e.target.value)}
               className="form-input"
-              style={{ fontSize: "13px", padding: "8px 14px", backgroundColor: "var(--white-pure)" }}
+              style={{ maxWidth: "260px", padding: "8px 12px", fontSize: "12.5px", backgroundColor: "var(--white-pure)" }}
             />
           </div>
-        </div>
 
-        {/* Events Table / Card List */}
-        {isLoadingEvents ? (
-          <div style={{ padding: "60px 0", textAlign: "center", color: "var(--ink-muted)" }}>
-            Loading events catalog...
-          </div>
-        ) : filteredEvents.length === 0 ? (
-          <div style={{ padding: "60px 0", textAlign: "center", backgroundColor: "var(--white-pure)", border: "1px solid var(--white-border)" }}>
-            <p className="font-display-serif" style={{ fontSize: "20px", color: "var(--ink-title)" }}>No initiatives match the selected criteria.</p>
-            <button
-              type="button"
-              onClick={handleOpenAddModal}
-              className="stamp-button stamp-button-primary"
-              style={{ marginTop: "12px", backgroundColor: "var(--navy-hero)", color: "#FFFFFF" }}
-            >
-              + Create First Event
-            </button>
-          </div>
-        ) : (
+          {/* Events List */}
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             {filteredEvents.map((ev) => {
               const isLive = ev.status === "ACTIVE";
@@ -622,7 +691,7 @@ export default function AdminPortalPage() {
                     backgroundColor: "var(--white-pure)",
                     border: "1px solid var(--white-border)",
                     boxShadow: "var(--card-shadow)",
-                    padding: "24px 28px",
+                    padding: "22px 26px",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -630,125 +699,64 @@ export default function AdminPortalPage() {
                     gap: "20px",
                   }}
                 >
-                  {/* Left Column: Details */}
-                  <div style={{ flex: 1, minWidth: "300px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
-                      <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--ink-muted)" }}>
-                        {ev.fileNumber}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: "10.5px",
-                          padding: "2px 8px",
-                          borderRadius: "4px",
-                          backgroundColor: "var(--white-alabaster)",
-                          border: "1px solid var(--white-border)",
-                          fontFamily: "var(--font-mono)",
-                          color: "var(--ink-title)",
-                          textTransform: "uppercase",
-                        }}
-                      >
+                  <div style={{ flex: 1, minWidth: "280px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                      <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--ink-muted)" }}>{ev.fileNumber}</span>
+                      <span style={{ fontSize: "10px", padding: "2px 6px", backgroundColor: "var(--white-alabaster)", border: "1px solid var(--white-border)", textTransform: "uppercase" }}>
                         {ev.category}
                       </span>
-                      <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--gold-oxford)" }}>
-                        Anchor: #{ev.id}
-                      </span>
+                      <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--gold-oxford)" }}>#{ev.id}</span>
                     </div>
 
-                    <h3 className="font-display-serif" style={{ fontSize: "22px", color: "var(--ink-title)", margin: "0 0 6px" }}>
+                    <h3 className="font-display-serif" style={{ fontSize: "21px", color: "var(--ink-title)", margin: "0 0 6px" }}>
                       {ev.title}
                     </h3>
-
-                    <p style={{ fontSize: "13.5px", color: "var(--ink-body)", margin: "0 0 10px", lineHeight: 1.5, maxWidth: "720px" }}>
+                    <p style={{ fontSize: "13px", color: "var(--ink-body)", margin: "0 0 8px", lineHeight: 1.5, maxWidth: "700px" }}>
                       {ev.description}
                     </p>
-
-                    <div style={{ display: "flex", gap: "18px", fontSize: "12px", color: "var(--ink-muted)", flexWrap: "wrap" }}>
-                      <span>📅 Timeline: <strong style={{ color: "var(--ink-title)" }}>{ev.date}</strong></span>
-                      <span>🏆 Output: <strong style={{ color: "var(--emerald)" }}>{ev.prizeOrOutput}</strong></span>
-                      <span>👥 Target: <strong style={{ color: "var(--ink-title)" }}>{ev.eligibility}</strong></span>
+                    <div style={{ display: "flex", gap: "16px", fontSize: "11.5px", color: "var(--ink-muted)", flexWrap: "wrap" }}>
+                      <span>📅 {ev.date}</span>
+                      <span>🏆 {ev.prizeOrOutput}</span>
+                      <span>👥 {ev.eligibility}</span>
                     </div>
                   </div>
 
-                  {/* Right Column: 1-Click Status Toggler & Actions */}
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "12px" }}>
-                    {/* Interactive 3-way Status Switcher */}
-                    <div>
-                      <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--ink-muted)", display: "block", marginBottom: "6px", textAlign: "right" }}>
-                        EVENT STATUS TOGGLE:
-                      </span>
-                      <div
-                        style={{
-                          display: "inline-flex",
-                          border: "1px solid var(--white-border)",
-                          borderRadius: "6px",
-                          overflow: "hidden",
-                          backgroundColor: "var(--white-alabaster)",
-                        }}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => handleToggleStatus(ev.id, "ACTIVE")}
-                          style={{
-                            padding: "6px 14px",
-                            fontSize: "11.5px",
-                            fontFamily: "var(--font-mono)",
-                            backgroundColor: isLive ? "var(--emerald)" : "transparent",
-                            color: isLive ? "#FFFFFF" : "var(--ink-muted)",
-                            fontWeight: isLive ? 700 : 500,
-                            transition: "all 0.15s ease",
-                          }}
-                        >
-                          ● LIVE
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleToggleStatus(ev.id, "UPCOMING")}
-                          style={{
-                            padding: "6px 14px",
-                            fontSize: "11.5px",
-                            fontFamily: "var(--font-mono)",
-                            backgroundColor: isUpcoming ? "var(--gold-oxford)" : "transparent",
-                            color: isUpcoming ? "var(--navy-deep)" : "var(--ink-muted)",
-                            fontWeight: isUpcoming ? 700 : 500,
-                            transition: "all 0.15s ease",
-                          }}
-                        >
-                          ● UPCOMING
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleToggleStatus(ev.id, "CLOSED")}
-                          style={{
-                            padding: "6px 14px",
-                            fontSize: "11.5px",
-                            fontFamily: "var(--font-mono)",
-                            backgroundColor: isArchived ? "var(--burgundy-crest)" : "transparent",
-                            color: isArchived ? "#FFFFFF" : "var(--ink-muted)",
-                            fontWeight: isArchived ? 700 : 500,
-                            transition: "all 0.15s ease",
-                          }}
-                        >
-                          ● ARCHIVED
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Action buttons */}
-                    <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
-                      <Link
-                        href={`/events#${ev.id}`}
-                        target="_blank"
-                        className="stamp-button"
-                        style={{ fontSize: "11px", padding: "6px 12px", color: "var(--ink-title)" }}
-                      >
-                        View Card ↗
-                      </Link>
+                  {/* 1-Click Status Switcher */}
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "10px" }}>
+                    <div style={{ display: "inline-flex", border: "1px solid var(--white-border)", borderRadius: "6px", overflow: "hidden", backgroundColor: "var(--white-alabaster)" }}>
                       <button
                         type="button"
-                        onClick={() => handleOpenEditModal(ev)}
+                        onClick={() => handleToggleEventStatus(ev.id, "ACTIVE")}
+                        style={{ padding: "6px 12px", fontSize: "11px", fontFamily: "var(--font-mono)", backgroundColor: isLive ? "var(--emerald)" : "transparent", color: isLive ? "#FFFFFF" : "var(--ink-muted)", fontWeight: isLive ? 700 : 500 }}
+                      >
+                        ● LIVE
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleEventStatus(ev.id, "UPCOMING")}
+                        style={{ padding: "6px 12px", fontSize: "11px", fontFamily: "var(--font-mono)", backgroundColor: isUpcoming ? "var(--gold-oxford)" : "transparent", color: isUpcoming ? "var(--navy-deep)" : "var(--ink-muted)", fontWeight: isUpcoming ? 700 : 500 }}
+                      >
+                        ● UPCOMING
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleEventStatus(ev.id, "CLOSED")}
+                        style={{ padding: "6px 12px", fontSize: "11px", fontFamily: "var(--font-mono)", backgroundColor: isArchived ? "var(--burgundy-crest)" : "transparent", color: isArchived ? "#FFFFFF" : "var(--ink-muted)", fontWeight: isArchived ? 700 : 500 }}
+                      >
+                        ● ARCHIVED
+                      </button>
+                    </div>
+
+                    <div style={{ display: "flex", gap: "6px" }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingEvent(ev);
+                          setEventForm({ title: ev.title, category: ev.category, status: ev.status, date: ev.date, prizeOrOutput: ev.prizeOrOutput, eligibility: ev.eligibility, description: ev.description });
+                          setIsEventModalOpen(true);
+                        }}
                         className="stamp-button"
-                        style={{ fontSize: "11px", padding: "6px 14px", borderColor: "var(--navy-hero)", color: "var(--navy-hero)" }}
+                        style={{ fontSize: "10.5px", padding: "4px 10px", borderColor: "var(--navy-hero)", color: "var(--navy-hero)" }}
                       >
                         ✎ Edit
                       </button>
@@ -756,7 +764,7 @@ export default function AdminPortalPage() {
                         type="button"
                         onClick={() => handleDeleteEvent(ev.id, ev.title)}
                         className="stamp-button"
-                        style={{ fontSize: "11px", padding: "6px 12px", borderColor: "var(--burgundy-border)", color: "var(--burgundy-text)" }}
+                        style={{ fontSize: "10.5px", padding: "4px 8px", borderColor: "var(--burgundy-border)", color: "var(--burgundy-text)" }}
                       >
                         ✕ Delete
                       </button>
@@ -766,149 +774,380 @@ export default function AdminPortalPage() {
               );
             })}
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
-      {/* Add / Edit Event Modal */}
-      {isAddModalOpen && (
-        <div className="lightbox-overlay" role="dialog" aria-modal="true">
-          <div style={{ position: "fixed", inset: 0 }} onClick={() => setIsAddModalOpen(false)} />
+      {/* ================= SECTION 2: SPEAKERS & MENTORS ================= */}
+      {activeSection === "speakers" && (
+        <section className="container" style={{ marginTop: "32px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+            <div>
+              <h2 className="font-display-serif" style={{ fontSize: "24px", color: "var(--ink-title)", margin: 0 }}>
+                Keynote Speakers & Conclave Mentors
+              </h2>
+              <p style={{ fontSize: "13px", color: "var(--ink-muted)", marginTop: "4px" }}>
+                These profiles appear directly on the homepage in the fast Inspirational Speakers Carousel and POTR Conclave Jury.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleOpenSpeakerModal()}
+              className="stamp-button stamp-button-primary"
+              style={{ fontSize: "12px", backgroundColor: "var(--navy-hero)", color: "#FFFFFF" }}
+            >
+              + ADD NEW SPEAKER
+            </button>
+          </div>
 
-          <div
-            className="lightbox-dialog"
-            style={{
-              maxWidth: "600px",
-              padding: "32px",
-              backgroundColor: "var(--white-pure)",
-              color: "var(--ink-title)",
-              maxHeight: "90vh",
-              overflowY: "auto",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", borderBottom: "1px solid var(--white-border)", paddingBottom: "14px" }}>
-              <div>
-                <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--gold-oxford)", textTransform: "uppercase" }}>
-                  EVENT SPECIFICATION DESK
-                </span>
-                <h3 className="font-display-serif" style={{ fontSize: "24px", color: "var(--ink-title)", margin: "4px 0 0" }}>
-                  {editingEvent ? "Edit Initiative Dossier" : "Publish New Initiative / League"}
-                </h3>
+          <div className="grid-3" style={{ gap: "20px" }}>
+            {speakersList.map((sp) => (
+              <div
+                key={sp.id || sp.name}
+                style={{
+                  backgroundColor: "var(--white-pure)",
+                  border: "1px solid var(--white-border)",
+                  boxShadow: "var(--card-shadow)",
+                  padding: "24px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+                    <div style={{ width: "48px", height: "48px", borderRadius: "50%", overflow: "hidden", position: "relative", backgroundColor: "var(--navy-deep)", flexShrink: 0 }}>
+                      <Image src={sp.image || "/assets/gallery/summit-keynote.jpg"} alt={sp.name} fill style={{ objectFit: "cover" }} />
+                    </div>
+                    <div>
+                      <span className="font-metadata-mono" style={{ fontSize: "10px", color: "var(--burgundy-crest)", textTransform: "uppercase" }}>
+                        {sp.category}
+                      </span>
+                      <h4 className="font-display-serif" style={{ fontSize: "18px", color: "var(--ink-title)", margin: "2px 0 0" }}>
+                        {sp.name}
+                      </h4>
+                    </div>
+                  </div>
+
+                  <p className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--gold-oxford)", marginBottom: "4px" }}>
+                    {sp.title}
+                  </p>
+                  <p style={{ fontSize: "12px", color: "var(--ink-muted)", marginBottom: "12px" }}>
+                    {sp.firm}
+                  </p>
+                  <blockquote style={{ fontSize: "12.5px", color: "var(--ink-body)", fontStyle: "italic", lineHeight: 1.5, borderLeft: "2px solid var(--gold-oxford)", paddingLeft: "10px", margin: "0 0 16px" }}>
+                    &ldquo;{sp.quote}&rdquo;
+                  </blockquote>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", borderTop: "1px solid var(--white-border)", paddingTop: "12px" }}>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenSpeakerModal(sp)}
+                    className="stamp-button"
+                    style={{ fontSize: "10.5px", padding: "4px 10px", borderColor: "var(--navy-hero)", color: "var(--navy-hero)" }}
+                  >
+                    ✎ Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteSpeaker(sp.id || sp.name, sp.name)}
+                    className="stamp-button"
+                    style={{ fontSize: "10.5px", padding: "4px 8px", borderColor: "var(--burgundy-border)", color: "var(--burgundy-text)" }}
+                  >
+                    ✕ Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ================= SECTION 3: LEADERSHIP & TEAM ================= */}
+      {activeSection === "team" && (
+        <section className="container" style={{ marginTop: "32px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", marginBottom: "20px" }}>
+            <div>
+              <h2 className="font-display-serif" style={{ fontSize: "24px", color: "var(--ink-title)", margin: 0 }}>
+                Organizational Hierarchy & Team Roster
+              </h2>
+              <p style={{ fontSize: "13px", color: "var(--ink-muted)", marginTop: "4px" }}>
+                Add, edit, or remove Coordinators, Department Heads, and Core Associates displayed on the About page.
+              </p>
+            </div>
+
+            <div style={{ display: "flex", gap: "10px" }}>
+              <div style={{ display: "flex", gap: "6px" }}>
+                {["ALL", "coordinators", "heads", "coreTeam"].map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setTeamTierFilter(t)}
+                    className="stamp-button"
+                    style={{
+                      fontSize: "11px",
+                      padding: "6px 12px",
+                      backgroundColor: teamTierFilter === t ? "var(--navy-hero)" : "var(--white-pure)",
+                      color: teamTierFilter === t ? "#FFFFFF" : "var(--ink-title)",
+                      borderColor: teamTierFilter === t ? "var(--navy-hero)" : "var(--white-border)",
+                    }}
+                  >
+                    {t === "ALL" ? "ALL" : t === "coordinators" ? "COORDINATORS" : t === "heads" ? "HEADS" : "ASSOCIATES"}
+                  </button>
+                ))}
               </div>
               <button
                 type="button"
-                onClick={() => setIsAddModalOpen(false)}
-                style={{ fontSize: "20px", color: "var(--ink-muted)" }}
+                onClick={() => handleOpenTeamModal()}
+                className="stamp-button stamp-button-primary"
+                style={{ fontSize: "12px", backgroundColor: "var(--navy-hero)", color: "#FFFFFF" }}
               >
-                ✕
+                + ADD MEMBER
               </button>
             </div>
+          </div>
 
-            <form onSubmit={handleSaveEvent} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div className="grid-3" style={{ gap: "20px" }}>
+            {filteredTeam.map((m) => (
+              <div
+                key={m.id || m.name}
+                style={{
+                  backgroundColor: "var(--white-pure)",
+                  border: "1px solid var(--white-border)",
+                  boxShadow: "var(--card-shadow)",
+                  padding: "20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+                    <div style={{ width: "44px", height: "44px", borderRadius: "50%", overflow: "hidden", position: "relative", backgroundColor: "var(--navy-deep)", flexShrink: 0 }}>
+                      <Image src={m.image || "/assets/team/aditya-tiwari.jpg"} alt={m.name} fill style={{ objectFit: "cover" }} />
+                    </div>
+                    <div>
+                      <span
+                        style={{
+                          fontSize: "9.5px",
+                          padding: "2px 6px",
+                          borderRadius: "4px",
+                          backgroundColor: m.tier === "coordinators" ? "var(--navy-hero)" : m.tier === "heads" ? "var(--burgundy-crest)" : "var(--white-alabaster)",
+                          color: m.tier === "coreTeam" ? "var(--ink-title)" : "#FFFFFF",
+                          fontFamily: "var(--font-mono)",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        {m.tier === "coordinators" ? "COORDINATOR" : m.tier === "heads" ? "HEAD" : "ASSOCIATE"}
+                      </span>
+                      <h4 className="font-display-serif" style={{ fontSize: "18px", color: "var(--ink-title)", margin: "4px 0 0" }}>
+                        {m.name}
+                      </h4>
+                    </div>
+                  </div>
+
+                  <p style={{ fontSize: "12.5px", color: "var(--ink-body)", margin: "0 0 4px", fontWeight: 600 }}>
+                    {m.role} {m.dept ? `· ${m.dept}` : ""}
+                  </p>
+                  <p className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--ink-muted)", margin: "0 0 10px" }}>
+                    {m.batch || "Y25"} · {m.email}
+                  </p>
+                  <a
+                    href={m.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontSize: "11px", color: "var(--navy-hero)", textDecoration: "none", display: "inline-block", marginBottom: "12px" }}
+                  >
+                    LinkedIn Profile ↗
+                  </a>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "6px", borderTop: "1px solid var(--white-border)", paddingTop: "10px" }}>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenTeamModal(m)}
+                    className="stamp-button"
+                    style={{ fontSize: "10.5px", padding: "4px 10px", borderColor: "var(--navy-hero)", color: "var(--navy-hero)" }}
+                  >
+                    ✎ Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteTeamMember(m.id || m.name, m.name)}
+                    className="stamp-button"
+                    style={{ fontSize: "10.5px", padding: "4px 8px", borderColor: "var(--burgundy-border)", color: "var(--burgundy-text)" }}
+                  >
+                    ✕ Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* MODAL 1: ADD/EDIT EVENT */}
+      {isEventModalOpen && (
+        <div className="lightbox-overlay" role="dialog" aria-modal="true">
+          <div style={{ position: "fixed", inset: 0 }} onClick={() => setIsEventModalOpen(false)} />
+          <div className="lightbox-dialog" style={{ maxWidth: "580px", padding: "30px", backgroundColor: "var(--white-pure)", color: "var(--ink-title)" }}>
+            <h3 className="font-display-serif" style={{ fontSize: "22px", marginBottom: "16px" }}>
+              {editingEvent ? "Edit Initiative" : "Add New Event"}
+            </h3>
+            <form onSubmit={handleSaveEvent} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
               <div>
                 <label className="form-label">EVENT TITLE *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. NATIONAL CASE CRACKERS 2026"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="form-input"
-                />
+                <input type="text" required value={eventForm.title} onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })} className="form-input" placeholder="e.g. NATIONAL STRATEGY SPRINT" />
               </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                 <div>
                   <label className="form-label">CATEGORY</label>
-                  <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="form-input"
-                    style={{ backgroundColor: "var(--white-pure)" }}
-                  >
+                  <select value={eventForm.category} onChange={(e) => setEventForm({ ...eventForm, category: e.target.value })} className="form-input">
                     <option value="Consulting">Consulting</option>
                     <option value="Finance">Finance</option>
                     <option value="Strategy">Strategy</option>
                     <option value="Venture">Venture</option>
                   </select>
                 </div>
-
                 <div>
-                  <label className="form-label">INITIAL STATUS</label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                    className="form-input"
-                    style={{ backgroundColor: "var(--white-pure)" }}
-                  >
-                    <option value="ACTIVE">ACTIVE (Live Registration)</option>
-                    <option value="UPCOMING">UPCOMING (Teaser)</option>
-                    <option value="CLOSED">CLOSED (Archived Post-Mortem)</option>
+                  <label className="form-label">STATUS</label>
+                  <select value={eventForm.status} onChange={(e) => setEventForm({ ...eventForm, status: e.target.value as any })} className="form-input">
+                    <option value="ACTIVE">ACTIVE (Live)</option>
+                    <option value="UPCOMING">UPCOMING</option>
+                    <option value="CLOSED">CLOSED (Archived)</option>
                   </select>
                 </div>
               </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                 <div>
                   <label className="form-label">TIMELINE / DATE</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. SPRING 2026 or APRIL 10"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    className="form-input"
-                  />
+                  <input type="text" value={eventForm.date} onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })} className="form-input" placeholder="SPRING 2026" />
                 </div>
-
                 <div>
-                  <label className="form-label">PRIZE / RECOGNITION</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. ₹50,000 & Mentorship"
-                    value={formData.prizeOrOutput}
-                    onChange={(e) => setFormData({ ...formData, prizeOrOutput: e.target.value })}
-                    className="form-input"
-                  />
+                  <label className="form-label">PRIZE POOL</label>
+                  <input type="text" value={eventForm.prizeOrOutput} onChange={(e) => setEventForm({ ...eventForm, prizeOrOutput: e.target.value })} className="form-input" placeholder="₹50,000 & Citation" />
                 </div>
               </div>
-
               <div>
                 <label className="form-label">ELIGIBILITY</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Open Pan-India · Undergrads & Postgrads"
-                  value={formData.eligibility}
-                  onChange={(e) => setFormData({ ...formData, eligibility: e.target.value })}
-                  className="form-input"
-                />
+                <input type="text" value={eventForm.eligibility} onChange={(e) => setEventForm({ ...eventForm, eligibility: e.target.value })} className="form-input" />
               </div>
-
               <div>
-                <label className="form-label">EVENT BRIEF / DESCRIPTION *</label>
-                <textarea
-                  rows={4}
-                  required
-                  placeholder="Describe problem statements, rounds, judging criteria..."
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="form-textarea"
-                />
+                <label className="form-label">DESCRIPTION *</label>
+                <textarea rows={3} required value={eventForm.description} onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })} className="form-textarea" />
               </div>
-
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "8px" }}>
-                <button
-                  type="button"
-                  onClick={() => setIsAddModalOpen(false)}
-                  style={{ fontSize: "13px", color: "var(--ink-muted)", padding: "10px 18px" }}
-                >
-                  Cancel
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "8px" }}>
+                <button type="button" onClick={() => setIsEventModalOpen(false)} style={{ padding: "8px 16px", color: "var(--ink-muted)" }}>Cancel</button>
+                <button type="submit" disabled={isSavingEvent} className="stamp-button stamp-button-primary" style={{ backgroundColor: "var(--navy-hero)", color: "#FFFFFF" }}>
+                  {isSavingEvent ? "SAVING..." : "SAVE EVENT →"}
                 </button>
-                <button
-                  type="submit"
-                  disabled={isSaving}
-                  className="stamp-button stamp-button-primary"
-                  style={{ padding: "12px 28px", backgroundColor: "var(--navy-hero)", color: "#FFFFFF", borderColor: "var(--navy-hero)" }}
-                >
-                  {isSaving ? "SAVING..." : editingEvent ? "UPDATE EVENT DOSSIER →" : "PUBLISH LIVE TO WEBSITE →"}
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: ADD/EDIT SPEAKER */}
+      {isSpeakerModalOpen && (
+        <div className="lightbox-overlay" role="dialog" aria-modal="true">
+          <div style={{ position: "fixed", inset: 0 }} onClick={() => setIsSpeakerModalOpen(false)} />
+          <div className="lightbox-dialog" style={{ maxWidth: "540px", padding: "30px", backgroundColor: "var(--white-pure)", color: "var(--ink-title)" }}>
+            <h3 className="font-display-serif" style={{ fontSize: "22px", marginBottom: "16px" }}>
+              {editingSpeaker ? "Edit Speaker / Mentor" : "Add Keynote Speaker / Mentor"}
+            </h3>
+            <form onSubmit={handleSaveSpeaker} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+              <div>
+                <label className="form-label">FULL NAME *</label>
+                <input type="text" required value={speakerForm.name} onChange={(e) => setSpeakerForm({ ...speakerForm, name: e.target.value })} className="form-input" placeholder="e.g. Radhika Iyer" />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <div>
+                  <label className="form-label">ROLE / TITLE</label>
+                  <input type="text" required value={speakerForm.title} onChange={(e) => setSpeakerForm({ ...speakerForm, title: e.target.value })} className="form-input" placeholder="Partner / Managing Director" />
+                </div>
+                <div>
+                  <label className="form-label">FIRM / FUND / SPECIALTY</label>
+                  <input type="text" required value={speakerForm.firm} onChange={(e) => setSpeakerForm({ ...speakerForm, firm: e.target.value })} className="form-input" placeholder="100X.VC / Goldman Sachs" />
+                </div>
+              </div>
+              <div>
+                <label className="form-label">CATEGORY TAG</label>
+                <input type="text" value={speakerForm.category} onChange={(e) => setSpeakerForm({ ...speakerForm, category: e.target.value })} className="form-input" placeholder="Venture Capital, Angel Investment, Private Equity" />
+              </div>
+              <div>
+                <label className="form-label">ENDORSEMENT / QUOTE</label>
+                <textarea rows={3} required value={speakerForm.quote} onChange={(e) => setSpeakerForm({ ...speakerForm, quote: e.target.value })} className="form-textarea" placeholder="Quote or endorsement about Finlogue..." />
+              </div>
+              <div>
+                <label className="form-label">IMAGE PATH / URL</label>
+                <input type="text" value={speakerForm.image} onChange={(e) => setSpeakerForm({ ...speakerForm, image: e.target.value })} className="form-input" />
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "8px" }}>
+                <button type="button" onClick={() => setIsSpeakerModalOpen(false)} style={{ padding: "8px 16px", color: "var(--ink-muted)" }}>Cancel</button>
+                <button type="submit" disabled={isSavingSpeaker} className="stamp-button stamp-button-primary" style={{ backgroundColor: "var(--navy-hero)", color: "#FFFFFF" }}>
+                  {isSavingSpeaker ? "SAVING..." : "SAVE SPEAKER →"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 3: ADD/EDIT TEAM MEMBER */}
+      {isTeamModalOpen && (
+        <div className="lightbox-overlay" role="dialog" aria-modal="true">
+          <div style={{ position: "fixed", inset: 0 }} onClick={() => setIsTeamModalOpen(false)} />
+          <div className="lightbox-dialog" style={{ maxWidth: "540px", padding: "30px", backgroundColor: "var(--white-pure)", color: "var(--ink-title)" }}>
+            <h3 className="font-display-serif" style={{ fontSize: "22px", marginBottom: "16px" }}>
+              {editingMember ? "Edit Team Member" : "Add Leadership / Core Member"}
+            </h3>
+            <form onSubmit={handleSaveTeamMember} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+              <div>
+                <label className="form-label">FULL NAME *</label>
+                <input type="text" required value={teamForm.name} onChange={(e) => setTeamForm({ ...teamForm, name: e.target.value })} className="form-input" placeholder="e.g. Rohan Sharma" />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <div>
+                  <label className="form-label">TIER / HIERARCHY</label>
+                  <select value={teamForm.tier} onChange={(e) => setTeamForm({ ...teamForm, tier: e.target.value as any })} className="form-input">
+                    <option value="coordinators">Coordinator (Steering Council)</option>
+                    <option value="heads">Department Head</option>
+                    <option value="coreTeam">Core Associate</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="form-label">ROLE TITLE</label>
+                  <input type="text" required value={teamForm.role} onChange={(e) => setTeamForm({ ...teamForm, role: e.target.value })} className="form-input" placeholder="Coordinator / Head / Associate" />
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <div>
+                  <label className="form-label">DEPARTMENT / FOCUS</label>
+                  <input type="text" value={teamForm.dept} onChange={(e) => setTeamForm({ ...teamForm, dept: e.target.value })} className="form-input" placeholder="Equity Research, Corporate Finance" />
+                </div>
+                <div>
+                  <label className="form-label">BATCH</label>
+                  <input type="text" value={teamForm.batch} onChange={(e) => setTeamForm({ ...teamForm, batch: e.target.value })} className="form-input" placeholder="Batch Y24 / Y25" />
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <div>
+                  <label className="form-label">OFFICIAL EMAIL</label>
+                  <input type="email" required value={teamForm.email} onChange={(e) => setTeamForm({ ...teamForm, email: e.target.value })} className="form-input" placeholder="24uec533@lnmiit.ac.in" />
+                </div>
+                <div>
+                  <label className="form-label">LINKEDIN URL</label>
+                  <input type="url" required value={teamForm.linkedin} onChange={(e) => setTeamForm({ ...teamForm, linkedin: e.target.value })} className="form-input" />
+                </div>
+              </div>
+              <div>
+                <label className="form-label">PORTRAIT IMAGE PATH</label>
+                <input type="text" value={teamForm.image} onChange={(e) => setTeamForm({ ...teamForm, image: e.target.value })} className="form-input" />
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "8px" }}>
+                <button type="button" onClick={() => setIsTeamModalOpen(false)} style={{ padding: "8px 16px", color: "var(--ink-muted)" }}>Cancel</button>
+                <button type="submit" disabled={isSavingMember} className="stamp-button stamp-button-primary" style={{ backgroundColor: "var(--navy-hero)", color: "#FFFFFF" }}>
+                  {isSavingMember ? "SAVING..." : "SAVE MEMBER →"}
                 </button>
               </div>
             </form>

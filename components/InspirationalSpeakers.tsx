@@ -9,12 +9,28 @@ interface InspirationalSpeakersProps {
 }
 
 export default function InspirationalSpeakers({ speakers }: InspirationalSpeakersProps) {
+  const [currentSpeakers, setCurrentSpeakers] = useState<MentorSpeaker[]>(speakers);
   const [startIndex, setStartIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  const total = speakers.length;
+  useEffect(() => {
+    const fetchLiveSpeakers = async () => {
+      try {
+        const res = await fetch("/api/admin/speakers");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.speakers) && data.speakers.length > 0) {
+          setCurrentSpeakers(data.speakers);
+        }
+      } catch {
+        // keep fallback
+      }
+    };
+    fetchLiveSpeakers();
+  }, []);
+
+  const total = currentSpeakers.length;
 
   useEffect(() => {
     const handleResize = () => {
@@ -26,10 +42,12 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
   }, []);
 
   const nextSlide = useCallback(() => {
+    if (total === 0) return;
     setStartIndex((prev) => (prev + 1) % total);
   }, [total]);
 
   const prevSlide = useCallback(() => {
+    if (total === 0) return;
     setStartIndex((prev) => (prev - 1 + total) % total);
   }, [total]);
 
@@ -43,7 +61,7 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
   }, [isPaused, total, nextSlide]);
 
   // Duplicate once for continuous sliding
-  const displayItems = [...speakers, ...speakers];
+  const displayItems = [...currentSpeakers, ...currentSpeakers];
   const stepDistance = isMobile ? 258 : 234;
 
   return (
@@ -239,9 +257,9 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
 
         {/* Pagination Dots */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          {speakers.map((s, idx) => (
+          {currentSpeakers.map((s, idx) => (
             <button
-              key={s.name}
+              key={`${s.name}-${idx}`}
               type="button"
               onClick={() => setStartIndex(idx)}
               aria-label={`Go to slide ${idx + 1}`}
