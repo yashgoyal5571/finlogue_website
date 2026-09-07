@@ -122,8 +122,8 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
                   <div className="ecell-card-body">
                     {/* Top Status Strip */}
                     <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--gold-oxford)", letterSpacing: "0.1em" }}>
-                        {item.fileNumber}
+                      <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--gold-oxford)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+                        {item.category}
                       </span>
                       <span
                         className={`status-badge ${
@@ -153,18 +153,6 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
                         {getInitiativeEmblem(item.id, item.category)}
                       </div>
 
-                      <span
-                        className="font-metadata-mono"
-                        style={{
-                          fontSize: "11px",
-                          color: "var(--platinum-muted)",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.12em",
-                        }}
-                      >
-                        {item.category}
-                      </span>
-
                       <h3
                         className="font-display-serif"
                         style={{
@@ -173,42 +161,26 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
                           lineHeight: 1.25,
                           maxWidth: "260px",
                           textShadow: "0 2px 8px rgba(0,0,0,0.6)",
+                          margin: 0,
                         }}
                       >
                         {item.title}
                       </h3>
                     </div>
 
-                    {/* Bottom Tagline & Flip Hint */}
+                    {/* Bottom Tagline */}
                     <div style={{ width: "100%", textAlign: "center", borderTop: "1px solid rgba(197, 168, 128, 0.2)", paddingTop: "14px" }}>
                       <p
                         className="font-metadata-mono"
                         style={{
-                          fontSize: "11px",
+                          fontSize: "11.5px",
                           color: "#FFFFFF",
-                          marginBottom: "8px",
+                          margin: 0,
                           letterSpacing: "0.06em",
                         }}
                       >
                         🏆 {item.prizeOrOutput}
                       </p>
-                      <span
-                        className="font-metadata-mono"
-                        style={{
-                          fontSize: "10.5px",
-                          color: "var(--gold-oxford)",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "6px",
-                          opacity: 0.85,
-                        }}
-                      >
-                        <span>Hover or tap to flip</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="23 4 23 10 17 10" />
-                          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                        </svg>
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -393,8 +365,8 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
                 <span className="status-badge status-badge-active">
                   {selectedDossier.status === "CLOSED" ? "ARCHIVED CASE" : "ACTIVE INITIATIVE"}
                 </span>
-                <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--gold-oxford)" }}>
-                  {selectedDossier.fileNumber} · {selectedDossier.category}
+                <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--gold-oxford)", textTransform: "uppercase" }}>
+                  {selectedDossier.category}
                 </span>
               </div>
 
@@ -422,28 +394,28 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
                   className={`dossier-tab-btn ${activeDossierTab === "overview" ? "active" : ""}`}
                   onClick={() => setActiveDossierTab("overview")}
                 >
-                  1. Overview & Charter
+                  Overview & Charter
                 </button>
                 <button
                   type="button"
                   className={`dossier-tab-btn ${activeDossierTab === "rounds" ? "active" : ""}`}
                   onClick={() => setActiveDossierTab("rounds")}
                 >
-                  2. Rounds & Roadmap
+                  Rounds & Roadmap
                 </button>
                 <button
                   type="button"
                   className={`dossier-tab-btn ${activeDossierTab === "prizes" ? "active" : ""}`}
                   onClick={() => setActiveDossierTab("prizes")}
                 >
-                  3. Honors & Perks
+                  Honors & Perks
                 </button>
                 <button
                   type="button"
                   className={`dossier-tab-btn ${activeDossierTab === "rules" ? "active" : ""}`}
                   onClick={() => setActiveDossierTab("rules")}
                 >
-                  4. Rules & Guidelines
+                  Rules & Guidelines
                 </button>
               </div>
             </div>

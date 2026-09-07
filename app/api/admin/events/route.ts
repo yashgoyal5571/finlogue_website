@@ -27,7 +27,7 @@ export async function GET() {
           // Normalize status
           const sheetEvents = data.events.map((e: any) => ({
             id: e.id || e.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-            fileNumber: e.fileNumber || "CASE FILE",
+            fileNumber: e.fileNumber || "",
             title: e.title,
             status: e.status || "ACTIVE",
             category: e.category || "Strategy",
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
     const eventId = event.id || event.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     const normalizedEvent: CaseFile = {
       id: eventId,
-      fileNumber: event.fileNumber || `INITIATIVE 0${dynamicEventsCache.length + 1}`,
+      fileNumber: event.fileNumber || "",
       title: event.title.toUpperCase(),
       status: event.status || "ACTIVE",
       category: event.category || "Strategy",

@@ -202,9 +202,7 @@ export default function AdminPortalPage() {
       id: editingEvent
         ? editingEvent.id
         : eventForm.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      fileNumber: editingEvent
-        ? editingEvent.fileNumber
-        : `INITIATIVE 0${eventsList.length + 1}`,
+      fileNumber: editingEvent ? editingEvent.fileNumber : "",
       title: eventForm.title.toUpperCase(),
       category: eventForm.category as any,
       status: eventForm.status,

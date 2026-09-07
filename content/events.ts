@@ -123,7 +123,7 @@ export const events: EventsContent = {
   caseFiles: [
     {
       id: "case-crackers",
-      fileNumber: "INITIATIVE 01",
+      fileNumber: "",
       title: "NATIONAL CASE CRACKERS",
       status: "ACTIVE",
       category: "Consulting",
@@ -135,7 +135,7 @@ export const events: EventsContent = {
     },
     {
       id: "valuation-lab",
-      fileNumber: "INITIATIVE 02",
+      fileNumber: "",
       title: "VALUATION & EQUITY RESEARCH LAB",
       status: "UPCOMING",
       category: "Finance",
@@ -147,7 +147,7 @@ export const events: EventsContent = {
     },
     {
       id: "market-watch",
-      fileNumber: "INITIATIVE 03",
+      fileNumber: "",
       title: "MARKET WATCH SERIES",
       status: "ACTIVE",
       category: "Strategy",
@@ -159,7 +159,7 @@ export const events: EventsContent = {
     },
     {
       id: "ma-simulation",
-      fileNumber: "INITIATIVE 04",
+      fileNumber: "",
       title: "M&A BOARDROOM SIMULATION",
       status: "UPCOMING",
       category: "Strategy",
@@ -171,7 +171,7 @@ export const events: EventsContent = {
     },
     {
       id: "the-snapdeal-dilemma",
-      fileNumber: "CASE FILE 026",
+      fileNumber: "",
       title: "THE SNAPDEAL DILEMMA",
       status: "CLOSED",
       category: "Strategy",
@@ -183,7 +183,7 @@ export const events: EventsContent = {
     },
     {
       id: "consultants-got-talent",
-      fileNumber: "CASE FILE 027",
+      fileNumber: "",
       title: "CONSULTANTS GOT TALENT",
       status: "ACTIVE",
       category: "Consulting",
