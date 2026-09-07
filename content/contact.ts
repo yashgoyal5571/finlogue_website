@@ -63,8 +63,8 @@ export const contact: ContactContent = {
     },
     {
       platform: "LinkedIn",
-      handle: "Finlogue LNMIIT",
-      href: "https://www.linkedin.com/company/finlogue-lnmiit/",
+      handle: "Entrepreneuria / Finlogue LNMIIT",
+      href: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
       iconType: "linkedin",
     },
     {

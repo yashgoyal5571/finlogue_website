@@ -108,7 +108,7 @@ export const home: HomeContent = {
       description:
         "Finlogue's marquee annual investment & strategy conclave bringing together industry leaders, analysts, and LNMIIT cohorts for live case deliberation, valuation panels, and sector keynotes.",
       metrics: "Annual Flagship Conclave · 9+ Industry Leaders & Jury",
-      href: "/events",
+      href: "/events#potr",
       highlight: "Annual Conclave",
     },
     {
@@ -118,7 +118,7 @@ export const home: HomeContent = {
       description:
         "Intensive business problem-solving challenge where multi-disciplinary cohorts deconstruct corporate distress, supply chain shocks, and market-entry strategies under real boardroom conditions.",
       metrics: "50+ Teams · Boardroom Defense · Cash Honors",
-      href: "/events",
+      href: "/events#case-crackers",
       highlight: "Flagship Case Challenge",
     },
     {
@@ -128,7 +128,7 @@ export const home: HomeContent = {
       description:
         "Rigorous financial modeling program covering discounted cash flows, LBO analysis, comparable company analysis, and equity research teardowns guided by industry practitioners.",
       metrics: "12+ Live Models · Industry Standards",
-      href: "/events",
+      href: "/events#valuation-lab",
       highlight: "Skill Accelerator",
     },
     {
@@ -138,8 +138,18 @@ export const home: HomeContent = {
       description:
         "Recurring market analysis sessions, sector deep-dives, and investment committee simulations designed to sharpen macro-economic reasoning and portfolio thinking.",
       metrics: "Weekly Sessions · Live Market Data",
-      href: "/contact",
-      highlight: "Ongoing Programme",
+      href: "/events#market-watch",
+      highlight: "Weekly Briefing",
+    },
+    {
+      id: "ma-simulation",
+      tag: "CORPORATE STRATEGY",
+      title: "M&A BOARDROOM SIMULATION",
+      description:
+        "High-stakes executive negotiation arena simulating contested takeovers, synergy valuations, antitrust defenses, and hostile bids with real-time deal room mechanics.",
+      metrics: "Live Deal Room · Multi-Round Negotiation",
+      href: "/events#ma-simulation",
+      highlight: "Boardroom Arena",
     },
   ],
   pillars: [

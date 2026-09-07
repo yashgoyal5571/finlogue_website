@@ -28,6 +28,7 @@ export interface FlagshipEvent {
 }
 
 export interface CaseFile {
+  id: string;
   fileNumber: string;
   title: string;
   status: "ACTIVE" | "UPCOMING" | "CLOSED";
@@ -58,7 +59,7 @@ export const events: EventsContent = {
   },
   categories: ["All", "Flagship Summits", "Case Competitions", "Valuation Labs", "Workshops"],
   flagship: {
-    id: "pitch-on-the-rocks",
+    id: "potr",
     title: "PITCH ON THE ROCKS (POTR)",
     tagline: "ANNUAL VENTURE & ANGEL SUMMIT",
     badge: "FLAGSHIP CONCLAVE",
@@ -121,17 +122,67 @@ export const events: EventsContent = {
   },
   caseFiles: [
     {
+      id: "case-crackers",
+      fileNumber: "INITIATIVE 01",
+      title: "NATIONAL CASE CRACKERS",
+      status: "ACTIVE",
+      category: "Consulting",
+      date: "SPRING 2026",
+      description:
+        "Finlogue's flagship multi-stage national case challenge. Student cohorts deconstruct live corporate distress, supply chain bottlenecks, and market-entry roadmaps before industry partners.",
+      prizeOrOutput: "₹50,000 Prize Pool & Executive Mentorship Briefs",
+      eligibility: "Open Pan-India · Undergrads & Postgrads",
+    },
+    {
+      id: "valuation-lab",
+      fileNumber: "INITIATIVE 02",
+      title: "VALUATION & EQUITY RESEARCH LAB",
+      status: "UPCOMING",
+      category: "Finance",
+      date: "SUMMER 2026",
+      description:
+        "Rigorous hands-on financial engineering immersion. Analysts construct institutional-grade 3-statement models, DCFs, trading comparables, and equity research reports guided by industry professionals.",
+      prizeOrOutput: "Live Research Coverage Citation & Institutional Credentials",
+      eligibility: "Student Analysts & Financial Engineering Aspirants",
+    },
+    {
+      id: "market-watch",
+      fileNumber: "INITIATIVE 03",
+      title: "MARKET WATCH SERIES",
+      status: "ACTIVE",
+      category: "Strategy",
+      date: "WEEKLY SESSIONS",
+      description:
+        "Weekly institutional market briefings and macroeconomic debates dissecting central bank actions, sector rotations, earnings surprises, and geopolitical trade dynamics.",
+      prizeOrOutput: "Published Weekly Dispatch & Macro Portfolio Honors",
+      eligibility: "All LNMIIT Cohorts & Open Observer Desk",
+    },
+    {
+      id: "ma-simulation",
+      fileNumber: "INITIATIVE 04",
+      title: "M&A BOARDROOM SIMULATION",
+      status: "UPCOMING",
+      category: "Strategy",
+      date: "AUTUMN 2026",
+      description:
+        "High-stakes executive negotiation arena simulating contested takeovers, synergy valuations, antitrust defenses, and hostile bids with real-time deal room mechanics.",
+      prizeOrOutput: "Trophy of Dealmaking Excellence & Angel Fund Fast-Track",
+      eligibility: "Syndicate Teams of 3–5 Members",
+    },
+    {
+      id: "the-snapdeal-dilemma",
       fileNumber: "CASE FILE 026",
       title: "THE SNAPDEAL DILEMMA",
       status: "CLOSED",
       category: "Strategy",
       date: "AUTUMN 2025",
       description:
-        "A forensic strategic autopsy and post-mortem dissecting the critical capital allocation, competitor consolidation, and pivot strategies during the peak e-commerce burn war.",
+        "A forensic strategic autopsy and post-mortem dissecting capital allocation, competitor consolidation, and pivot strategies during the peak Indian e-commerce burn war.",
       prizeOrOutput: "Published Case Brief & Archival Analysis",
       eligibility: "Open Pan-India · 120+ Teams Participated",
     },
     {
+      id: "consultants-got-talent",
       fileNumber: "CASE FILE 027",
       title: "CONSULTANTS GOT TALENT",
       status: "ACTIVE",
@@ -141,28 +192,6 @@ export const events: EventsContent = {
         "High-octane live case challenge assessing structured problem solving, hypothesis generation, executive presence, and rapid financial sizing before industry consultants.",
       prizeOrOutput: "₹50,000 Prize Pool & Direct Mentorship Interviews",
       eligibility: "Open to Undergrads & Postgrads across India",
-    },
-    {
-      fileNumber: "CASE FILE 028",
-      title: "FINTECH DISRUPTION VALUATION LAB",
-      status: "UPCOMING",
-      category: "Finance",
-      date: "SUMMER 2026",
-      description:
-        "Rigorous financial modeling competition analyzing unit economics, customer acquisition costs, and valuation multiples for cross-border payment platforms.",
-      prizeOrOutput: "Corporate Citation & Research Publication",
-      eligibility: "Student Analysts & Finance Enthusiasts",
-    },
-    {
-      fileNumber: "CASE FILE 029",
-      title: "VENTURE BUILDERS HACKATHON",
-      status: "UPCOMING",
-      category: "Venture",
-      date: "AUTUMN 2026",
-      description:
-        "36-hour sprint where product engineers collaborate with finance analysts to build, validate, and pitch an investor-ready business model from scratch.",
-      prizeOrOutput: "Incubation Grant & Angel Syndicate Review",
-      eligibility: "Teams of 2–4 Students",
     },
   ],
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { events } from "@/content/events";
@@ -52,12 +52,39 @@ export default function EventsPage() {
     }
   };
 
+  useEffect(() => {
+    const handleHash = () => {
+      if (typeof window === "undefined") return;
+      const rawHash = window.location.hash.replace("#", "");
+      if (rawHash) {
+        // Alias support if someone accesses #pitch-on-the-rocks
+        const hash = rawHash === "pitch-on-the-rocks" ? "potr" : rawHash;
+        setSelectedCategory("All");
+        setTimeout(() => {
+          const el = document.getElementById(hash);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.classList.add("highlight-active-card");
+            setTimeout(() => {
+              el.classList.remove("highlight-active-card");
+            }, 3000);
+          }
+        }, 150);
+      }
+    };
+
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
   const filteredCaseFiles = events.caseFiles.filter((cf) => {
     if (selectedCategory === "All") return true;
     if (selectedCategory === "Case Competitions")
       return cf.category === "Consulting" || cf.category === "Strategy";
     if (selectedCategory === "Valuation Labs") return cf.category === "Finance";
-    if (selectedCategory === "Flagship Summits") return cf.category === "Venture";
+    if (selectedCategory === "Flagship Summits") return cf.category === "Venture" || cf.id === "potr";
+    if (selectedCategory === "Workshops") return cf.category === "Strategy" || cf.category === "Finance";
     return true;
   });
 
@@ -134,12 +161,15 @@ export default function EventsPage() {
           {/* Flagship Summit Feature: PITCH ON THE ROCKS */}
           {(selectedCategory === "All" || selectedCategory === "Flagship Summits") && (
             <div
+              id="potr"
               style={{
                 backgroundColor: "var(--white-pure)",
                 border: "1px solid var(--white-border)",
                 boxShadow: "var(--card-shadow)",
                 overflow: "hidden",
                 marginBottom: "40px",
+                scrollMarginTop: "120px",
+                transition: "box-shadow 0.3s ease, outline 0.3s ease",
               }}
             >
               {/* Banner Media Frame */}
@@ -307,7 +337,8 @@ export default function EventsPage() {
 
               return (
                 <div
-                  key={cf.fileNumber}
+                  key={cf.id || cf.fileNumber}
+                  id={cf.id}
                   style={{
                     backgroundColor: "var(--white-pure)",
                     border: "1px solid var(--white-border)",
@@ -316,7 +347,8 @@ export default function EventsPage() {
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",
-                    transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                    transition: "transform 0.25s ease, box-shadow 0.25s ease, outline 0.25s ease",
+                    scrollMarginTop: "120px",
                   }}
                 >
                   <div>

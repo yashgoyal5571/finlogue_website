@@ -187,6 +187,7 @@ export default function AboutPage() {
             {about.pillars.map((pillar) => (
               <div
                 key={pillar.id}
+                id={pillar.id}
                 style={{
                   backgroundColor: "var(--white-pure)",
                   border: "1px solid var(--white-border)",
@@ -195,6 +196,8 @@ export default function AboutPage() {
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
+                  scrollMarginTop: "120px",
+                  transition: "transform 0.25s ease, box-shadow 0.25s ease",
                 }}
               >
                 <div>
@@ -235,7 +238,7 @@ export default function AboutPage() {
       </section>
 
       {/* 5. Leadership & Hierarchy — Elevated Executive Presentation */}
-      <section className="section-pure-white">
+      <section id="leadership" className="section-pure-white" style={{ scrollMarginTop: "120px" }}>
         <div className="container">
           <div className="section-header">
             <span className="section-badge">GOVERNANCE & HIERARCHY</span>

@@ -1371,3 +1371,12 @@ img {
   .stats-grid { grid-template-columns: 1fr; }
   .footer-middle { flex-direction: column; align-items: flex-start; }
 }
+
+/* 16. Active Card Anchor Highlight */
+.highlight-active-card {
+  outline: 2px solid var(--gold-oxford) !important;
+  box-shadow: 0 8px 32px rgba(197, 168, 128, 0.4), 0 2px 8px rgba(10, 19, 41, 0.2) !important;
+  transform: translateY(-4px);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), outline 0.3s ease;
+}
+

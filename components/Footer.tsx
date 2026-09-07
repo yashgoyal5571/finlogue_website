@@ -135,7 +135,7 @@ export default function Footer() {
               </span>
               <div style={{ display: "flex", gap: "10px" }}>
                 <a
-                  href="https://www.linkedin.com/company/finlogue-lnmiit/"
+                  href="https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Finlogue LinkedIn"
@@ -222,27 +222,27 @@ export default function Footer() {
             </h4>
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
               <li>
-                <Link href="/events" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/events#potr" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Pitch on the Rocks (POTR)
                 </Link>
               </li>
               <li>
-                <Link href="/events" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/events#case-crackers" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   National Case Crackers
                 </Link>
               </li>
               <li>
-                <Link href="/events" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/events#valuation-lab" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Valuation & Equity Research Lab
                 </Link>
               </li>
               <li>
-                <Link href="/events" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/events#market-watch" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Market Watch Series
                 </Link>
               </li>
               <li>
-                <Link href="/events" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/events#ma-simulation" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   M&A Boardroom Simulation
                 </Link>
               </li>
@@ -266,27 +266,27 @@ export default function Footer() {
             </h4>
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
               <li>
-                <Link href="/about" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/about#finance" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Finance & Capital Markets
                 </Link>
               </li>
               <li>
-                <Link href="/about" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/about#consulting" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Strategy & Consulting
                 </Link>
               </li>
               <li>
-                <Link href="/about" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/about#competition" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Competitive Arenas
                 </Link>
               </li>
               <li>
-                <Link href="/about" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/about#finance" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Equity Valuation Practical
                 </Link>
               </li>
               <li>
-                <Link href="/about" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/about#community" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Corporate Diligence Desk
                 </Link>
               </li>
@@ -330,7 +330,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/about" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/about#leadership" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Leadership Hierarchy
                 </Link>
               </li>

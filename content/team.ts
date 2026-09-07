@@ -105,8 +105,8 @@ export const team: TeamContent = {
       },
       {
         platform: "LinkedIn",
-        label: "Finlogue LNMIIT",
-        href: "https://www.linkedin.com/company/finlogue-lnmiit/",
+        label: "Entrepreneuria / Finlogue LNMIIT",
+        href: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
       },
       {
         platform: "Email",
