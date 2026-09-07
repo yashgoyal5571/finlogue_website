@@ -20,7 +20,7 @@ export async function GET() {
       if (res.ok) {
         const data = await res.json();
         if (data.success && Array.isArray(data.gallery) && data.gallery.length > 0) {
-          return NextResponse.json({ success: true, gallery: data.gallery, source: "google_sheets" });
+          return NextResponse.json({ success: true, gallery: data.gallery, items: data.gallery, source: "google_sheets" });
         }
       }
     } catch {
@@ -31,6 +31,7 @@ export async function GET() {
   return NextResponse.json({
     success: true,
     gallery: dynamicGalleryCache,
+    items: dynamicGalleryCache,
     source: "local_cache",
   });
 }

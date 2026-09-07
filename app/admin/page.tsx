@@ -6,7 +6,7 @@ import Image from "next/image";
 import { CaseFile } from "@/content/events";
 import { SpeakerItem } from "@/app/api/admin/speakers/route";
 import { TeamMemberItem } from "@/app/api/admin/team/route";
-import { GalleryItem } from "@/content/gallery";
+import { gallery as defaultGalleryData, GalleryItem } from "@/content/gallery";
 
 export default function AdminPortalPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -73,7 +73,7 @@ export default function AdminPortalPage() {
   });
 
   // --- 4. GALLERY / VISUAL VAULT STATE ---
-  const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
+  const [galleryList, setGalleryList] = useState<GalleryItem[]>(defaultGalleryData.items);
   const [isLoadingGallery, setIsLoadingGallery] = useState(false);
   const [galleryCategoryFilter, setGalleryCategoryFilter] = useState<string>("ALL");
   const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
@@ -197,8 +197,9 @@ export default function AdminPortalPage() {
     try {
       const res = await fetch("/api/admin/gallery");
       const data = await res.json();
-      if (data.success && Array.isArray(data.items)) {
-        setGalleryList(data.items);
+      const list = data.gallery || data.items;
+      if (Array.isArray(list) && list.length > 0) {
+        setGalleryList(list);
       }
     } catch (err) {
       console.error(err);

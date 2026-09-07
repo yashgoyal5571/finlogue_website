@@ -19,8 +19,9 @@ export default function GalleryPage() {
         const res = await fetch("/api/admin/gallery");
         if (res.ok) {
           const data = await res.json();
-          if (Array.isArray(data.items) && data.items.length > 0) {
-            setItems(data.items);
+          const list = data.gallery || data.items;
+          if (Array.isArray(list) && list.length > 0) {
+            setItems(list);
           }
         }
       } catch (err) {
