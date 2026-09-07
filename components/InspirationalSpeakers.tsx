@@ -12,8 +12,18 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
   const [startIndex, setStartIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   const total = speakers.length;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const nextSlide = useCallback(() => {
     setStartIndex((prev) => (prev + 1) % total);
@@ -23,17 +33,18 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
     setStartIndex((prev) => (prev - 1 + total) % total);
   }, [total]);
 
-  // Fast moving speed (slides every 3 seconds), pauses on hover
+  // Slides every 4 seconds, pauses on hover for smooth reading
   useEffect(() => {
     if (isPaused || total <= 1) return;
     const timer = setInterval(() => {
       nextSlide();
-    }, 3000);
+    }, 4000);
     return () => clearInterval(timer);
   }, [isPaused, total, nextSlide]);
 
-  // Infinite sliding items array (duplicate to allow seamless forward sliding)
-  const displayItems = [...speakers, ...speakers, ...speakers];
+  // Duplicate once for continuous sliding
+  const displayItems = [...speakers, ...speakers];
+  const stepDistance = isMobile ? 258 : 234;
 
   return (
     <div
@@ -54,6 +65,7 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
           width: "100%",
           overflow: "hidden",
           borderRadius: "20px",
+          padding: "8px 0",
         }}
       >
         <div
@@ -61,8 +73,9 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
           style={{
             display: "flex",
             gap: "18px",
-            transform: `translateX(calc(-${startIndex} * (20% + 3.6px)))`,
-            transition: "transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1)",
+            transform: `translate3d(-${startIndex * stepDistance}px, 0, 0)`,
+            transition: "transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1)",
+            willChange: "transform",
             width: "max-content",
           }}
         >
@@ -73,22 +86,21 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
                 key={`${speaker.name}-${idx}`}
                 onMouseEnter={() => setHoveredIdx(idx)}
                 style={{
-                  width: "216px",
+                  width: isMobile ? "240px" : "216px",
                   flexShrink: 0,
                   background: "linear-gradient(180deg, #0D1933 0%, #060D1E 100%)",
                   border: isHovered
                     ? "1.5px solid var(--gold-oxford)"
                     : "1px solid rgba(197, 168, 128, 0.22)",
                   borderRadius: "18px",
-                  padding: "28px 14px 24px",
+                  padding: "26px 14px 22px",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
                   textAlign: "center",
                   boxShadow: isHovered
-                    ? "0 14px 30px rgba(0, 0, 0, 0.45)"
-                    : "0 6px 18px rgba(7, 13, 30, 0.2)",
-                  // STATIC GRID: Card frame itself DOES NOT jump or translate up
+                    ? "0 14px 28px rgba(0, 0, 0, 0.45)"
+                    : "0 4px 14px rgba(7, 13, 30, 0.2)",
                   transform: "none",
                   cursor: "pointer",
                 }}
@@ -96,18 +108,17 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
                 {/* Circular Portrait — Inner item that moves forward on hover */}
                 <div
                   style={{
-                    width: "102px",
-                    height: "102px",
+                    width: "98px",
+                    height: "98px",
                     borderRadius: "50%",
                     border: isHovered ? "2.5px solid var(--gold-oxford)" : "2px solid rgba(226, 232, 240, 0.2)",
-                    boxShadow: isHovered ? "0 10px 24px rgba(197, 168, 128, 0.35)" : "0 6px 16px rgba(0, 0, 0, 0.5)",
+                    boxShadow: isHovered ? "0 8px 20px rgba(197, 168, 128, 0.35)" : "0 4px 12px rgba(0, 0, 0, 0.5)",
                     position: "relative",
                     overflow: "hidden",
                     backgroundColor: "var(--navy-surface)",
-                    marginBottom: "16px",
-                    // Inner movement: scales & floats forward on hover
-                    transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.25s, box-shadow 0.25s",
-                    transform: isHovered ? "scale(1.1) translateY(-4px)" : "scale(1) translateY(0)",
+                    marginBottom: "14px",
+                    transition: "transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s",
+                    transform: isHovered ? "scale(1.08) translateY(-3px)" : "scale(1) translateY(0)",
                   }}
                 >
                   {speaker.image ? (
@@ -115,7 +126,8 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
                       src={speaker.image}
                       alt={speaker.name}
                       fill
-                      sizes="104px"
+                      sizes="100px"
+                      loading={idx < 5 ? "eager" : "lazy"}
                       style={{ objectFit: "cover" }}
                     />
                   ) : (
@@ -127,7 +139,7 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
                         alignItems: "center",
                         justifyContent: "center",
                         fontFamily: "var(--font-serif)",
-                        fontSize: "26px",
+                        fontSize: "24px",
                         color: "var(--gold-oxford)",
                       }}
                     >
@@ -140,26 +152,26 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
                 <h4
                   className="font-display-serif"
                   style={{
-                    fontSize: "18px",
+                    fontSize: "17.5px",
                     color: isHovered ? "#FFFFFF" : "var(--gold-oxford)",
                     lineHeight: 1.2,
-                    marginBottom: "6px",
-                    transition: "transform 0.25s ease, color 0.25s ease",
+                    marginBottom: "5px",
+                    transition: "transform 0.2s ease, color 0.2s ease",
                     transform: isHovered ? "translateY(-2px)" : "translateY(0)",
                   }}
                 >
                   {speaker.name}
                 </h4>
 
-                {/* Title / Role — Inner item that moves forward on hover */}
+                {/* Title / Role */}
                 <span
                   className="font-metadata-mono"
                   style={{
-                    fontSize: "11px",
+                    fontSize: "10.5px",
                     color: "#FFFFFF",
                     display: "block",
                     lineHeight: 1.35,
-                    transition: "transform 0.25s ease",
+                    transition: "transform 0.2s ease",
                     transform: isHovered ? "translateY(-1px)" : "translateY(0)",
                   }}
                 >
@@ -168,7 +180,7 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
 
                 <span
                   style={{
-                    fontSize: "10.5px",
+                    fontSize: "10px",
                     color: "var(--platinum-muted)",
                     marginTop: "4px",
                     display: "block",
@@ -188,8 +200,8 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          gap: "20px",
-          marginTop: "32px",
+          gap: "18px",
+          marginTop: "26px",
         }}
       >
         {/* Left Arrow Button */}
@@ -198,8 +210,8 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
           onClick={prevSlide}
           aria-label="Previous speaker"
           style={{
-            width: "44px",
-            height: "44px",
+            width: "42px",
+            height: "42px",
             borderRadius: "50%",
             backgroundColor: "var(--navy-hero)",
             border: "1.5px solid var(--gold-oxford)",
@@ -220,7 +232,7 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
             e.currentTarget.style.backgroundColor = "var(--navy-hero)";
           }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
@@ -234,7 +246,7 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
               onClick={() => setStartIndex(idx)}
               aria-label={`Go to slide ${idx + 1}`}
               style={{
-                width: startIndex === idx ? "26px" : "8px",
+                width: startIndex === idx ? "24px" : "8px",
                 height: "8px",
                 borderRadius: "4px",
                 backgroundColor: startIndex === idx ? "var(--gold-oxford)" : "rgba(7, 13, 30, 0.2)",
@@ -252,8 +264,8 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
           onClick={nextSlide}
           aria-label="Next speaker"
           style={{
-            width: "44px",
-            height: "44px",
+            width: "42px",
+            height: "42px",
             borderRadius: "50%",
             backgroundColor: "var(--navy-hero)",
             border: "1.5px solid var(--gold-oxford)",
@@ -274,7 +286,7 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
             e.currentTarget.style.backgroundColor = "var(--navy-hero)";
           }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>

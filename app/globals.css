@@ -409,32 +409,107 @@ img {
   align-items: center;
 }
 
+/* Mobile Navigation Drawer & Hamburger Trigger */
 .mobile-toggle-btn {
   display: none;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-xs);
-  border: 1px solid var(--navy-border);
-  color: var(--platinum);
+  flex-direction: column;
+  gap: 5px;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid var(--gold-oxford);
+  cursor: pointer;
+  padding: 8px;
+  transition: background-color 0.2s, transform 0.15s;
+  flex-shrink: 0;
 }
 
-.mobile-drawer {
+.mobile-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+.mobile-toggle-line {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background-color: var(--gold-oxford);
+  border-radius: 2px;
+}
+
+.drawer-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(7, 13, 30, 0.98);
-  backdrop-filter: blur(16px);
-  z-index: 100;
+  z-index: 9999;
+  background-color: rgba(7, 13, 30, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
-  flex-direction: column;
-  padding: 24px;
-  transform: translateX(100%);
-  transition: transform var(--transition-normal);
+  justify-content: flex-end;
 }
 
-.mobile-drawer.open {
-  transform: translateX(0);
+.drawer-panel {
+  position: relative;
+  z-index: 10000;
+  width: 82%;
+  max-width: 320px;
+  height: 100%;
+  background-color: #070D1E;
+  border-left: 1.5px solid rgba(197, 168, 128, 0.35);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.7);
+  animation: drawerSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes drawerSlideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.1);
+  margin-bottom: 22px;
+}
+
+.drawer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.drawer-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  border-radius: 10px;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: #E2E8F0;
+  text-decoration: none;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(226, 232, 240, 0.08);
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.drawer-link:active, .drawer-link.active {
+  background-color: rgba(197, 168, 128, 0.15);
+  color: var(--gold-oxford);
+  border-color: var(--gold-oxford);
+}
+
+.drawer-footer {
+  padding-top: 18px;
+  border-top: 1px solid rgba(226, 232, 240, 0.1);
 }
 
 /* 8. Institutional Badges & Status */
