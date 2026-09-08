@@ -13,16 +13,19 @@ export const metadata = {
 
 export default function HomePage() {
   return (
-    <main style={{ flex: 1, width: "100%", overflow: "hidden" }}>
-      {/* 1. HERO SECTION — Full Bleed Picture Holder with Light-Colored Luminous Overlay */}
+    <main style={{ flex: 1, width: "100%", position: "relative" }}>
+      {/* 1. HERO SECTION — Sticky Parallax Base (Blue / Keynote) */}
       <section
+        className="hero-parallax-section"
         style={{
-          position: "relative",
-          minHeight: "92vh",
+          position: "sticky",
+          top: 0,
+          minHeight: "94vh",
           display: "flex",
           alignItems: "center",
           overflow: "hidden",
           backgroundColor: "#F8FAFC",
+          zIndex: 1,
         }}
       >
         {/* Full-Cover Background Image (Picture Holder covering whole hero) */}
@@ -94,7 +97,7 @@ export default function HomePage() {
                 fontWeight: 700,
               }}
             >
-              FINLOGUE LNMIIT
+              FINLOGUE
             </h1>
 
             {/* Description Subtitle */}
@@ -108,7 +111,7 @@ export default function HomePage() {
                 fontWeight: 400,
               }}
             >
-              The Finance & Strategy Cell (Finlogue) of LNMIIT develops premier student analysts and venture leaders through live market challenges, quantitative modeling, and boardroom case simulations.
+              Finlogue is the official finance syndicate of LNMIIT, built on the idea that finance is more than an academic subject, it is a dialogue that shapes economies, businesses and futures.
             </p>
 
             {/* Action Buttons (Pill button Know More → like ecell reference) */}
@@ -189,8 +192,21 @@ export default function HomePage() {
         </a>
       </section>
 
-      {/* 2. ABOUT FINLOGUE (What is Finlogue? — Matching E-Cell IIT Bombay layout) */}
-      <section id="about-finlogue" className="section-pure-white" style={{ padding: "80px 0", scrollMarginTop: "72px" }}>
+      {/* 2. OVERLAPPING WHITE CONTENT SHEET — Glides up and over the blue hero in parallax */}
+      <div
+        className="content-overlap-sheet"
+        style={{
+          position: "relative",
+          zIndex: 10,
+          backgroundColor: "#FFFFFF",
+          borderTopLeftRadius: "clamp(24px, 3.5vw, 40px)",
+          borderTopRightRadius: "clamp(24px, 3.5vw, 40px)",
+          boxShadow: "0 -24px 60px rgba(7, 13, 30, 0.18), 0 -6px 20px rgba(7, 13, 30, 0.08)",
+          borderTop: "1px solid rgba(197, 168, 128, 0.35)",
+        }}
+      >
+        {/* 2. ABOUT FINLOGUE (What is Finlogue? — Matching E-Cell IIT Bombay layout) */}
+        <section id="about-finlogue" className="section-pure-white" style={{ padding: "80px 0", scrollMarginTop: "72px" }}>
         <div className="container">
           <div
             style={{
@@ -633,6 +649,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      </div>
     </main>
   );
 }
