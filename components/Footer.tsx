@@ -40,7 +40,7 @@ export default function Footer() {
                 alt="Finlogue Crest"
                 width={40}
                 height={40}
-                style={{ height: "40px", width: "auto", objectFit: "contain" }}
+                style={{ height: "40px", width: "auto", objectFit: "contain", filter: "drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.5))" }}
               />
               <div>
                 <h3 className="font-display-serif" style={{ fontSize: "22px", color: "#FFFFFF", lineHeight: 1 }}>
