@@ -58,8 +58,8 @@ export default function Navbar() {
     { label: "Home", href: "/" },
     { label: "About Us", href: "/about" },
     { label: "Events", href: "/events" },
-    { label: "Team", href: "/team" },
     { label: "Gallery", href: "/gallery" },
+    { label: "Team", href: "/team" },
     { label: "Contact Us", href: "/contact" },
   ];
 
@@ -147,18 +147,17 @@ export default function Navbar() {
                 })}
               </nav>
 
-              {/* Recruitment CTA Button (Inspired by Waterfield's New Badge Callout) */}
-              <div className="nav-cta-btn">
+              {/* Recruitment Callout (Waterfield-Inspired Serif Text with Top Bronze Pill) */}
+              <div className="nav-callout-wrapper">
                 <button
                   type="button"
                   onClick={() => setPiModalOpen(true)}
-                  className="pi-recruitment-btn"
+                  className="nav-waterfield-callout"
                   aria-label="Register for Personal Interviews (PI) - Y-26 Batch"
                   title="Y-26 Batch Recruitments Open · Register for Personal Interviews"
                 >
-                  <span className="pi-new-badge">New</span>
-                  <span className="pi-label-text">Register for PI</span>
-                  <span className="pi-batch-tag">Y-26</span>
+                  <span className="nav-callout-badge">New</span>
+                  <span className="nav-callout-text">Register for PI</span>
                 </button>
               </div>
 

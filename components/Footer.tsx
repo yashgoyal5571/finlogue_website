@@ -249,46 +249,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: Specialized Pillars */}
-          <div>
-            <h4
-              className="font-metadata-mono"
-              style={{
-                fontSize: "12px",
-                color: "var(--gold-oxford)",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                marginBottom: "18px",
-                fontWeight: 700,
-              }}
-            >
-              CELL DIVISIONS
-            </h4>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
-              <li>
-                <Link href="/about#finance" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
-                  Finance & Capital Markets
-                </Link>
-              </li>
-              <li>
-                <Link href="/about#consulting" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
-                  Strategy & Consulting
-                </Link>
-              </li>
-              <li>
-                <Link href="/about#competition" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
-                  National Competitions
-                </Link>
-              </li>
-              <li>
-                <Link href="/about#community" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
-                  Ecosystem & Venture
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 4: Useful Links */}
+          {/* Column 3: Useful Links */}
           <div>
             <h4
               className="font-metadata-mono"
@@ -331,7 +292,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/contact" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
-                  Contact Secretariat
+                  Contact Us
                 </Link>
               </li>
               <li>
