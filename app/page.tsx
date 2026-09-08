@@ -4,6 +4,7 @@ import Image from "next/image";
 import { home } from "@/content/home";
 import StatsCounter from "@/components/StatsCounter";
 import InspirationalSpeakers from "@/components/InspirationalSpeakers";
+import HeroParallax from "@/components/HeroParallax";
 
 export const metadata = {
   title: "FINLOGUE — Finance & Strategy Cell | LNMIIT",
@@ -13,200 +14,27 @@ export const metadata = {
 
 export default function HomePage() {
   return (
-    <main style={{ flex: 1, width: "100%", position: "relative" }}>
-      {/* 1. HERO SECTION — Sticky Parallax Base (Blue / Keynote) */}
+    <main style={{ flex: 1, width: "100%", overflow: "hidden" }}>
+      {/* 1. HERO SECTION — Natural Parallax Drift (Blue Keynote Auditorium) */}
+      <HeroParallax />
+
+      {/* 2. ABOUT FINLOGUE (White section that smoothly glides above the hero) */}
       <section
-        className="hero-parallax-section"
-        style={{
-          position: "sticky",
-          top: 0,
-          minHeight: "94vh",
-          display: "flex",
-          alignItems: "center",
-          overflow: "hidden",
-          backgroundColor: "#F8FAFC",
-          zIndex: 1,
-        }}
-      >
-        {/* Full-Cover Background Image (Picture Holder covering whole hero) */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 1,
-          }}
-        >
-          <Image
-            src="/assets/gallery/summit-keynote.jpg"
-            alt="Finlogue Auditorium & Keynote Arena"
-            fill
-            sizes="100vw"
-            priority
-            style={{
-              objectFit: "cover",
-              objectPosition: "center 35%",
-              filter: "contrast(102%) brightness(105%)",
-            }}
-          />
-          {/* Lighter Tone Gradient Overlay so the photograph is rich & clearly visible */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background:
-                "linear-gradient(90deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.65) 42%, rgba(255, 255, 255, 0.18) 75%, rgba(255, 255, 255, 0.08) 100%), linear-gradient(180deg, rgba(248, 250, 252, 0.35) 0%, transparent 40%, rgba(248, 250, 252, 0.6) 100%)",
-            }}
-          />
-        </div>
-
-        {/* Hero Content Container */}
-        <div className="container" style={{ position: "relative", zIndex: 10, padding: "90px 0 60px" }}>
-          <div style={{ maxWidth: "720px" }}>
-            {/* Institutional Badge */}
-            <div
-              className="badge-pill"
-              style={{
-                marginBottom: "22px",
-                backgroundColor: "rgba(7, 13, 30, 0.06)",
-                borderColor: "rgba(7, 13, 30, 0.15)",
-                color: "var(--navy-hero)",
-              }}
-            >
-              <span
-                style={{
-                  width: "8px",
-                  height: "8px",
-                  borderRadius: "9999px",
-                  backgroundColor: "var(--navy-hero)",
-                  display: "inline-block",
-                }}
-              />
-              <span style={{ fontWeight: 600 }}>{home.hero.badge}</span>
-            </div>
-
-            {/* Main Title (Executive Navy with authority) */}
-            <h1
-              className="font-display-serif"
-              style={{
-                fontSize: "clamp(44px, 6vw, 76px)",
-                color: "var(--navy-hero)",
-                lineHeight: 1.05,
-                letterSpacing: "0.02em",
-                textTransform: "uppercase",
-                marginBottom: "22px",
-                fontWeight: 700,
-              }}
-            >
-              FINLOGUE
-            </h1>
-
-            {/* Description Subtitle */}
-            <p
-              style={{
-                fontSize: "clamp(15px, 1.8vw, 17.5px)",
-                color: "#334155",
-                lineHeight: 1.65,
-                marginBottom: "36px",
-                maxWidth: "640px",
-                fontWeight: 400,
-              }}
-            >
-              Finlogue is the official finance syndicate of LNMIIT, built on the idea that finance is more than an academic subject, it is a dialogue that shapes economies, businesses and futures.
-            </p>
-
-            {/* Action Buttons (Pill button Know More → like ecell reference) */}
-            <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-              <Link
-                href="/about"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="stamp-button stamp-button-primary"
-                style={{
-                  padding: "14px 32px",
-                  borderRadius: "100px",
-                  backgroundColor: "var(--navy-hero)",
-                  borderColor: "var(--navy-hero)",
-                  color: "#FFFFFF",
-                  fontWeight: 700,
-                  fontSize: "14.5px",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  boxShadow: "0 6px 20px rgba(7, 13, 30, 0.25)",
-                }}
-              >
-                <span>Know More</span>
-                <span style={{ fontSize: "16px", color: "var(--gold-oxford)" }}>→</span>
-              </Link>
-
-              <Link
-                href="#initiatives"
-                className="secondary-button"
-                style={{
-                  padding: "14px 28px",
-                  borderRadius: "100px",
-                  fontSize: "14px",
-                  borderColor: "var(--navy-hero)",
-                  color: "var(--navy-hero)",
-                  backgroundColor: "rgba(255, 255, 255, 0.8)",
-                  fontWeight: 600,
-                }}
-              >
-                <span>Explore Initiatives</span>
-              </Link>
-            </div>
-
-            {/* University Credentials Strip */}
-            <div
-              className="hero-credentials"
-              style={{
-                marginTop: "44px",
-                justifyContent: "flex-start",
-                color: "#475569",
-                fontSize: "12px",
-                fontWeight: 500,
-              }}
-            >
-              <span>The LNM Institute of Information Technology</span>
-              <span style={{ color: "var(--navy-hero)" }}>·</span>
-              <span>Venture Incubation</span>
-              <span style={{ color: "var(--navy-hero)" }}>·</span>
-              <span>Financial Modeling</span>
-              <span style={{ color: "var(--navy-hero)" }}>·</span>
-              <span>Corporate Strategy</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Downward Scroll Button — Interactive Smooth Scroll */}
-        <a
-          href="#about-finlogue"
-          aria-label="Scroll down to About Finlogue"
-          title="Scroll down to explore"
-          className="hero-scroll-down-btn"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <polyline points="19 12 12 19 5 12" />
-          </svg>
-        </a>
-      </section>
-
-      {/* 2. OVERLAPPING WHITE CONTENT SHEET — Glides up and over the blue hero in parallax */}
-      <div
-        className="content-overlap-sheet"
+        id="about-finlogue"
+        className="section-pure-white"
         style={{
           position: "relative",
           zIndex: 10,
           backgroundColor: "#FFFFFF",
+          padding: "90px 0 80px",
+          scrollMarginTop: "72px",
           borderTopLeftRadius: "clamp(24px, 3.5vw, 40px)",
           borderTopRightRadius: "clamp(24px, 3.5vw, 40px)",
-          boxShadow: "0 -24px 60px rgba(7, 13, 30, 0.18), 0 -6px 20px rgba(7, 13, 30, 0.08)",
+          marginTop: "-48px",
+          boxShadow: "0 -20px 50px rgba(7, 13, 30, 0.12), 0 -4px 14px rgba(7, 13, 30, 0.05)",
           borderTop: "1px solid rgba(197, 168, 128, 0.35)",
         }}
       >
-        {/* 2. ABOUT FINLOGUE (What is Finlogue? — Matching E-Cell IIT Bombay layout) */}
-        <section id="about-finlogue" className="section-pure-white" style={{ padding: "80px 0", scrollMarginTop: "72px" }}>
         <div className="container">
           <div
             style={{
@@ -649,7 +477,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      </div>
     </main>
   );
 }
