@@ -240,14 +240,56 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 5. Leadership & Hierarchy — Elevated Executive Dynamic Presentation */}
-      <LeadershipSection
-        initialCoordinators={about.leadership.coordinators}
-        initialHeads={about.leadership.heads}
-        initialCoreTeam={about.leadership.coreTeam}
-        subtitle={about.leadership.subtitle}
-        coreTeamText={about.leadership.coreTeamText}
-      />
+      {/* 5. Leadership & Hierarchy Preview — Redirects to Dedicated Team Section */}
+      <section id="leadership" className="section-pure-white" style={{ scrollMarginTop: "120px" }}>
+        <div className="container">
+          <div className="section-header">
+            <span className="section-badge">GOVERNANCE & HIERARCHY</span>
+            <h2 className="section-title">Institutional Leadership</h2>
+            <p className="section-sub">
+              An institutional hierarchy governed by academic rigor, strategic discipline, and student leadership across LNMIIT.
+            </p>
+          </div>
+
+          <div
+            style={{
+              backgroundColor: "var(--white-pure)",
+              border: "1px solid var(--white-border)",
+              boxShadow: "var(--card-shadow)",
+              borderRadius: "var(--radius-sm)",
+              padding: "44px 36px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "24px",
+            }}
+          >
+            <div style={{ maxWidth: "680px" }}>
+              <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--gold-oxford)", textTransform: "uppercase" }}>
+                COORDINATORS · DEPARTMENT HEADS · CORE ASSOCIATES
+              </span>
+              <h3 className="font-display-serif" style={{ fontSize: "28px", color: "var(--ink-title)", margin: "8px 0 12px" }}>
+                The People Behind The House
+              </h3>
+              <p style={{ fontSize: "15px", color: "var(--ink-body)", lineHeight: 1.65, margin: 0 }}>
+                Explore the complete roster of our Steering Council Coordinators, Department Heads for Consulting & Research, and the Core Team associates driving institutional initiatives.
+              </p>
+            </div>
+
+            <div>
+              <Link
+                href="/team"
+                className="stamp-button stamp-button-primary"
+                style={{ padding: "14px 28px" }}
+              >
+                <span>EXPLORE TEAM HIERARCHY ↗</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       {/* 6. Closing Partnership Banner — Deep Midnight Navy (#070D1E) */}
       <section className="section-navy-dark" style={{ padding: "80px 0" }}>

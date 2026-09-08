@@ -4,10 +4,12 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import PIRegistrationModal from "@/components/PIRegistrationModal";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [piModalOpen, setPiModalOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -56,74 +58,126 @@ export default function Navbar() {
     { label: "Home", href: "/" },
     { label: "About Us", href: "/about" },
     { label: "Events", href: "/events" },
+    { label: "Team", href: "/team" },
     { label: "Gallery", href: "/gallery" },
     { label: "Contact Us", href: "/contact" },
   ];
 
   return (
     <>
-      <header className={`site-header ${isScrolled ? "scrolled" : ""}`}>
-        <div className="nav-inner" style={{ width: "100%", padding: "0 clamp(20px, 4vw, 48px)" }}>
-          {/* Brand Logo */}
-          <Link
-            href="/"
-            className="brand-wrap"
-            aria-label="Finlogue Portal Home"
-          >
-            <Image
-              src="/logo.png"
-              alt="Finlogue Crest"
-              width={40}
-              height={40}
-              style={{ height: "40px", width: "auto", objectFit: "contain", flexShrink: 0 }}
-              priority
-            />
-            <div className="brand-titles">
-              <span className="brand-name">FINLOGUE</span>
-              <span className="brand-sub">Finance Cell · LNMIIT</span>
+      <header className="site-header-wrapper">
+        <div className={`site-header ${isScrolled ? "scrolled" : ""}`}>
+          <div className="nav-inner">
+            {/* Desktop Left Navigation Links */}
+            <nav
+              className="nav-links nav-links-left"
+              aria-label="Primary Navigation Left"
+              onMouseLeave={() => setHoveredHref(null)}
+            >
+              {navLinks.slice(0, 3).map((link) => {
+                const isSelected = hoveredHref
+                  ? hoveredHref === link.href
+                  : pathname === link.href;
+
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    target={link.href === "/" ? undefined : "_blank"}
+                    rel={link.href === "/" ? undefined : "noopener noreferrer"}
+                    onMouseEnter={() => setHoveredHref(link.href)}
+                    className={`nav-link ${isSelected ? "active" : ""}`}
+                  >
+                    <span>{link.label}</span>
+                    <span className="nav-link-underline" />
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Center Anchor: Brand Logo & Wordmark */}
+            <div className="nav-center-brand">
+              <Link
+                href="/"
+                className="brand-center-wrap"
+                aria-label="Finlogue Portal Home"
+              >
+                <div className="brand-crest-box">
+                  <Image
+                    src="/logo.png"
+                    alt="Finlogue Crest"
+                    width={40}
+                    height={40}
+                    className="brand-crest-img"
+                    priority
+                  />
+                </div>
+                <div className="brand-center-text">
+                  <span className="brand-center-title">FINLOGUE</span>
+                  <span className="brand-center-sub">FINANCE CELL</span>
+                </div>
+              </Link>
             </div>
-          </Link>
 
-          {/* Desktop Nav Links (Opening sections in a new tab per user approach) */}
-          <nav
-            className="nav-links"
-            aria-label="Primary Navigation"
-            onMouseLeave={() => setHoveredHref(null)}
-          >
-            {navLinks.map((link) => {
-              const isSelected = hoveredHref
-                ? hoveredHref === link.href
-                : pathname === link.href;
+            {/* Desktop Right Navigation Links & Action */}
+            <div className="nav-right-cluster">
+              <nav
+                className="nav-links nav-links-right"
+                aria-label="Primary Navigation Right"
+                onMouseLeave={() => setHoveredHref(null)}
+              >
+                {navLinks.slice(3).map((link) => {
+                  const isSelected = hoveredHref
+                    ? hoveredHref === link.href
+                    : pathname === link.href;
 
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  target={link.href === "/" ? undefined : "_blank"}
-                  rel={link.href === "/" ? undefined : "noopener noreferrer"}
-                  onMouseEnter={() => setHoveredHref(link.href)}
-                  className={`nav-link ${isSelected ? "active" : ""}`}
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      target={link.href === "/" ? undefined : "_blank"}
+                      rel={link.href === "/" ? undefined : "noopener noreferrer"}
+                      onMouseEnter={() => setHoveredHref(link.href)}
+                      className={`nav-link ${isSelected ? "active" : ""}`}
+                    >
+                      <span>{link.label}</span>
+                      <span className="nav-link-underline" />
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              {/* Recruitment CTA Button (Inspired by Waterfield's New Badge Callout) */}
+              <div className="nav-cta-btn">
+                <button
+                  type="button"
+                  onClick={() => setPiModalOpen(true)}
+                  className="pi-recruitment-btn"
+                  aria-label="Register for Personal Interviews (PI) - Y-26 Batch"
+                  title="Y-26 Batch Recruitments Open · Register for Personal Interviews"
                 >
-                  <span>{link.label}</span>
-                  <span className="nav-link-underline" />
-                </Link>
-              );
-            })}
-          </nav>
+                  <span className="pi-new-badge">New</span>
+                  <span className="pi-label-text">Register for PI</span>
+                  <span className="pi-batch-tag">Y-26</span>
+                </button>
+              </div>
 
-          {/* Mobile Hamburger Trigger */}
-          <button
-            type="button"
-            onClick={() => setMobileDrawerOpen(true)}
-            className="mobile-toggle-btn"
-            aria-label="Open mobile navigation drawer"
-            aria-expanded={mobileDrawerOpen}
-          >
-            <span className="mobile-toggle-line" />
-            <span className="mobile-toggle-line" />
-          </button>
+              {/* Mobile Hamburger Trigger */}
+              <button
+                type="button"
+                onClick={() => setMobileDrawerOpen(true)}
+                className="mobile-toggle-btn"
+                aria-label="Open mobile navigation drawer"
+                aria-expanded={mobileDrawerOpen}
+              >
+                <span className="mobile-toggle-line" />
+                <span className="mobile-toggle-line" />
+              </button>
+            </div>
+          </div>
         </div>
       </header>
+
 
       {/* Mobile Drawer Overlay */}
       {mobileDrawerOpen && (
@@ -206,6 +260,22 @@ export default function Navbar() {
                   );
                 })}
               </nav>
+
+              {/* Mobile Drawer Recruitment Callout */}
+              <div style={{ marginTop: "24px", paddingTop: "20px", borderTop: "1px solid rgba(226, 232, 240, 0.1)" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileDrawerOpen(false);
+                    setPiModalOpen(true);
+                  }}
+                  className="pi-recruitment-btn"
+                  style={{ width: "100%", justifyContent: "center", padding: "12px 18px" }}
+                >
+                  <span className="pi-pulse-dot" />
+                  <span>Register for PI (Y-26)</span>
+                </button>
+              </div>
             </div>
 
             {/* Bottom Section */}
@@ -220,6 +290,13 @@ export default function Navbar() {
           </aside>
         </div>
       )}
+
+      {/* Interactive Y-26 Personal Interview (PI) Registration Modal */}
+      <PIRegistrationModal
+        isOpen={piModalOpen}
+        onClose={() => setPiModalOpen(false)}
+      />
     </>
   );
 }
+

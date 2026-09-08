@@ -325,8 +325,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/about#leadership" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
-                  Leadership Hierarchy
+                <Link href="/team" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                  Team & Leadership
                 </Link>
               </li>
               <li>

@@ -45,13 +45,13 @@ export default function HomePage() {
               filter: "contrast(102%) brightness(105%)",
             }}
           />
-          {/* Light-Colored Gradient Overlay so the photograph is bright & clearly visible */}
+          {/* Lighter Tone Gradient Overlay so the photograph is rich & clearly visible */}
           <div
             style={{
               position: "absolute",
               inset: 0,
               background:
-                "linear-gradient(180deg, rgba(248, 250, 252, 0.78) 0%, rgba(241, 245, 249, 0.90) 100%), linear-gradient(90deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.70) 55%, rgba(248, 250, 252, 0.85) 100%)",
+                "linear-gradient(90deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.65) 42%, rgba(255, 255, 255, 0.18) 75%, rgba(255, 255, 255, 0.08) 100%), linear-gradient(180deg, rgba(248, 250, 252, 0.35) 0%, transparent 40%, rgba(248, 250, 252, 0.6) 100%)",
             }}
           />
         </div>
@@ -175,31 +175,22 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Downward Scroll Indicator (matching ecell reference) */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: "20px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 10,
-            color: "var(--navy-hero)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            opacity: 0.7,
-            animation: "pulse 2s infinite",
-          }}
+        {/* Downward Scroll Button — Interactive Smooth Scroll */}
+        <a
+          href="#about-finlogue"
+          aria-label="Scroll down to About Finlogue"
+          title="Scroll down to explore"
+          className="hero-scroll-down-btn"
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19" />
             <polyline points="19 12 12 19 5 12" />
           </svg>
-        </div>
+        </a>
       </section>
 
       {/* 2. ABOUT FINLOGUE (What is Finlogue? — Matching E-Cell IIT Bombay layout) */}
-      <section className="section-pure-white" style={{ padding: "80px 0" }}>
+      <section id="about-finlogue" className="section-pure-white" style={{ padding: "80px 0", scrollMarginTop: "72px" }}>
         <div className="container">
           <div
             style={{

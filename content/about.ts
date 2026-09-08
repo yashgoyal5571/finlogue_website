@@ -56,12 +56,12 @@ export interface AboutContent {
 
 export const about: AboutContent = {
   header: {
-    badge: "INSTITUTIONAL ARCHIVE",
-    title: "WE DIDN'T INHERIT THE HOUSE. WE BUILT IT.",
+    badge: "WHO WE ARE",
+    title: "FINANCE IS MORE THAN A SUBJECT.",
     subtitle:
-      "Finlogue is LNMIIT's premier student-run Finance, Strategy, and Consulting body — forged to bridge the gap between classroom theory and real-world boardroom execution.",
+      "Finlogue is the official Finance, Consulting & Analytics society of LNMIIT, created to bring finance beyond the classroom and into conversations, competitions, research, and real-world ideas.",
     statSummary:
-      "Founded with the conviction that future business leaders, analysts, and founders are built through high-stakes case solving, market diligence, and rigorous execution.",
+      "EXPLORING MARKETS, BUSINESSES, STARTUPS, AND THE IDEAS THAT SHAPE THEM.",
   },
   mission: {
     title: "MISSION & VISION",
