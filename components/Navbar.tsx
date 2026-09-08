@@ -114,7 +114,6 @@ export default function Navbar() {
                 </div>
                 <div className="brand-center-text">
                   <span className="brand-center-title">FINLOGUE</span>
-                  <span className="brand-center-sub">FINANCE CELL</span>
                 </div>
               </Link>
             </div>
@@ -283,7 +282,7 @@ export default function Navbar() {
                 className="font-metadata-mono"
                 style={{ fontSize: "10px", color: "rgba(147, 161, 176, 0.7)", textTransform: "uppercase" }}
               >
-                Finance Cell · LNMIIT
+                Finlogue · LNMIIT
               </p>
             </div>
           </aside>
