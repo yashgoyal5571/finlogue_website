@@ -33,7 +33,7 @@ export default function Footer() {
                   FINLOGUE
                 </h3>
                 <span className="font-metadata-mono" style={{ fontSize: "10px", color: "var(--gold-oxford)", letterSpacing: "0.1em" }}>
-                  FINANCE CELL · LNMIIT
+                  FINANCE AND CONSULTING · LNMIIT
                 </span>
               </div>
             </div>
@@ -288,7 +288,7 @@ export default function Footer() {
           }}
         >
           <span className="font-metadata-mono" style={{ textTransform: "uppercase" }}>
-            FINLOGUE CELL © 2026 · THE LNM INSTITUTE OF INFORMATION TECHNOLOGY · ALL RIGHTS RESERVED
+            FINLOGUE © 2026 · THE LNM INSTITUTE OF INFORMATION TECHNOLOGY · ALL RIGHTS RESERVED
           </span>
           <span className="font-metadata-mono" style={{ textTransform: "uppercase", color: "var(--gold-oxford)" }}>
             STUDENT RUN · INSTITUTIONALLY GOVERNED
