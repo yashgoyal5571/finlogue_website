@@ -154,6 +154,7 @@ export default function LeadershipSection({
                           alt={coord.name}
                           fill
                           sizes="80px"
+                          unoptimized
                           style={{ objectFit: "cover" }}
                         />
                       ) : (
@@ -319,6 +320,7 @@ export default function LeadershipSection({
                     alt={head.name}
                     fill
                     sizes="100px"
+                    unoptimized
                     style={{ objectFit: "cover" }}
                   />
                 </div>
@@ -439,6 +441,7 @@ export default function LeadershipSection({
                     alt={member.name}
                     fill
                     sizes="96px"
+                    unoptimized
                     style={{ objectFit: "cover" }}
                   />
                 </div>

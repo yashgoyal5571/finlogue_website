@@ -2320,11 +2320,12 @@ export default function AdminPortalPage() {
                           src={teamForm.image.startsWith("http") || teamForm.image.startsWith("/") ? teamForm.image : `/assets/team/${teamForm.image}`}
                           alt="Preview"
                           fill
+                          unoptimized
                           style={{ objectFit: "cover" }}
                         />
                       </div>
-                      <div style={{ textAlign: "left" }}>
-                        <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--ink-title)", display: "block" }}>
+                      <div style={{ textAlign: "left", minWidth: 0, flex: 1 }}>
+                        <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--ink-title)", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {teamForm.image}
                         </span>
                         <span style={{ fontSize: "10.5px", color: "var(--navy-hero)", textDecoration: "underline" }}>
@@ -2338,13 +2339,13 @@ export default function AdminPortalPage() {
                         Drag & drop photo here, or <span style={{ textDecoration: "underline", color: "var(--gold-oxford)" }}>browse computer</span>
                       </p>
                       <span style={{ fontSize: "10.5px", color: "var(--ink-muted)" }}>
-                        JPG, PNG, or WEBP (auto-saved to /assets/team/)
+                        JPG, PNG, or WEBP (or paste an image link below)
                       </span>
                     </div>
                   )}
                 </div>
 
-                {/* Direct Path Input with Permanent Prefix */}
+                {/* Direct Path Input with Adaptive Prefix */}
                 <div style={{ display: "flex", alignItems: "stretch" }}>
                   <span
                     style={{
@@ -2352,7 +2353,7 @@ export default function AdminPortalPage() {
                       border: teamErrors.image ? "1px solid #EF4444" : "1px solid #CBD5E1",
                       borderRight: "none",
                       padding: "9px 12px",
-                      fontSize: "13px",
+                      fontSize: "12px",
                       color: "var(--navy-hero)",
                       fontFamily: "var(--font-mono)",
                       fontWeight: 600,
@@ -2361,14 +2362,16 @@ export default function AdminPortalPage() {
                       userSelect: "none",
                       borderTopLeftRadius: "6px",
                       borderBottomLeftRadius: "6px",
+                      whiteSpace: "nowrap",
                     }}
                   >
-                    /assets/team/
+                    {teamForm.image?.startsWith("http") ? "URL" : "/assets/team/"}
                   </span>
                   <input
                     type="text"
                     value={teamForm.image}
                     onChange={(e) => handleTeamFieldChange("image", e.target.value)}
+                    placeholder="filename.jpg or https://..."
                     className="form-input"
                     style={{
                       borderTopLeftRadius: 0,

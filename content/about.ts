@@ -221,7 +221,7 @@ export const about: AboutContent = {
         batch: "Y25",
         linkedin: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
         email: "24uec533@lnmiit.ac.in",
-        image: "/assets/team/aditya-tiwari.jpg",
+        image: "/assets/team/rohan-rastogi.png",
       },
       {
         name: "Armaan Pareek",
