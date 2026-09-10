@@ -28,6 +28,14 @@ export const metadata: Metadata = {
   title: "FINLOGUE — Finance & Strategy Cell | LNMIIT",
   description:
     "LNMIIT's premier student-run Finance and Strategy body. Institutional equity valuation, quantitative case solving, and venture capital syndicates.",
+  icons: {
+    icon: [
+      { url: "/logo.png", sizes: "any", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export const viewport: Viewport = {
