@@ -5,20 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function Footer() {
-  const [emailInput, setEmailInput] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (emailInput.trim()) {
-      setSubscribed(true);
-      setTimeout(() => {
-        setEmailInput("");
-        setSubscribed(false);
-      }, 4000);
-    }
-  };
-
   return (
     <footer
       style={{
@@ -56,69 +42,6 @@ export default function Footer() {
               Forging future venture builders, equity research analysts, and strategy consultants through relentless analytical diligence.
             </p>
 
-            {/* Newsletter Subscription Box (e-cell inspiration) */}
-            <div style={{ marginBottom: "24px" }}>
-              <span
-                style={{
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  color: "#FFFFFF",
-                  display: "block",
-                  marginBottom: "8px",
-                }}
-              >
-                Subscribe to Our Financial Briefs
-              </span>
-              <form onSubmit={handleSubscribe} style={{ position: "relative", maxWidth: "280px" }}>
-                <input
-                  type="email"
-                  value={emailInput}
-                  onChange={(e) => setEmailInput(e.target.value)}
-                  placeholder="Enter your email"
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "10px 42px 10px 14px",
-                    borderRadius: "100px",
-                    border: "1px solid rgba(197, 168, 128, 0.4)",
-                    backgroundColor: "rgba(255, 255, 255, 0.05)",
-                    color: "#FFFFFF",
-                    fontSize: "12.5px",
-                    outline: "none",
-                  }}
-                />
-                <button
-                  type="submit"
-                  aria-label="Subscribe"
-                  style={{
-                    position: "absolute",
-                    right: "4px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "50%",
-                    backgroundColor: "var(--gold-oxford)",
-                    border: "none",
-                    color: "#070D1E",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                  }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </button>
-              </form>
-              {subscribed && (
-                <span style={{ fontSize: "11px", color: "var(--gold-oxford)", marginTop: "6px", display: "block" }}>
-                  ✓ You are subscribed to Finlogue briefs.
-                </span>
-              )}
-            </div>
 
             {/* Social Network Links */}
             <div>
