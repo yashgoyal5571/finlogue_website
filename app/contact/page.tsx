@@ -14,7 +14,6 @@ export default function ContactPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationTicket, setConfirmationTicket] = useState<string | null>(null);
-  const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -278,6 +277,20 @@ export default function ContactPage() {
                   >
                     🕒 {contact.office.hours}
                   </p>
+                  <p
+                    className="font-metadata-mono"
+                    style={{ fontSize: "12px", color: "var(--navy-hero)", paddingTop: "8px", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}
+                  >
+                    <span>✉ Official Dispatch:</span>
+                    <a
+                      href={`mailto:${contact.office.email}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "var(--navy-hero)", textDecoration: "underline" }}
+                    >
+                      {contact.office.email}
+                    </a>
+                  </p>
                 </div>
               </div>
 
@@ -301,75 +314,79 @@ export default function ContactPage() {
                     <div
                       key={c.name}
                       style={{
-                        padding: "20px",
+                        padding: "22px 24px",
                         backgroundColor: "#F8FAFC",
-                        border: "1px solid rgba(7, 13, 30, 0.07)",
+                        border: "1px solid rgba(7, 13, 30, 0.08)",
                         borderRadius: "14px",
                         boxShadow: "0 2px 8px rgba(7, 13, 30, 0.03)",
                       }}
                     >
-                      <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--gold-oxford)", textTransform: "uppercase", display: "block", fontWeight: 700 }}>
-                        {c.role}
-                      </span>
-                      <h4 className="font-display-serif" style={{ fontSize: "22px", color: "var(--navy-hero)", marginTop: "4px", fontWeight: 600 }}>
+                      <h4
+                        className="font-display-serif"
+                        style={{
+                          fontSize: "22px",
+                          color: "var(--navy-hero)",
+                          marginTop: "4px",
+                          fontWeight: 600,
+                        }}
+                      >
                         {c.name}
                       </h4>
                       <p style={{ fontSize: "13px", color: "var(--ink-muted)", marginTop: "2px" }}>
                         {c.dept}
                       </p>
-
-                      <a
-                        href={`mailto:${c.email}`}
-                        className="font-metadata-mono"
-                        style={{ fontSize: "12px", color: "var(--navy-hero)", marginTop: "12px", display: "inline-block", fontWeight: 600 }}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "14px",
+                          marginTop: "12px",
+                          paddingTop: "12px",
+                          borderTop: "1px solid rgba(7, 13, 30, 0.06)",
+                        }}
                       >
-                        ✉ {c.email}
-                      </a>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                        {/* LinkedIn Icon */}
+                        <a
+                          href={c.linkedin || "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={`${c.name} on LinkedIn`}
+                          aria-label={`${c.name} on LinkedIn`}
+                          style={{
+                            color: "var(--navy-hero)",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            transition: "opacity 0.15s ease, transform 0.15s ease",
+                          }}
+                        >
+                          <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64c-.88 0-1.6.72-1.6 1.6 0 .88.72 1.6 1.6 1.6.88 0 1.6-.72 1.6-1.6 0-.88-.72-1.6-1.6-1.6Z" />
+                          </svg>
+                        </a>
 
-              {/* Social Channels */}
-              <div
-                style={{
-                  padding: "24px 32px",
-                  backgroundColor: "#FFFFFF",
-                  border: "1px solid rgba(7, 13, 30, 0.09)",
-                  boxShadow: "0 16px 36px -10px rgba(7, 13, 30, 0.07)",
-                  borderRadius: "18px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  flexWrap: "wrap",
-                  gap: "16px",
-                }}
-              >
-                <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--navy-hero)", textTransform: "uppercase", fontWeight: 700 }}>
-                  Official Networks:
-                </span>
-                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                  {contact.channels.map((ch) => (
-                    <a
-                      key={ch.platform}
-                      href={ch.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-metadata-mono"
-                      style={{
-                        fontSize: "11.5px",
-                        color: "var(--navy-hero)",
-                        border: "1px solid rgba(7, 13, 30, 0.12)",
-                        borderRadius: "8px",
-                        padding: "8px 16px",
-                        textTransform: "uppercase",
-                        backgroundColor: "#F8FAFC",
-                        fontWeight: 600,
-                        transition: "all 0.2s ease",
-                      }}
-                    >
-                      {ch.platform}
-                    </a>
+                        {/* Email Icon */}
+                        <a
+                          href={`mailto:${c.email}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={`Email ${c.name}`}
+                          aria-label={`Email ${c.name}`}
+                          style={{
+                            color: "var(--navy-hero)",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            transition: "opacity 0.15s ease, transform 0.15s ease",
+                          }}
+                        >
+                          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect width="20" height="16" x="2" y="4" rx="2" />
+                            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                          </svg>
+                        </a>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -378,82 +395,6 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* 3. Frequently Asked Questions — Architectural Alabaster (#F8FAFC) */}
-      <section className="section-alabaster">
-        <div className="container">
-          <div className="section-header">
-            <span className="section-badge">KNOWLEDGE BASE</span>
-            <h2 className="section-title">Frequently Asked Questions</h2>
-            <p className="section-sub">
-              Common queries regarding summit participation, startup pitching, corporate sponsorships, and inductions.
-            </p>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px", maxWidth: "880px" }}>
-            {contact.faqs.map((faq, idx) => {
-              const isOpen = activeFaq === idx;
-              return (
-                <div
-                  key={faq.question}
-                  style={{
-                    border: "1px solid var(--white-border)",
-                    backgroundColor: "var(--white-pure)",
-                    boxShadow: "var(--card-shadow)",
-                    overflow: "hidden",
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setActiveFaq(isOpen ? null : idx)}
-                    style={{
-                      width: "100%",
-                      padding: "24px",
-                      textAlign: "left",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: "16px",
-                      backgroundColor: "var(--white-pure)",
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "baseline", gap: "12px" }}>
-                      <span className="font-metadata-mono" style={{ fontSize: "12px", color: "var(--burgundy-crest)" }}>
-                        0{idx + 1}
-                      </span>
-                      <span className="font-display-serif" style={{ fontSize: "22px", color: "var(--ink-title)" }}>
-                        {faq.question}
-                      </span>
-                    </div>
-
-                    <span className="font-metadata-mono" style={{ fontSize: "18px", color: "var(--navy-hero)", fontWeight: 700 }}>
-                      {isOpen ? "−" : "+"}
-                    </span>
-                  </button>
-
-                  {isOpen && (
-                    <div
-                      style={{
-                        padding: "0 24px 24px",
-                        borderTop: "1px solid var(--white-border)",
-                        fontSize: "14.5px",
-                        color: "var(--ink-body)",
-                        lineHeight: 1.65,
-                      }}
-                    >
-                      <p style={{ marginTop: "16px" }}>{faq.answer}</p>
-                      <div style={{ marginTop: "12px" }}>
-                        <span className="status-badge status-badge-upcoming">
-                          {faq.category}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
       {/* 4. Bottom Campus Coordinates Strip — Deep Midnight Navy (#070D1E) */}
       <section className="section-navy-dark" style={{ padding: "70px 0" }}>

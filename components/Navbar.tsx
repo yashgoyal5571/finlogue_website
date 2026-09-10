@@ -4,12 +4,10 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import PIRegistrationModal from "@/components/PIRegistrationModal";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  const [piModalOpen, setPiModalOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -83,8 +81,6 @@ export default function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    target={link.href === "/" ? undefined : "_blank"}
-                    rel={link.href === "/" ? undefined : "noopener noreferrer"}
                     onMouseEnter={() => setHoveredHref(link.href)}
                     className={`nav-link ${isSelected ? "active" : ""}`}
                   >
@@ -134,8 +130,6 @@ export default function Navbar() {
                     <Link
                       key={link.href}
                       href={link.href}
-                      target={link.href === "/" ? undefined : "_blank"}
-                      rel={link.href === "/" ? undefined : "noopener noreferrer"}
                       onMouseEnter={() => setHoveredHref(link.href)}
                       className={`nav-link ${isSelected ? "active" : ""}`}
                     >
@@ -148,16 +142,17 @@ export default function Navbar() {
 
               {/* Recruitment Callout (Waterfield-Inspired Serif Text with Top Bronze Pill) */}
               <div className="nav-callout-wrapper">
-                <button
-                  type="button"
-                  onClick={() => setPiModalOpen(true)}
+                <Link
+                  href="/register-pi"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="nav-waterfield-callout"
-                  aria-label="Register for Personal Interviews (PI) - Y-26 Batch"
-                  title="Y-26 Batch Recruitments Open · Register for Personal Interviews"
+                  aria-label="Register for Personal Interviews (PI)"
+                  title="Recruitments Open · Register for Personal Interviews"
                 >
                   <span className="nav-callout-badge">New</span>
                   <span className="nav-callout-text">Register for PI</span>
-                </button>
+                </Link>
               </div>
 
               {/* Mobile Hamburger Trigger */}
@@ -261,18 +256,17 @@ export default function Navbar() {
 
               {/* Mobile Drawer Recruitment Callout */}
               <div style={{ marginTop: "24px", paddingTop: "20px", borderTop: "1px solid rgba(226, 232, 240, 0.1)" }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileDrawerOpen(false);
-                    setPiModalOpen(true);
-                  }}
+                <Link
+                  href="/register-pi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileDrawerOpen(false)}
                   className="pi-recruitment-btn"
-                  style={{ width: "100%", justifyContent: "center", padding: "12px 18px" }}
+                  style={{ width: "100%", justifyContent: "center", padding: "12px 18px", textDecoration: "none" }}
                 >
                   <span className="pi-pulse-dot" />
-                  <span>Register for PI (Y-26)</span>
-                </button>
+                  <span>Register for PI</span>
+                </Link>
               </div>
             </div>
 
@@ -289,11 +283,6 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Interactive Y-26 Personal Interview (PI) Registration Modal */}
-      <PIRegistrationModal
-        isOpen={piModalOpen}
-        onClose={() => setPiModalOpen(false)}
-      />
     </>
   );
 }

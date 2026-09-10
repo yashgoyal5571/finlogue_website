@@ -141,16 +141,6 @@ export const home: HomeContent = {
       href: "/events#market-watch",
       highlight: "Weekly Briefing",
     },
-    {
-      id: "ma-simulation",
-      tag: "CORPORATE STRATEGY",
-      title: "M&A BOARDROOM SIMULATION",
-      description:
-        "High-stakes executive negotiation arena simulating contested takeovers, synergy valuations, antitrust defenses, and hostile bids with real-time deal room mechanics.",
-      metrics: "Live Deal Room · Multi-Round Negotiation",
-      href: "/events#ma-simulation",
-      highlight: "Boardroom Arena",
-    },
   ],
   pillars: [
     {

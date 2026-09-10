@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { gallery, GalleryItem } from "@/content/gallery";
 import LightboxModal from "@/components/LightboxModal";
 import CelebratingSuccessShowcase from "@/components/CelebratingSuccessShowcase";
@@ -181,38 +180,6 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* 4. Bottom Submit Footage Box — Deep Midnight Navy (#070D1E) */}
-      <section className="section-navy-dark" style={{ padding: "80px 0" }}>
-        <div className="container">
-          <div
-            style={{
-              padding: "40px",
-              backgroundColor: "var(--navy-card)",
-              border: "1px solid var(--navy-border)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: "24px",
-            }}
-          >
-            <div>
-              <h3 className="font-display-serif" style={{ fontSize: "28px", color: "#FFFFFF" }}>
-                Are you an attendee with photos from our past conclaves?
-              </h3>
-              <p style={{ fontSize: "14.5px", color: "var(--platinum-muted)", marginTop: "6px" }}>
-                Submit your event captures to be cataloged in the official Finlogue Visual Vault.
-              </p>
-            </div>
-            <Link
-              href="/contact"
-              className="stamp-button stamp-button-primary"
-            >
-              <span>SUBMIT ARCHIVE ASSETS</span>
-            </Link>
-          </div>
-        </div>
-      </section>
 
       {/* Fullscreen Lightbox Modal */}
       <LightboxModal

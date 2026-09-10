@@ -73,7 +73,7 @@ export const team: TeamContent = {
       role: "Head",
       dept: "Consulting & Strategy",
       batch: "Y24",
-      focus: "Case Competitions & Mentorship",
+      focus: "",
       email: null,
       phone: null,
       image: "/assets/team/krishna-khairnar.jpg",
@@ -83,7 +83,7 @@ export const team: TeamContent = {
       role: "Head",
       dept: "Finance & Research",
       batch: "Y24",
-      focus: "Markets Research & Equity Valuation",
+      focus: "",
       email: null,
       phone: null,
       image: "/assets/team/abhinav-sharma.jpg",
@@ -91,7 +91,7 @@ export const team: TeamContent = {
   ],
   coreTeam: {
     photo: "/assets/team/core-y25-group.jpg",
-    caption: "Core Team · Batch Y25",
+    caption: "Core Team",
   },
   contact: {
     title: "INTAKE & INQUIRIES",
@@ -110,8 +110,8 @@ export const team: TeamContent = {
       },
       {
         platform: "Email",
-        label: "24uec533@lnmiit.ac.in",
-        href: "mailto:24uec533@lnmiit.ac.in",
+        label: "finlogue@licai.lnmiit.ac.in",
+        href: "mailto:finlogue@licai.lnmiit.ac.in",
       },
     ],
   },

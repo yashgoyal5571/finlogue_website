@@ -177,7 +177,7 @@ Note: the four names on the POTR brochure (Mihir Chakravarthy, Abhinav Sharma, K
 Simple form: Name / Email / Message, submit styled as a document stamp (`SUBMIT FOR REVIEW`, not "Send"). Beside/below it: direct socials as icon row:
 - Instagram → `https://www.instagram.com/finlogue.lnmiit/`
 - LinkedIn → `https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all`
-- Email → `mailto:24uec533@lnmiit.ac.in`
+- Email → `mailto:finlogue@licai.lnmiit.ac.in`
 
 ### 4.4 Footer (large, closing)
 ```
@@ -185,7 +185,7 @@ FINLOGUE
 FINANCE × STRATEGY × CONSULTING
 BUILT FROM THE GROUND UP.
 
-[Instagram → instagram.com/finlogue.lnmiit]  [LinkedIn → linkedin.com/company/entrepreneuria-lnmiit]  [Email → mailto:24uec533@lnmiit.ac.in]     Home · Events · Team & Contact
+[Instagram → instagram.com/finlogue.lnmiit]  [LinkedIn → linkedin.com/company/entrepreneuria-lnmiit]  [Email → mailto:finlogue@licai.lnmiit.ac.in]     Home · Events · Team & Contact
 
 FINLOGUE — EST. [YEAR]          DOCUMENT STATUS: ACTIVE
 ```
@@ -245,7 +245,7 @@ Swapping an image, adding a pillar, adding a case file, adding a new core-team m
 | Other Case Files "OPEN CASE →" | in-place accordion expand |
 | Team dossier back-face email/phone (all 3 tiers) | `mailto:` / `tel:` where provided, else omitted (no fake contact info) |
 | Contact form submit | form POST / mailto fallback |
-| Footer socials | Instagram: `https://www.instagram.com/finlogue.lnmiit/` · LinkedIn: `https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all` · Email: `mailto:24uec533@lnmiit.ac.in` |
+| Footer socials | Instagram: `https://www.instagram.com/finlogue.lnmiit/` · LinkedIn: `https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all` · Email: `mailto:finlogue@licai.lnmiit.ac.in` |
 | Footer nav repeat | same 3 routes as top nav |
 | Startup portfolio logos | left empty (`url: null`) until you have links — don't fake them |
 

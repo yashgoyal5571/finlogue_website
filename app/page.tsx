@@ -2,9 +2,10 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { home } from "@/content/home";
-import StatsCounter from "@/components/StatsCounter";
 import InspirationalSpeakers from "@/components/InspirationalSpeakers";
 import HeroParallax from "@/components/HeroParallax";
+import MomentsAccordion from "@/components/MomentsAccordion";
+import VenturesShowcase from "@/components/VenturesShowcase";
 
 export const metadata = {
   title: "FINLOGUE — Finance & Strategy Cell | LNMIIT",
@@ -161,42 +162,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. LIVE IMPACT NUMBERS / STATS BAR — Architectural Light Gray (#F8FAFC) */}
-      <section className="section-alabaster">
-        <div className="container">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-              flexWrap: "wrap",
-              gap: "16px",
-              marginBottom: "36px",
-            }}
-          >
-            <div>
-              <span className="section-badge">KEY PERFORMANCE METRICS</span>
-              <h2 className="section-title">
-                The Scale of Our Ecosystem
-              </h2>
-            </div>
-            <p className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--ink-muted)" }}>
-              Validated data across flagship symposiums and student cohorts.
-            </p>
-          </div>
-
-          <div className="stats-grid">
-            {home.stats.map((stat) => (
-              <StatsCounter
-                key={stat.label}
-                label={stat.label}
-                value={stat.value}
-                detail={stat.detail}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* 3. FLAGSHIP INITIATIVES & PROGRAMS — Architectural Alabaster (#F8FAFC) */}
       <section className="section-alabaster" id="initiatives">
@@ -236,21 +201,13 @@ export default function HomePage() {
                   }}
                 >
                   <div>
-                    <div className="initiative-header">
-                      <span className="initiative-tag">{item.tag}</span>
-                      <span className="initiative-badge-tag">{item.highlight}</span>
-                    </div>
-
                     <h3 className="initiative-title">{item.title}</h3>
                     <p className="initiative-desc">{item.description}</p>
                   </div>
 
-                  <div className="initiative-footer" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+                  <div className="initiative-footer" style={{ display: "flex", alignItems: "center" }}>
                     <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--burgundy-crest)" }}>
                       {item.metrics}
-                    </span>
-                    <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--navy-hero)", fontWeight: 700 }}>
-                      EXPLORE EVENT →
                     </span>
                   </div>
                 </Link>
@@ -359,124 +316,13 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid-3">
-            <div className="gallery-card">
-              <div className="gallery-frame">
-                <Image
-                  src="/assets/gallery/summit-keynote.jpg"
-                  alt="Global Financial Summit Keynote"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  style={{ objectFit: "cover" }}
-                />
-                <span className="gallery-tag">KEYNOTE ADDRESS</span>
-              </div>
-              <div className="gallery-content">
-                <h3 className="gallery-title" style={{ fontSize: "20px" }}>
-                  Global Financial Conclave
-                </h3>
-              </div>
-            </div>
-
-            <div className="gallery-card">
-              <div className="gallery-frame">
-                <Image
-                  src="/assets/gallery/pitch-session.jpg"
-                  alt="Live Pitch Session"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  style={{ objectFit: "cover" }}
-                />
-                <span className="gallery-tag">VENTURE PITCH</span>
-              </div>
-              <div className="gallery-content">
-                <h3 className="gallery-title" style={{ fontSize: "20px" }}>
-                  Pitch on the Rocks Battle
-                </h3>
-              </div>
-            </div>
-
-            <div className="gallery-card">
-              <div className="gallery-frame">
-                <Image
-                  src="/assets/gallery/award-ceremony.jpg"
-                  alt="Award Ceremony"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  style={{ objectFit: "cover" }}
-                />
-                <span className="gallery-tag">HONORS & VICTORY</span>
-              </div>
-              <div className="gallery-content">
-                <h3 className="gallery-title" style={{ fontSize: "20px" }}>
-                  National Case League Champions
-                </h3>
-              </div>
-            </div>
-          </div>
+          {/* Interactive Stretching Moments Accordion with Vertical Labels & Hover Reveal */}
+          <MomentsAccordion />
         </div>
       </section>
 
-      {/* 7. STARTUP ECOSYSTEM TICKER — Cool Platinum Light Strip */}
-      <section className="section-ticker-light">
-        <div className="container" style={{ textAlign: "center" }}>
-          <span className="section-badge" style={{ marginBottom: "20px" }}>
-            VENTURES PITCHED & ACCELERATED THROUGH OUR SUMMITS
-          </span>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-              gap: "16px",
-              marginTop: "24px",
-            }}
-          >
-            {home.startups.map((st) => (
-              <div
-                key={st.name}
-                style={{
-                  backgroundColor: "var(--white-pure)",
-                  border: "1px solid var(--white-border)",
-                  boxShadow: "var(--card-shadow)",
-                  padding: "16px 12px",
-                  textAlign: "center",
-                }}
-              >
-                <span className="font-display-serif-sm" style={{ fontSize: "17px", color: "var(--ink-title)", display: "block" }}>
-                  {st.name}
-                </span>
-                <span
-                  className="font-metadata-mono"
-                  style={{ fontSize: "9.5px", color: "var(--navy-hero)", textTransform: "uppercase", marginTop: "4px", display: "block" }}
-                >
-                  {st.category}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 8. CLOSING HIGH-CONVERSION CTA — Statement Executive Midnight Navy Banner */}
-      <section className="section-navy-cta">
-        <div className="container-narrow">
-          <span className="section-badge">SHAPE TOMORROW'S MARKETS</span>
-          <h2 className="section-title">{home.closingCta.headline}</h2>
-          <p className="section-sub" style={{ maxWidth: "600px", margin: "20px auto 0" }}>
-            {home.closingCta.subline}
-          </p>
-          <div style={{ marginTop: "40px" }}>
-            <Link
-              href={home.closingCta.href}
-              className="stamp-button stamp-button-primary"
-              style={{ padding: "16px 36px", fontSize: "15px" }}
-            >
-              <span>{home.closingCta.buttonText}</span>
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* 7. VENTURES SHOWCASE — 3D Squircle Logo System */}
+      <VenturesShowcase />
     </main>
   );
 }

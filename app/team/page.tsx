@@ -4,10 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { about } from "@/content/about";
 import LeadershipSection from "@/components/LeadershipSection";
-import PIRegistrationModal from "@/components/PIRegistrationModal";
-
 export default function TeamPage() {
-  const [piModalOpen, setPiModalOpen] = useState(false);
 
   return (
     <main style={{ flex: 1, width: "100%", overflow: "hidden" }}>
@@ -49,19 +46,20 @@ export default function TeamPage() {
               className="font-metadata-mono"
               style={{ fontSize: "11.5px", color: "var(--gold-oxford)", textTransform: "uppercase" }}
             >
-              COUNCIL · HEADS · CORE ASSOCIATES (Y24 & Y25)
+              COUNCIL · HEADS · CORE ASSOCIATES
             </div>
 
             {/* Quick jump to recruitment modal */}
-            <button
-              type="button"
-              onClick={() => setPiModalOpen(true)}
+            <Link
+              href="/register-pi"
+              target="_blank"
+              rel="noopener noreferrer"
               className="pi-recruitment-btn"
-              style={{ fontSize: "12px", padding: "7px 16px" }}
+              style={{ fontSize: "12px", padding: "7px 16px", textDecoration: "none" }}
             >
               <span className="pi-pulse-dot" />
-              <span>Recruiting Batch Y-26 · Register for PI</span>
-            </button>
+              <span>Register for PI</span>
+            </Link>
           </div>
         </div>
       </section>
@@ -72,91 +70,8 @@ export default function TeamPage() {
         initialHeads={about.leadership.heads}
         initialCoreTeam={about.leadership.coreTeam}
         subtitle="Governed by student leadership with uncompromising institutional standards across capital markets and corporate strategy."
-        coreTeamText={about.leadership.coreTeamText}
       />
 
-      {/* 3. Dedicated Y-26 Recruitment Callout Banner */}
-      <section className="section-navy-dark" style={{ padding: "80px 0" }}>
-        <div className="container">
-          <div
-            style={{
-              padding: "48px 40px",
-              backgroundColor: "var(--navy-card)",
-              border: "1px solid rgba(197, 168, 128, 0.4)",
-              boxShadow: "0 20px 48px rgba(7, 13, 30, 0.6)",
-              borderRadius: "12px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: "32px",
-            }}
-          >
-            <div style={{ maxWidth: "620px" }}>
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "4px 10px",
-                  borderRadius: "100px",
-                  backgroundColor: "rgba(16, 185, 129, 0.12)",
-                  border: "1px solid rgba(16, 185, 129, 0.3)",
-                  marginBottom: "14px",
-                }}
-              >
-                <span
-                  style={{
-                    width: "7px",
-                    height: "7px",
-                    borderRadius: "50%",
-                    backgroundColor: "#10B981",
-                    display: "inline-block",
-                    boxShadow: "0 0 8px #10B981",
-                  }}
-                />
-                <span
-                  className="font-metadata-mono"
-                  style={{ fontSize: "10.5px", color: "#6EE7B7", letterSpacing: "0.12em" }}
-                >
-                  NEW STUDENT INDUCTIONS · BATCH Y-26
-                </span>
-              </div>
-
-              <h3 className="font-display-serif" style={{ fontSize: "32px", color: "#FFFFFF", lineHeight: 1.2 }}>
-                Want to become a part of Finlogue?
-              </h3>
-              <p style={{ fontSize: "15px", color: "var(--platinum-muted)", marginTop: "10px", lineHeight: 1.6 }}>
-                Recruitment for the upcoming Y-26 batch is now underway. If you are passionate about capital markets, management consulting, venture strategy, or creative operations, register for your Personal Interview (PI) now.
-              </p>
-            </div>
-
-            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-              <button
-                type="button"
-                onClick={() => setPiModalOpen(true)}
-                className="stamp-button stamp-button-primary"
-                style={{ padding: "14px 28px" }}
-              >
-                <span>REGISTER FOR PI (Y-26)</span>
-              </button>
-              <Link
-                href="/contact"
-                className="secondary-button"
-                style={{ padding: "14px 24px" }}
-              >
-                <span>CONTACT SECRETARIAT</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Interactive Y-26 Personal Interview (PI) Registration Modal */}
-      <PIRegistrationModal
-        isOpen={piModalOpen}
-        onClose={() => setPiModalOpen(false)}
-      />
     </main>
   );
 }

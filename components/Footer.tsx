@@ -181,7 +181,9 @@ export default function Footer() {
                   </svg>
                 </a>
                 <a
-                  href="mailto:24uec533@lnmiit.ac.in"
+                  href="mailto:finlogue@licai.lnmiit.ac.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label="Email Finlogue"
                   style={{
                     width: "34px",
@@ -271,7 +273,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/about" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/about" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   About Finlogue
                 </Link>
               </li>
@@ -337,10 +339,12 @@ export default function Footer() {
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                 </svg>
                 <a
-                  href="mailto:24uec533@lnmiit.ac.in"
+                  href="mailto:finlogue@licai.lnmiit.ac.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{ fontSize: "13px", color: "var(--platinum-muted)", transition: "color 0.15s" }}
                 >
-                  24uec533@lnmiit.ac.in
+                  finlogue@licai.lnmiit.ac.in
                 </a>
               </div>
             </div>

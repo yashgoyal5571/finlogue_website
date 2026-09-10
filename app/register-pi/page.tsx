@@ -1,13 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 
-interface PIRegistrationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationModalProps) {
+export default function RegisterPIPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,32 +14,22 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submittedToken, setSubmittedToken] = useState<string | null>(null);
+  const [alreadySubmitted, setAlreadySubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
+    if (typeof window !== "undefined") {
+      if (localStorage.getItem("finlogue_pi_submitted") === "true") {
+        setAlreadySubmitted(true);
       }
-    };
-    if (isOpen) {
-      window.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
     }
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
+  }, []);
 
   const handleFieldChange = (field: string, val: string) => {
     let formattedVal = val;
 
     if (field === "phone") {
-      // Restrict to digits only and maximum 10 digits
+      // Restrict strictly to digits and maximum 10 digits
       formattedVal = val.replace(/\D/g, "").slice(0, 10);
     } else if (field === "rollNumber") {
       // Uppercase alphanumeric, max 10 characters
@@ -68,6 +54,10 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (alreadySubmitted) {
+      return;
+    }
+
     const nameTrimmed = formData.name.trim();
     const rollTrimmed = formData.rollNumber.trim().toUpperCase();
     const emailTrimmed = formData.email.trim().toLowerCase();
@@ -76,18 +66,22 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
 
     const fieldErrors: Record<string, string> = {};
 
-    // Specific validity checks for filled fields
+    // Roll number must start with 26
     if (rollTrimmed && !rollTrimmed.startsWith("26")) {
       fieldErrors.rollNumber = "Invalid";
     }
 
-    const expectedEmail = rollTrimmed ? `${rollTrimmed.toLowerCase()}@lnmiit.ac.in` : "";
+    // Email format must strictly be rollno@lnmiit.ac.in
+    const expectedEmail = rollTrimmed
+      ? `${rollTrimmed.toLowerCase()}@lnmiit.ac.in`
+      : "";
     if (emailTrimmed) {
       if (!expectedEmail || emailTrimmed !== expectedEmail) {
         fieldErrors.email = "Invalid";
       }
     }
 
+    // Phone number must be exactly 10 digits
     if (phoneTrimmed && phoneTrimmed.length !== 10) {
       fieldErrors.phone = "Invalid";
     }
@@ -139,100 +133,64 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
         if (typeof window !== "undefined") {
           localStorage.setItem("finlogue_pi_submitted", "true");
         }
-        setSubmittedToken(data.token || "SUCCESS");
+        setAlreadySubmitted(true);
       } else {
         setErrorMessage(data.error || "Failed to process application. Please try again.");
       }
     } catch {
-      // Offline / fallback token generation
+      // Offline fallback
       if (typeof window !== "undefined") {
         localStorage.setItem("finlogue_pi_submitted", "true");
       }
-      setSubmittedToken("SUCCESS");
+      setAlreadySubmitted(true);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleReset = () => {
-    setSubmittedToken(null);
-    setErrors({});
-    setFormData({
-      name: "",
-      email: "",
-      rollNumber: "",
-      phone: "",
-      statement: "",
-    });
-    onClose();
-  };
-
   return (
-    <div
-      className="drawer-overlay"
+    <main
       style={{
+        minHeight: "100vh",
+        backgroundColor: "#050A18",
+        color: "#FFFFFF",
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "16px",
-        backgroundColor: "rgba(5, 10, 24, 0.85)",
-        backdropFilter: "blur(6px)",
+        padding: "48px 16px",
+        position: "relative",
       }}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="pi-modal-title"
     >
-      {/* Dimmed backdrop click */}
+      {/* Background architectural grid */}
       <div
-        style={{ position: "fixed", inset: 0 }}
-        onClick={handleReset}
-        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage:
+            "radial-gradient(rgba(197, 168, 128, 0.08) 1px, transparent 1px), radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+          pointerEvents: "none",
+        }}
       />
 
+      {/* Form Container */}
       <div
         style={{
           position: "relative",
-          zIndex: 10001,
+          zIndex: 10,
           width: "100%",
           maxWidth: "580px",
-          maxHeight: "92vh",
-          overflowY: "auto",
           backgroundColor: "#070D1E",
-          border: "1px solid rgba(197, 168, 128, 0.4)",
-          boxShadow: "0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(197, 168, 128, 0.15)",
+          border: "1px solid rgba(197, 168, 128, 0.35)",
+          boxShadow:
+            "0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(197, 168, 128, 0.12)",
           borderRadius: "14px",
           padding: "clamp(24px, 4vw, 36px)",
-          color: "#FFFFFF",
         }}
       >
-        {/* Close Button */}
-        <button
-          type="button"
-          onClick={handleReset}
-          style={{
-            position: "absolute",
-            top: "18px",
-            right: "18px",
-            width: "36px",
-            height: "36px",
-            borderRadius: "50%",
-            border: "1px solid rgba(226, 232, 240, 0.15)",
-            backgroundColor: "rgba(255, 255, 255, 0.05)",
-            color: "var(--platinum-muted)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "16px",
-            transition: "all 0.15s ease",
-            cursor: "pointer",
-          }}
-          aria-label="Close modal"
-        >
-          ✕
-        </button>
-
-        {submittedToken ? (
-          /* Confirmation State - Simple Message */
+        {alreadySubmitted ? (
+          /* Simple confirmation state */
           <div style={{ textAlign: "center", padding: "28px 12px" }}>
             <div
               style={{
@@ -252,13 +210,12 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
               ✓
             </div>
 
-            <h3
-              id="pi-modal-title"
+            <h2
               className="font-display-serif"
               style={{ fontSize: "26px", color: "#FFFFFF", marginBottom: "8px" }}
             >
               Application Submitted
-            </h3>
+            </h2>
 
             <p
               style={{
@@ -272,19 +229,24 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
               Your response has been recorded.
             </p>
 
-            <button
-              type="button"
-              onClick={handleReset}
+            <Link
+              href="/"
               className="stamp-button stamp-button-primary"
-              style={{ width: "100%", justifyContent: "center", padding: "12px 20px" }}
+              style={{
+                display: "inline-flex",
+                justifyContent: "center",
+                padding: "12px 28px",
+                fontSize: "13.5px",
+                textDecoration: "none",
+              }}
             >
-              <span>CLOSE</span>
-            </button>
+              <span>RETURN TO HOME</span>
+            </Link>
           </div>
         ) : (
-          /* Application Form */
+          /* Form State */
           <div>
-            <div style={{ marginBottom: "24px" }}>
+            <div style={{ marginBottom: "22px" }}>
               <div
                 style={{
                   display: "inline-flex",
@@ -309,19 +271,22 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
                 />
                 <span
                   className="font-metadata-mono"
-                  style={{ fontSize: "10px", color: "var(--gold-oxford)", letterSpacing: "0.12em" }}
+                  style={{
+                    fontSize: "10px",
+                    color: "var(--gold-oxford)",
+                    letterSpacing: "0.12em",
+                  }}
                 >
                   RECRUITING Y-26 BATCH
                 </span>
               </div>
 
-              <h2
-                id="pi-modal-title"
+              <h1
                 className="font-display-serif"
                 style={{ fontSize: "28px", color: "#FFFFFF", margin: "0" }}
               >
                 Register for Personal Interviews (PI)
-              </h2>
+              </h1>
             </div>
 
             {errorMessage && (
@@ -346,10 +311,16 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
               style={{ display: "flex", flexDirection: "column", gap: "18px" }}
             >
               {/* Row 1: Name & Roll Number */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px" }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                  gap: "16px",
+                }}
+              >
                 <div>
                   <label
-                    htmlFor="pi-name"
+                    htmlFor="pi-page-name"
                     style={{
                       fontFamily: "var(--font-sans)",
                       fontSize: "12.5px",
@@ -362,7 +333,7 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
                     Full Name
                   </label>
                   <input
-                    id="pi-name"
+                    id="pi-page-name"
                     type="text"
                     value={formData.name}
                     onChange={(e) => handleFieldChange("name", e.target.value)}
@@ -395,7 +366,7 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
 
                 <div>
                   <label
-                    htmlFor="pi-roll"
+                    htmlFor="pi-page-roll"
                     style={{
                       fontFamily: "var(--font-sans)",
                       fontSize: "12.5px",
@@ -408,7 +379,7 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
                     Roll Number
                   </label>
                   <input
-                    id="pi-roll"
+                    id="pi-page-roll"
                     type="text"
                     value={formData.rollNumber}
                     onChange={(e) => handleFieldChange("rollNumber", e.target.value)}
@@ -441,10 +412,16 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
               </div>
 
               {/* Row 2: Email & Phone */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px" }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                  gap: "16px",
+                }}
+              >
                 <div>
                   <label
-                    htmlFor="pi-email"
+                    htmlFor="pi-page-email"
                     style={{
                       fontFamily: "var(--font-sans)",
                       fontSize: "12.5px",
@@ -457,7 +434,7 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
                     Institute Email
                   </label>
                   <input
-                    id="pi-email"
+                    id="pi-page-email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleFieldChange("email", e.target.value)}
@@ -490,7 +467,7 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
 
                 <div>
                   <label
-                    htmlFor="pi-phone"
+                    htmlFor="pi-page-phone"
                     style={{
                       fontFamily: "var(--font-sans)",
                       fontSize: "12.5px",
@@ -503,7 +480,7 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
                     WhatsApp / Phone Number
                   </label>
                   <input
-                    id="pi-phone"
+                    id="pi-page-phone"
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => handleFieldChange("phone", e.target.value)}
@@ -538,7 +515,7 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
               {/* Statement / Pitch */}
               <div>
                 <label
-                  htmlFor="pi-statement"
+                  htmlFor="pi-page-statement"
                   style={{
                     fontFamily: "var(--font-sans)",
                     fontSize: "12.5px",
@@ -551,7 +528,7 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
                   Why do you want to join Finlogue? (Brief Pitch)
                 </label>
                 <textarea
-                  id="pi-statement"
+                  id="pi-page-statement"
                   rows={3}
                   value={formData.statement}
                   onChange={(e) => handleFieldChange("statement", e.target.value)}
@@ -567,20 +544,6 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
                     resize: "vertical",
                   }}
                 />
-                {errors.statement && (
-                  <span
-                    style={{
-                      fontSize: "11px",
-                      color: "#EF4444",
-                      marginTop: "5px",
-                      display: "block",
-                      fontFamily: "var(--font-sans)",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {errors.statement}
-                  </span>
-                )}
               </div>
 
               {/* Submit CTA */}
@@ -610,13 +573,17 @@ export default function PIRegistrationModal({ isOpen, onClose }: PIRegistrationM
                     opacity: isSubmitting ? 0.7 : 1,
                   }}
                 >
-                  <span>{isSubmitting ? "PROCESSING CANDIDATURE..." : "SUBMIT PI REGISTRATION"}</span>
+                  <span>
+                    {isSubmitting
+                      ? "PROCESSING APPLICATION..."
+                      : "SUBMIT PI REGISTRATION"}
+                  </span>
                 </button>
               </div>
             </form>
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

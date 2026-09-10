@@ -146,8 +146,6 @@ export default function HeroParallax() {
           <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
             <Link
               href="/about"
-              target="_blank"
-              rel="noopener noreferrer"
               className="stamp-button stamp-button-primary"
               style={{
                 padding: "14px 32px",
@@ -182,26 +180,6 @@ export default function HeroParallax() {
             >
               <span>Explore Initiatives</span>
             </Link>
-          </div>
-
-          {/* University Credentials Strip */}
-          <div
-            className="hero-credentials"
-            style={{
-              marginTop: "44px",
-              justifyContent: "flex-start",
-              color: "#475569",
-              fontSize: "12px",
-              fontWeight: 500,
-            }}
-          >
-            <span>The LNM Institute of Information Technology</span>
-            <span style={{ color: "var(--navy-hero)" }}>·</span>
-            <span>Venture Incubation</span>
-            <span style={{ color: "var(--navy-hero)" }}>·</span>
-            <span>Financial Modeling</span>
-            <span style={{ color: "var(--navy-hero)" }}>·</span>
-            <span>Corporate Strategy</span>
           </div>
         </div>
       </div>

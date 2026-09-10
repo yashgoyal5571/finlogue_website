@@ -1360,6 +1360,363 @@ img {
   margin-bottom: 8px;
 }
 
+/* 11b. Interactive Moments Accordion Gallery (Home Page — IIT Bombay E-Cell style) */
+.moments-accordion-wrapper {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.moments-accordion-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 520px;
+  background-color: var(--navy-deep);
+  border: 2px solid rgba(197, 168, 128, 0.45);
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(7, 13, 30, 0.8);
+  overflow: hidden;
+  position: relative;
+}
+
+.moments-accordion-panel {
+  position: relative;
+  height: 100%;
+  border-right: 1.5px solid rgba(197, 168, 128, 0.3);
+  overflow: hidden;
+  cursor: pointer;
+  outline: none;
+  transition: flex 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.moments-accordion-panel:last-child {
+  border-right: none;
+}
+
+/* Default idle state: all photos equal compacted width */
+.moments-accordion-panel.is-idle {
+  flex: 1;
+}
+
+/* When a panel is hovered/expanded */
+.moments-accordion-panel.is-expanded {
+  flex: 3.8;
+}
+
+/* Non-hovered sibling panels when another is expanded */
+.moments-accordion-panel.is-compressed {
+  flex: 0.8;
+}
+
+.moments-accordion-panel:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--gold-oxford);
+}
+
+.moments-accordion-image-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--navy-surface);
+}
+
+.moments-accordion-image-wrap img {
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s ease;
+}
+
+.moments-accordion-panel.is-expanded .moments-accordion-image-wrap img {
+  transform: scale(1.06);
+}
+
+.moments-accordion-panel.is-compressed .moments-accordion-image-wrap img,
+.moments-accordion-panel.is-idle .moments-accordion-image-wrap img {
+  filter: brightness(0.85);
+}
+
+/* Dark Vignette Overlay for collapsed states */
+.moments-accordion-vignette {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(7, 13, 30, 0.55) 0%, rgba(7, 13, 30, 0.85) 100%);
+  transition: opacity 0.5s ease;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Deep contrast overlay when active */
+.moments-accordion-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    0deg,
+    rgba(7, 13, 30, 0.95) 0%,
+    rgba(7, 13, 30, 0.75) 40%,
+    rgba(7, 13, 30, 0.4) 70%,
+    rgba(7, 13, 30, 0.2) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.55s ease;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.moments-accordion-panel.is-expanded .moments-accordion-gradient {
+  opacity: 1;
+}
+
+.moments-accordion-panel.is-expanded .moments-accordion-vignette {
+  opacity: 0.25;
+}
+
+/* Title Box: In compacted state it is vertical (-90deg), on hover it smoothly rotates to 0deg and slides to horizontal! */
+.moments-accordion-title-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  transform-origin: center center;
+  z-index: 4;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+              top 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+              left 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.moments-accordion-panel.is-expanded .moments-accordion-title-box {
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.moments-accordion-event-name {
+  font-family: var(--font-sans);
+  font-size: clamp(17px, 1.8vw, 24px);
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  color: #FFFFFF;
+  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.95), 0 0 2px rgba(0, 0, 0, 0.9);
+  text-transform: uppercase;
+  user-select: none;
+  margin: 0;
+  transition: font-size 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+              letter-spacing 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.moments-accordion-panel.is-expanded .moments-accordion-event-name {
+  font-size: clamp(26px, 3.2vw, 38px);
+  letter-spacing: 0.08em;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.95);
+}
+
+/* One-Liner Description: appears cleanly below the horizontal title */
+.moments-accordion-one-liner-wrap {
+  position: absolute;
+  top: 56%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 88%;
+  max-width: 580px;
+  text-align: center;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.moments-accordion-panel.is-expanded .moments-accordion-one-liner-wrap {
+  opacity: 1;
+  pointer-events: auto;
+  transition-delay: 0.18s;
+}
+
+.moments-accordion-one-liner {
+  font-family: var(--font-sans);
+  font-size: clamp(14px, 1.22vw, 16.5px);
+  font-weight: 400;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.94);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+  margin: 0;
+}
+
+.moments-accordion-mobile-hint {
+  display: none;
+  text-align: center;
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--platinum-muted);
+}
+
+/* Responsive adjustments */
+@media (max-width: 860px) {
+  .moments-accordion-container {
+    height: 480px;
+  }
+  .moments-accordion-panel.is-expanded {
+    flex: 3.2;
+  }
+}
+
+@media (max-width: 680px) {
+  .moments-accordion-container {
+    flex-direction: column;
+    height: auto;
+    min-height: 520px;
+  }
+
+  .moments-accordion-panel {
+    border-right: none;
+    border-bottom: 1.5px solid rgba(197, 168, 128, 0.3);
+    transition: height 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .moments-accordion-panel:last-child {
+    border-bottom: none;
+  }
+
+  .moments-accordion-panel.is-idle {
+    flex: none;
+    height: 130px;
+  }
+
+  .moments-accordion-panel.is-compressed {
+    flex: none;
+    height: 60px;
+  }
+
+  .moments-accordion-panel.is-expanded {
+    flex: none;
+    height: 330px;
+  }
+
+  .moments-accordion-panel.is-idle .moments-accordion-title-box,
+  .moments-accordion-panel.is-compressed .moments-accordion-title-box {
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  .moments-accordion-panel.is-idle .moments-accordion-event-name,
+  .moments-accordion-panel.is-compressed .moments-accordion-event-name {
+    font-size: 15px;
+    letter-spacing: 0.16em;
+  }
+
+  .moments-accordion-panel.is-expanded .moments-accordion-title-box {
+    top: 38%;
+  }
+
+  .moments-accordion-panel.is-expanded .moments-accordion-event-name {
+    font-size: 24px;
+    letter-spacing: 0.08em;
+  }
+
+  .moments-accordion-one-liner-wrap {
+    top: 58%;
+    width: 92%;
+  }
+
+  .moments-accordion-mobile-hint {
+    display: block;
+  }
+}
+
+/* 11c. Sponsors & Patronages Showcase (About Us Page) */
+.sponsors-showcase-section {
+  padding: 80px 0 90px;
+  background-color: var(--white-pure);
+  border-top: 1px solid var(--white-border);
+}
+
+.sponsors-showcase-header {
+  text-align: center;
+  margin-bottom: 44px;
+}
+
+.sponsors-showcase-title {
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 3.8vw, 40px);
+  font-weight: 700;
+  color: var(--gold-oxford);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.sponsors-showcase-subtitle {
+  font-size: 15px;
+  color: var(--ink-muted);
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.sponsors-showcase-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 26px;
+}
+
+.sponsor-tile-wrapper {
+  position: relative;
+  width: 154px;
+  height: 150px;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  user-select: none;
+}
+
+.sponsor-tile-wrapper:hover {
+  transform: translateY(-5px);
+}
+
+.sponsor-tile-backdrop {
+  position: absolute;
+  top: -4px;
+  left: -2px;
+  right: -2px;
+  bottom: 2px;
+  background-color: #C5B292; /* soft sand / gold rim */
+  border-radius: 20px;
+  z-index: 1;
+  box-shadow: 0 8px 18px rgba(7, 13, 30, 0.12);
+}
+
+.sponsor-tile-front {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #1E2833; /* dark slate/navy */
+  border-radius: 18px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 24px rgba(7, 13, 30, 0.22);
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.sponsor-tile-wrapper:hover .sponsor-tile-front {
+  border-color: rgba(197, 168, 128, 0.45);
+  background-color: #18222C;
+}
+
+@media (max-width: 640px) {
+  .sponsors-showcase-grid {
+    gap: 16px;
+  }
+  .sponsor-tile-wrapper {
+    width: 136px;
+    height: 132px;
+  }
+}
+
 .lightbox-overlay {
   position: fixed;
   inset: 0;

@@ -42,6 +42,23 @@ export async function POST(request: Request) {
     const registrationToken = `REG-${Date.now().toString().slice(-6)}`;
     const eventTitle = event || body.eventTitle || "PITCH ON THE ROCKS (POTR)";
 
+    // Prevent duplicate registrations for the same event by email
+    const existingAttendee = dynamicAttendeesCache.find(
+      (att) =>
+        att.email.toLowerCase().trim() === email.toLowerCase().trim() &&
+        att.event === eventTitle
+    );
+
+    if (existingAttendee) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "You have already submitted an application.",
+        },
+        { status: 409 }
+      );
+    }
+
     // Append to live attendees roster for admin visibility
     dynamicAttendeesCache.unshift({
       id: `att-${Date.now()}`,

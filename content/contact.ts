@@ -10,6 +10,7 @@ export interface CoordinatorContact {
   role: string;
   dept: string;
   email: string;
+  linkedin?: string;
   phone?: string;
 }
 
@@ -36,7 +37,7 @@ export interface ContactContent {
   channels: ContactChannel[];
   coordinators: CoordinatorContact[];
   inquiryTypes: string[];
-  faqs: FAQItem[];
+  faqs?: FAQItem[];
 }
 
 export const contact: ContactContent = {
@@ -52,7 +53,7 @@ export const contact: ContactContent = {
     building: "Student Activity Center (SAC) / Finlogue Cell",
     address: "Rupa ki Nangal, Post-Sumel, Via-Jamdoli, Jaipur, Rajasthan 302031",
     hours: "Monday – Saturday: 10:00 AM – 8:00 PM IST",
-    email: "24uec533@lnmiit.ac.in",
+    email: "finlogue@licai.lnmiit.ac.in",
   },
   channels: [
     {
@@ -69,8 +70,8 @@ export const contact: ContactContent = {
     },
     {
       platform: "Official Dispatch",
-      handle: "24uec533@lnmiit.ac.in",
-      href: "mailto:24uec533@lnmiit.ac.in",
+      handle: "finlogue@licai.lnmiit.ac.in",
+      href: "mailto:finlogue@licai.lnmiit.ac.in",
       iconType: "email",
     },
   ],
@@ -80,18 +81,14 @@ export const contact: ContactContent = {
       role: "Lead Coordinator",
       dept: "Institutional Strategy & Leadership",
       email: "24uec533@lnmiit.ac.in",
+      linkedin: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
     },
     {
       name: "Aryan Mittal",
       role: "Coordinator",
       dept: "Operations & Strategic Logistics",
       email: "24uec533@lnmiit.ac.in",
-    },
-    {
-      name: "Akshat Thadani",
-      role: "Coordinator",
-      dept: "Corporate Engagements & Partnerships",
-      email: "24uec533@lnmiit.ac.in",
+      linkedin: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
     },
   ],
   inquiryTypes: [

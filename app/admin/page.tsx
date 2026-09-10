@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { CaseFile, events as defaultEventsData } from "@/content/events";
@@ -63,15 +63,15 @@ export default function AdminPortalPage() {
   const [editingMember, setEditingMember] = useState<TeamMemberItem | null>(null);
   const [isSavingMember, setIsSavingMember] = useState(false);
 
+  const [teamErrors, setTeamErrors] = useState<Record<string, string>>({});
+
   const [teamForm, setTeamForm] = useState({
     name: "",
-    role: "Associate",
     tier: "coreTeam" as "coordinators" | "heads" | "coreTeam",
-    dept: "Equity Research",
-    batch: "Y25",
-    email: "24uec533@lnmiit.ac.in",
-    linkedin: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
-    image: "/assets/team/aditya-tiwari.jpg",
+    dept: "",
+    email: "",
+    linkedin: "",
+    image: "",
   });
 
   // --- 4. GALLERY / VISUAL VAULT STATE ---
@@ -396,30 +396,97 @@ export default function AdminPortalPage() {
   };
 
   // --- TEAM ACTIONS ---
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const teamFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (file: File) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload a valid image file (JPG, PNG, WEBP).");
+      return;
+    }
+
+    setIsUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        handleTeamFieldChange("image", data.fileName);
+        showToast("Image uploaded to /assets/team/ successfully!");
+      } else {
+        alert(data.error || "Failed to upload image.");
+      }
+    } catch {
+      alert("Network error uploading image.");
+    } finally {
+      setIsUploadingImage(false);
+      setIsDragOver(false);
+    }
+  };
+
+  const handleFileDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFileUpload(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  const handleTeamFieldChange = (field: string, value: string) => {
+    const cleanValue = field === "image" ? value.replace(/^\/assets\/team\//, "") : value;
+    setTeamForm((prev) => ({ ...prev, [field]: cleanValue }));
+    if (teamErrors[field] || teamErrors.general) {
+      setTeamErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[field];
+        delete updated.general;
+        return updated;
+      });
+    }
+  };
+
   const handleOpenTeamModal = (member?: TeamMemberItem) => {
+    setTeamErrors({});
     if (member) {
       setEditingMember(member);
       setTeamForm({
-        name: member.name,
-        role: member.role,
-        tier: member.tier,
-        dept: member.dept || "",
-        batch: member.batch || "Y25",
-        email: member.email || "24uec533@lnmiit.ac.in",
-        linkedin: member.linkedin || "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
-        image: member.image || "/assets/team/aditya-tiwari.jpg",
+        name: member.name || "",
+        tier: member.tier || "coreTeam",
+        dept: member.dept || member.focus || "",
+        email: member.email || "",
+        linkedin: member.linkedin || "",
+        image: (member.image || "").replace(/^\/assets\/team\//, ""),
       });
     } else {
       setEditingMember(null);
       setTeamForm({
         name: "",
-        role: "Associate",
         tier: "coreTeam",
-        dept: "Equity Research",
-        batch: "Y25",
-        email: "24uec533@lnmiit.ac.in",
-        linkedin: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
-        image: "/assets/team/aditya-tiwari.jpg",
+        dept: "",
+        email: "",
+        linkedin: "",
+        image: "",
       });
     }
     setIsTeamModalOpen(true);
@@ -427,19 +494,89 @@ export default function AdminPortalPage() {
 
   const handleSaveTeamMember = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const nameTrimmed = teamForm.name.trim();
+    const deptTrimmed = teamForm.dept.trim();
+    const emailTrimmed = teamForm.email.trim().toLowerCase();
+    const linkedinTrimmed = teamForm.linkedin.trim();
+    const imageTrimmed = teamForm.image.trim();
+
+    const fieldErrors: Record<string, string> = {};
+
+    // Specific validity checks for filled fields
+    if (nameTrimmed && (!/^[a-zA-Z\s.'-]+$/.test(nameTrimmed) || nameTrimmed.length < 2)) {
+      fieldErrors.name = "Invalid";
+    }
+
+    if (deptTrimmed && deptTrimmed.length < 2) {
+      fieldErrors.dept = "Invalid";
+    }
+
+    if (emailTrimmed) {
+      const lnmiitEmailRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9-]+\.)*lnmiit\.ac\.in$/i;
+      if (!lnmiitEmailRegex.test(emailTrimmed)) {
+        fieldErrors.email = "Invalid";
+      }
+    }
+
+    if (linkedinTrimmed) {
+      const isLinkedIn = /^(https?:\/\/)?(www\.)?linkedin\.com\/.*$/i.test(linkedinTrimmed);
+      const isGenericUrl = /^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(linkedinTrimmed);
+      if (!isLinkedIn && !isGenericUrl) {
+        fieldErrors.linkedin = "Invalid";
+      }
+    }
+
+    if (imageTrimmed) {
+      const isCleanFilename = /^[a-zA-Z0-9._/-]+$/.test(imageTrimmed);
+      const isUrl = /^https?:\/\//.test(imageTrimmed);
+      if (!isCleanFilename && !isUrl) {
+        fieldErrors.image = "Invalid";
+      }
+    }
+
+    const hasInvalidity = Object.keys(fieldErrors).length > 0;
+    const hasEmptyField = !nameTrimmed || !emailTrimmed || !linkedinTrimmed || !imageTrimmed;
+
+    const newErrors: Record<string, string> = { ...fieldErrors };
+
+    // Only show "All sections are required" if no invalidity exists and at least one field is empty
+    if (!hasInvalidity && hasEmptyField) {
+      newErrors.general = "All sections are required";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setTeamErrors(newErrors);
+      return;
+    }
+
     setIsSavingMember(true);
+
+    const derivedRole =
+      teamForm.tier === "coordinators"
+        ? "Coordinator"
+        : teamForm.tier === "heads"
+        ? "Head"
+        : "Associate";
+
+    const finalImage =
+      imageTrimmed.startsWith("http://") || imageTrimmed.startsWith("https://")
+        ? imageTrimmed
+        : imageTrimmed.startsWith("/")
+        ? imageTrimmed
+        : `/assets/team/${imageTrimmed}`;
 
     const payload: TeamMemberItem = {
       id: editingMember ? editingMember.id : `team-${Date.now()}`,
-      name: teamForm.name,
-      role: teamForm.role,
+      name: nameTrimmed,
+      role: derivedRole,
       tier: teamForm.tier,
-      dept: teamForm.dept,
-      batch: teamForm.batch,
-      focus: teamForm.dept,
-      email: teamForm.email,
-      linkedin: teamForm.linkedin,
-      image: teamForm.image,
+      dept: deptTrimmed,
+      batch: editingMember?.batch || "",
+      focus: editingMember?.focus && editingMember.focus !== deptTrimmed ? editingMember.focus : "",
+      email: emailTrimmed,
+      linkedin: linkedinTrimmed,
+      image: finalImage,
     };
 
     try {
@@ -1586,81 +1723,132 @@ export default function AdminPortalPage() {
             </div>
           </div>
 
-          <div className="grid-3" style={{ gap: "20px" }}>
-            {filteredTeam.map((m) => (
-              <div
-                key={m.id || m.name}
-                style={{
-                  backgroundColor: "var(--white-pure)",
-                  border: "1px solid var(--white-border)",
-                  boxShadow: "var(--card-shadow)",
-                  padding: "20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
-                    <div style={{ width: "44px", height: "44px", borderRadius: "50%", overflow: "hidden", position: "relative", backgroundColor: "var(--navy-deep)", flexShrink: 0 }}>
-                      <Image src={m.image || "/assets/team/aditya-tiwari.jpg"} alt={m.name} fill style={{ objectFit: "cover" }} />
-                    </div>
-                    <div>
-                      <span
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+              gap: "14px",
+            }}
+          >
+            {filteredTeam.map((m) => {
+              const tierLabel =
+                m.tier === "coordinators"
+                  ? "COORDINATOR"
+                  : m.tier === "heads"
+                  ? "DEPARTMENT HEAD"
+                  : "CORE ASSOCIATE";
+
+              const tierBadgeStyle =
+                m.tier === "coordinators"
+                  ? { color: "var(--gold-oxford)", backgroundColor: "rgba(197, 168, 128, 0.15)", border: "1px solid rgba(197, 168, 128, 0.3)" }
+                  : m.tier === "heads"
+                  ? { color: "var(--burgundy-crest)", backgroundColor: "rgba(114, 47, 55, 0.08)", border: "1px solid rgba(114, 47, 55, 0.2)" }
+                  : { color: "var(--navy-hero)", backgroundColor: "rgba(10, 19, 41, 0.06)", border: "1px solid rgba(10, 19, 41, 0.15)" };
+
+              return (
+                <div
+                  key={m.id || m.name}
+                  style={{
+                    backgroundColor: "var(--white-pure)",
+                    border: "1px solid var(--white-border)",
+                    boxShadow: "0 1px 4px rgba(7, 13, 30, 0.04)",
+                    borderRadius: "8px",
+                    padding: "14px 16px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    gap: "10px",
+                  }}
+                >
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+                      <div
                         style={{
-                          fontSize: "9.5px",
-                          padding: "2px 6px",
-                          borderRadius: "4px",
-                          backgroundColor: m.tier === "coordinators" ? "var(--navy-hero)" : m.tier === "heads" ? "var(--burgundy-crest)" : "var(--white-alabaster)",
-                          color: m.tier === "coreTeam" ? "var(--ink-title)" : "#FFFFFF",
-                          fontFamily: "var(--font-mono)",
-                          textTransform: "uppercase",
+                          width: "38px",
+                          height: "38px",
+                          borderRadius: "50%",
+                          overflow: "hidden",
+                          position: "relative",
+                          backgroundColor: "var(--navy-deep)",
+                          flexShrink: 0,
+                          border: "1.5px solid var(--white-border-strong)",
                         }}
                       >
-                        {m.tier === "coordinators" ? "COORDINATOR" : m.tier === "heads" ? "HEAD" : "ASSOCIATE"}
-                      </span>
-                      <h4 className="font-display-serif" style={{ fontSize: "18px", color: "var(--ink-title)", margin: "4px 0 0" }}>
-                        {m.name}
-                      </h4>
+                        <Image src={m.image || "/assets/team/aditya-tiwari.jpg"} alt={m.name} fill sizes="38px" style={{ objectFit: "cover" }} />
+                      </div>
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <h4
+                          className="font-display-serif"
+                          style={{
+                            fontSize: "16px",
+                            color: "var(--ink-title)",
+                            margin: 0,
+                            lineHeight: 1.2,
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {m.name}
+                        </h4>
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <div>
+                        <span
+                          className="font-metadata-mono"
+                          style={{
+                            fontSize: "9.5px",
+                            fontWeight: 700,
+                            letterSpacing: "0.06em",
+                            padding: "2px 6px",
+                            borderRadius: "4px",
+                            display: "inline-block",
+                            ...tierBadgeStyle,
+                          }}
+                        >
+                          {tierLabel}
+                        </span>
+                      </div>
+
+                      {(m.dept || m.role) && (
+                        <p
+                          style={{
+                            fontSize: "12px",
+                            color: "var(--ink-body)",
+                            margin: "2px 0 0",
+                            fontWeight: 600,
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          {m.dept || m.role}
+                        </p>
+                      )}
                     </div>
                   </div>
 
-                  <p style={{ fontSize: "12.5px", color: "var(--ink-body)", margin: "0 0 4px", fontWeight: 600 }}>
-                    {m.role} {m.dept ? `· ${m.dept}` : ""}
-                  </p>
-                  <p className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--ink-muted)", margin: "0 0 10px" }}>
-                    {m.batch || "Y25"} · {m.email}
-                  </p>
-                  <a
-                    href={m.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ fontSize: "11px", color: "var(--navy-hero)", textDecoration: "none", display: "inline-block", marginBottom: "12px" }}
-                  >
-                    LinkedIn Profile ↗
-                  </a>
+                  <div style={{ display: "flex", justifyContent: "flex-end", gap: "6px", borderTop: "1px solid var(--white-border)", paddingTop: "8px" }}>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenTeamModal(m)}
+                      className="stamp-button"
+                      style={{ fontSize: "10px", padding: "3px 8px", borderColor: "var(--navy-hero)", color: "var(--navy-hero)" }}
+                    >
+                      ✎ Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteTeamMember(m.id || m.name, m.name)}
+                      className="stamp-button"
+                      style={{ fontSize: "10px", padding: "3px 8px", borderColor: "var(--burgundy-border)", color: "var(--burgundy-text)" }}
+                    >
+                      ✕ Delete
+                    </button>
+                  </div>
                 </div>
-
-                <div style={{ display: "flex", justifyContent: "flex-end", gap: "6px", borderTop: "1px solid var(--white-border)", paddingTop: "10px" }}>
-                  <button
-                    type="button"
-                    onClick={() => handleOpenTeamModal(m)}
-                    className="stamp-button"
-                    style={{ fontSize: "10.5px", padding: "4px 10px", borderColor: "var(--navy-hero)", color: "var(--navy-hero)" }}
-                  >
-                    ✎ Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteTeamMember(m.id || m.name, m.name)}
-                    className="stamp-button"
-                    style={{ fontSize: "10.5px", padding: "4px 8px", borderColor: "var(--burgundy-border)", color: "var(--burgundy-text)" }}
-                  >
-                    ✕ Delete
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
@@ -1989,51 +2177,222 @@ export default function AdminPortalPage() {
             <h3 className="font-display-serif" style={{ fontSize: "22px", marginBottom: "16px" }}>
               {editingMember ? "Edit Team Member" : "Add Leadership / Core Member"}
             </h3>
-            <form onSubmit={handleSaveTeamMember} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+            <form noValidate onSubmit={handleSaveTeamMember} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
               <div>
-                <label className="form-label">FULL NAME *</label>
-                <input type="text" required value={teamForm.name} onChange={(e) => setTeamForm({ ...teamForm, name: e.target.value })} className="form-input" placeholder="e.g. Rohan Sharma" />
+                <label className="form-label">FULL NAME</label>
+                <input
+                  type="text"
+                  value={teamForm.name}
+                  onChange={(e) => handleTeamFieldChange("name", e.target.value)}
+                  className="form-input"
+                  style={{
+                    border: teamErrors.name ? "1px solid #EF4444" : undefined,
+                  }}
+                />
+                {teamErrors.name && (
+                  <span style={{ fontSize: "11px", color: "#EF4444", marginTop: "5px", display: "block", fontFamily: "var(--font-sans)", fontWeight: 500 }}>
+                    {teamErrors.name}
+                  </span>
+                )}
               </div>
+
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                 <div>
-                  <label className="form-label">TIER / HIERARCHY</label>
-                  <select value={teamForm.tier} onChange={(e) => setTeamForm({ ...teamForm, tier: e.target.value as any })} className="form-input">
-                    <option value="coordinators">Coordinator (Steering Council)</option>
+                  <label className="form-label">HIERARCHY</label>
+                  <select
+                    value={teamForm.tier}
+                    onChange={(e) => handleTeamFieldChange("tier", e.target.value)}
+                    className="form-input"
+                  >
+                    <option value="coordinators">Coordinator</option>
                     <option value="heads">Department Head</option>
                     <option value="coreTeam">Core Associate</option>
                   </select>
                 </div>
                 <div>
-                  <label className="form-label">ROLE TITLE</label>
-                  <input type="text" required value={teamForm.role} onChange={(e) => setTeamForm({ ...teamForm, role: e.target.value })} className="form-input" placeholder="Coordinator / Head / Associate" />
+                  <label className="form-label">ROLE (OPTIONAL)</label>
+                  <input
+                    type="text"
+                    value={teamForm.dept}
+                    onChange={(e) => handleTeamFieldChange("dept", e.target.value)}
+                    className="form-input"
+                    style={{
+                      border: teamErrors.dept ? "1px solid #EF4444" : undefined,
+                    }}
+                  />
+                  {teamErrors.dept && (
+                    <span style={{ fontSize: "11px", color: "#EF4444", marginTop: "5px", display: "block", fontFamily: "var(--font-sans)", fontWeight: 500 }}>
+                      {teamErrors.dept}
+                    </span>
+                  )}
                 </div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                <div>
-                  <label className="form-label">DEPARTMENT / FOCUS</label>
-                  <input type="text" value={teamForm.dept} onChange={(e) => setTeamForm({ ...teamForm, dept: e.target.value })} className="form-input" placeholder="Equity Research, Corporate Finance" />
-                </div>
-                <div>
-                  <label className="form-label">BATCH</label>
-                  <input type="text" value={teamForm.batch} onChange={(e) => setTeamForm({ ...teamForm, batch: e.target.value })} className="form-input" placeholder="Batch Y24 / Y25" />
-                </div>
-              </div>
+
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                 <div>
                   <label className="form-label">OFFICIAL EMAIL</label>
-                  <input type="email" required value={teamForm.email} onChange={(e) => setTeamForm({ ...teamForm, email: e.target.value })} className="form-input" placeholder="24uec533@lnmiit.ac.in" />
+                  <input
+                    type="email"
+                    value={teamForm.email}
+                    onChange={(e) => handleTeamFieldChange("email", e.target.value)}
+                    className="form-input"
+                    style={{
+                      border: teamErrors.email ? "1px solid #EF4444" : undefined,
+                    }}
+                  />
+                  {teamErrors.email && (
+                    <span style={{ fontSize: "11px", color: "#EF4444", marginTop: "5px", display: "block", fontFamily: "var(--font-sans)", fontWeight: 500 }}>
+                      {teamErrors.email}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <label className="form-label">LINKEDIN URL</label>
-                  <input type="url" required value={teamForm.linkedin} onChange={(e) => setTeamForm({ ...teamForm, linkedin: e.target.value })} className="form-input" />
+                  <input
+                    type="text"
+                    value={teamForm.linkedin}
+                    onChange={(e) => handleTeamFieldChange("linkedin", e.target.value)}
+                    className="form-input"
+                    style={{
+                      border: teamErrors.linkedin ? "1px solid #EF4444" : undefined,
+                    }}
+                  />
+                  {teamErrors.linkedin && (
+                    <span style={{ fontSize: "11px", color: "#EF4444", marginTop: "5px", display: "block", fontFamily: "var(--font-sans)", fontWeight: 500 }}>
+                      {teamErrors.linkedin}
+                    </span>
+                  )}
                 </div>
               </div>
+
               <div>
-                <label className="form-label">PORTRAIT IMAGE PATH</label>
-                <input type="text" value={teamForm.image} onChange={(e) => setTeamForm({ ...teamForm, image: e.target.value })} className="form-input" />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                  <label className="form-label" style={{ margin: 0 }}>PORTRAIT IMAGE</label>
+                  {teamForm.image && (
+                    <span style={{ fontSize: "11px", color: "var(--emerald)", fontWeight: 600 }}>
+                      ✓ Uploaded / Selected
+                    </span>
+                  )}
+                </div>
+
+                {/* Drag & Drop / Browse Upload Dropzone */}
+                <div
+                  onDrop={handleFileDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onClick={() => teamFileInputRef.current?.click()}
+                  style={{
+                    border: isDragOver
+                      ? "2px dashed var(--gold-oxford)"
+                      : teamErrors.image
+                      ? "2px dashed #EF4444"
+                      : "2px dashed #CBD5E1",
+                    borderRadius: "8px",
+                    padding: "14px 16px",
+                    textAlign: "center",
+                    backgroundColor: isDragOver ? "rgba(197, 168, 128, 0.08)" : "#F8FAFC",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    marginBottom: "8px",
+                  }}
+                >
+                  <input
+                    ref={teamFileInputRef}
+                    type="file"
+                    accept="image/png, image/jpeg, image/webp, image/jpg"
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        handleFileUpload(e.target.files[0]);
+                      }
+                    }}
+                  />
+
+                  {isUploadingImage ? (
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", color: "var(--navy-hero)", fontSize: "12.5px", fontWeight: 600, padding: "4px 0" }}>
+                      <span className="pi-pulse-dot" style={{ backgroundColor: "var(--navy-hero)" }} />
+                      <span>Uploading photo to /assets/team/...</span>
+                    </div>
+                  ) : teamForm.image ? (
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+                      <div style={{ width: "38px", height: "38px", borderRadius: "50%", overflow: "hidden", position: "relative", backgroundColor: "var(--navy-hero)", flexShrink: 0, border: "2px solid var(--gold-oxford)" }}>
+                        <Image
+                          src={teamForm.image.startsWith("http") || teamForm.image.startsWith("/") ? teamForm.image : `/assets/team/${teamForm.image}`}
+                          alt="Preview"
+                          fill
+                          style={{ objectFit: "cover" }}
+                        />
+                      </div>
+                      <div style={{ textAlign: "left" }}>
+                        <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--ink-title)", display: "block" }}>
+                          {teamForm.image}
+                        </span>
+                        <span style={{ fontSize: "10.5px", color: "var(--navy-hero)", textDecoration: "underline" }}>
+                          Click to browse or drop a different image
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{ fontSize: "12.5px", fontWeight: 600, color: "var(--navy-hero)", margin: "0 0 2px" }}>
+                        Drag & drop photo here, or <span style={{ textDecoration: "underline", color: "var(--gold-oxford)" }}>browse computer</span>
+                      </p>
+                      <span style={{ fontSize: "10.5px", color: "var(--ink-muted)" }}>
+                        JPG, PNG, or WEBP (auto-saved to /assets/team/)
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Direct Path Input with Permanent Prefix */}
+                <div style={{ display: "flex", alignItems: "stretch" }}>
+                  <span
+                    style={{
+                      backgroundColor: "#F1F5F9",
+                      border: teamErrors.image ? "1px solid #EF4444" : "1px solid #CBD5E1",
+                      borderRight: "none",
+                      padding: "9px 12px",
+                      fontSize: "13px",
+                      color: "var(--navy-hero)",
+                      fontFamily: "var(--font-mono)",
+                      fontWeight: 600,
+                      display: "flex",
+                      alignItems: "center",
+                      userSelect: "none",
+                      borderTopLeftRadius: "6px",
+                      borderBottomLeftRadius: "6px",
+                    }}
+                  >
+                    /assets/team/
+                  </span>
+                  <input
+                    type="text"
+                    value={teamForm.image}
+                    onChange={(e) => handleTeamFieldChange("image", e.target.value)}
+                    className="form-input"
+                    style={{
+                      borderTopLeftRadius: 0,
+                      borderBottomLeftRadius: 0,
+                      border: teamErrors.image ? "1px solid #EF4444" : "1px solid #CBD5E1",
+                      flex: 1,
+                    }}
+                  />
+                </div>
+                {teamErrors.image && (
+                  <span style={{ fontSize: "11px", color: "#EF4444", marginTop: "5px", display: "block", fontFamily: "var(--font-sans)", fontWeight: 500 }}>
+                    {teamErrors.image}
+                  </span>
+                )}
               </div>
+
+              {teamErrors.general && (
+                <div style={{ fontSize: "12px", color: "#EF4444", fontFamily: "var(--font-sans)", fontWeight: 500, textAlign: "center", marginTop: "2px" }}>
+                  {teamErrors.general}
+                </div>
+              )}
+
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "8px" }}>
-                <button type="button" onClick={() => setIsTeamModalOpen(false)} style={{ padding: "8px 16px", color: "var(--ink-muted)" }}>Cancel</button>
+                <button type="button" onClick={() => setIsTeamModalOpen(false)} style={{ padding: "8px 16px", color: "var(--ink-muted)", background: "none", border: "none", cursor: "pointer" }}>Cancel</button>
                 <button type="submit" disabled={isSavingMember} className="stamp-button stamp-button-primary" style={{ backgroundColor: "var(--navy-hero)", color: "#FFFFFF" }}>
                   {isSavingMember ? "SAVING..." : "SAVE MEMBER →"}
                 </button>

@@ -197,7 +197,7 @@ export const about: AboutContent = {
         role: "Head",
         dept: "Consulting & Strategy",
         batch: "Batch Y24",
-        focus: "Case Competitions & Mentorship",
+        focus: "",
         email: "24uec533@lnmiit.ac.in",
         linkedin: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
         image: "/assets/team/aryan-mittal.jpg",
@@ -207,7 +207,7 @@ export const about: AboutContent = {
         role: "Head",
         dept: "Finance & Research",
         batch: "Batch Y24",
-        focus: "Markets Research & Equity Valuation",
+        focus: "",
         email: "24uec533@lnmiit.ac.in",
         linkedin: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
         image: "/assets/team/aditya-tiwari.jpg",
@@ -270,6 +270,6 @@ export const about: AboutContent = {
       },
     ],
     coreTeamText:
-      "Supported by the dedicated Core Team (Batch Y25) driving equity research, financial modeling, consulting leagues, and corporate relations.",
+      "Supported by the dedicated Core Team driving equity research, financial modeling, consulting leagues, and corporate relations.",
   },
 };

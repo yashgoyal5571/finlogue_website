@@ -351,38 +351,6 @@ export default function EventsPage() {
         </div>
       </section>
 
-      {/* 4. Bottom Partnership CTA Banner — Deep Midnight Navy (#070D1E) */}
-      <section className="section-navy-dark" style={{ padding: "80px 0" }}>
-        <div className="container">
-          <div
-            style={{
-              padding: "40px",
-              backgroundColor: "var(--navy-card)",
-              border: "1px solid var(--navy-border)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: "24px",
-            }}
-          >
-            <div>
-              <h3 className="font-display-serif" style={{ fontSize: "28px", color: "#FFFFFF" }}>
-                Want to host a case competition or sponsor a track?
-              </h3>
-              <p style={{ fontSize: "14.5px", color: "var(--platinum-muted)", marginTop: "6px" }}>
-                Collaborate with Finlogue to engage 1,200+ top analytical minds across the nation.
-              </p>
-            </div>
-            <Link
-              href="/contact"
-              className="stamp-button stamp-button-primary"
-            >
-              <span>PARTNER WITH US</span>
-            </Link>
-          </div>
-        </div>
-      </section>
 
       {/* Interactive Registration / Participation Modal */}
       {registrationModalOpen && (
