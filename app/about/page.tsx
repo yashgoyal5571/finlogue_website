@@ -60,7 +60,7 @@ export default function AboutPage() {
               border: "1px solid var(--white-border)",
               borderLeft: "4px solid var(--emerald)",
               boxShadow: "var(--card-shadow)",
-              padding: "48px 40px",
+              padding: "clamp(28px, 5vw, 48px) clamp(18px, 4vw, 40px)",
               textAlign: "center",
               borderRadius: "var(--radius-sm)",
             }}
@@ -128,7 +128,7 @@ export default function AboutPage() {
                   backgroundColor: "var(--white-pure)",
                   border: "1px solid var(--white-border)",
                   boxShadow: "var(--card-shadow)",
-                  padding: "36px",
+                  padding: "clamp(22px, 4vw, 36px)",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",

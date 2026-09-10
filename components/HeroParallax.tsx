@@ -83,18 +83,19 @@ export default function HeroParallax() {
         style={{
           position: "relative",
           zIndex: 10,
-          padding: "90px 0 70px",
+          paddingTop: "clamp(96px, 14vh, 130px)",
+          paddingBottom: "clamp(50px, 8vh, 75px)",
           transform: `translate3d(0, ${textTranslateY}px, 0)`,
           opacity: textOpacity,
           willChange: "transform, opacity",
         }}
       >
-        <div style={{ maxWidth: "720px" }}>
+        <div style={{ maxWidth: "720px", width: "100%" }}>
           {/* Institutional Badge */}
           <div
             className="badge-pill"
             style={{
-              marginBottom: "22px",
+              marginBottom: "18px",
               backgroundColor: "rgba(7, 13, 30, 0.06)",
               borderColor: "rgba(7, 13, 30, 0.15)",
               color: "var(--navy-hero)",
@@ -107,6 +108,7 @@ export default function HeroParallax() {
                 borderRadius: "9999px",
                 backgroundColor: "var(--navy-hero)",
                 display: "inline-block",
+                flexShrink: 0,
               }}
             />
             <span style={{ fontWeight: 600 }}>{home.hero.badge}</span>
@@ -114,32 +116,37 @@ export default function HeroParallax() {
 
           {/* Main Title */}
           <h1
-            className="font-display-serif"
+            className="font-display-serif hero-title-display"
             style={{
-              fontSize: "clamp(44px, 6vw, 76px)",
+              fontSize: "clamp(29px, 5.8vw, 72px)",
               color: "var(--navy-hero)",
-              lineHeight: 1.05,
-              letterSpacing: "0.02em",
+              lineHeight: 1.08,
+              letterSpacing: "0.01em",
               textTransform: "uppercase",
-              marginBottom: "22px",
+              marginBottom: "18px",
               fontWeight: 700,
+              overflowWrap: "break-word",
+              wordBreak: "break-word",
+              hyphens: "auto",
             }}
           >
-            FINLOGUE LNMIIT
+            Finance is more than numbers, It's a conversation.
           </h1>
 
           {/* Description Subtitle */}
           <p
             style={{
-              fontSize: "clamp(15px, 1.8vw, 17.5px)",
+              fontSize: "clamp(14.5px, 1.8vw, 17.5px)",
               color: "#334155",
               lineHeight: 1.65,
-              marginBottom: "36px",
+              marginBottom: "32px",
               maxWidth: "640px",
               fontWeight: 400,
+              overflowWrap: "break-word",
+              wordBreak: "break-word",
             }}
           >
-            The Finance & Strategy Cell (Finlogue) of LNMIIT develops premier student analysts and venture leaders through live market challenges, quantitative modeling, and boardroom case simulations.
+            Finance isn’t just about numbers, markets, or balance sheets. It’s about understanding the decisions, ideas, and forces that shape businesses and economies.
           </p>
 
           {/* Action Buttons */}

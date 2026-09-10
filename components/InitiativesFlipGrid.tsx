@@ -93,9 +93,10 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
     <>
       {/* 3D Flip Cards Grid */}
       <div
+        className="initiatives-flip-grid"
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 300px), 1fr))",
           gap: "28px",
           width: "100%",
         }}

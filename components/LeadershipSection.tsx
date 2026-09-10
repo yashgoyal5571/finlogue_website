@@ -279,9 +279,10 @@ export default function LeadershipSection({
           </div>
 
           <div
+            className="leadership-heads-grid"
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 300px), 1fr))",
               gap: "20px",
             }}
           >
@@ -400,9 +401,10 @@ export default function LeadershipSection({
           </div>
 
           <div
+            className="leadership-core-grid"
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(165px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 150px), 1fr))",
               gap: "24px 18px",
               justifyContent: "center",
             }}

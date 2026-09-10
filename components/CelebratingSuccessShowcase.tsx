@@ -215,14 +215,14 @@ export default function CelebratingSuccessShowcase() {
               style={{
                 position: "absolute",
                 inset: 0,
-                background: "linear-gradient(to top, rgba(6, 12, 28, 0.95) 0%, rgba(6, 12, 28, 0.45) 50%, transparent 100%)",
+                background: "linear-gradient(to top, rgba(6, 12, 28, 0.96) 0%, rgba(6, 12, 28, 0.5) 50%, transparent 100%)",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "flex-end",
-                padding: "36px",
+                padding: "clamp(20px, 4vw, 36px)",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px", flexWrap: "wrap" }}>
                 <span className="status-badge status-badge-active" style={{ fontSize: "10px" }}>
                   {activeMoment.badge}
                 </span>
@@ -234,10 +234,12 @@ export default function CelebratingSuccessShowcase() {
               <h3
                 className="font-display-serif"
                 style={{
-                  fontSize: "clamp(24px, 3.2vw, 36px)",
+                  fontSize: "clamp(22px, 3.2vw, 36px)",
                   color: "#FFFFFF",
                   lineHeight: 1.2,
                   margin: "0 0 6px",
+                  overflowWrap: "break-word",
+                  wordBreak: "break-word",
                 }}
               >
                 {activeMoment.title}
@@ -246,10 +248,11 @@ export default function CelebratingSuccessShowcase() {
               <p
                 className="font-metadata-mono"
                 style={{
-                  fontSize: "12px",
+                  fontSize: "clamp(11px, 1.4vw, 12px)",
                   color: "var(--platinum-muted)",
                   margin: "0 0 10px",
                   letterSpacing: "0.06em",
+                  overflowWrap: "break-word",
                 }}
               >
                 {activeMoment.subtitle}
@@ -257,11 +260,12 @@ export default function CelebratingSuccessShowcase() {
 
               <p
                 style={{
-                  fontSize: "13.5px",
+                  fontSize: "clamp(12.5px, 1.5vw, 13.5px)",
                   color: "#E2E8F0",
                   lineHeight: 1.55,
                   maxWidth: "700px",
                   margin: 0,
+                  overflowWrap: "break-word",
                 }}
               >
                 {activeMoment.details}
@@ -273,36 +277,8 @@ export default function CelebratingSuccessShowcase() {
           <button
             type="button"
             onClick={prevMoment}
+            className="success-slider-arrow success-slider-prev"
             aria-label="Previous success moment"
-            style={{
-              position: "absolute",
-              left: "-20px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              width: "48px",
-              height: "48px",
-              borderRadius: "50%",
-              backgroundColor: "var(--navy-hero)",
-              border: "1.5px solid var(--gold-oxford)",
-              color: "var(--gold-oxford)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              boxShadow: "0 6px 18px rgba(0, 0, 0, 0.45)",
-              zIndex: 10,
-              transition: "all 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--gold-oxford)";
-              e.currentTarget.style.color = "#070D1E";
-              e.currentTarget.style.transform = "translateY(-50%) scale(1.1)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--navy-hero)";
-              e.currentTarget.style.color = "var(--gold-oxford)";
-              e.currentTarget.style.transform = "translateY(-50%) scale(1)";
-            }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
@@ -313,36 +289,8 @@ export default function CelebratingSuccessShowcase() {
           <button
             type="button"
             onClick={nextMoment}
+            className="success-slider-arrow success-slider-next"
             aria-label="Next success moment"
-            style={{
-              position: "absolute",
-              right: "-20px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              width: "48px",
-              height: "48px",
-              borderRadius: "50%",
-              backgroundColor: "var(--navy-hero)",
-              border: "1.5px solid var(--gold-oxford)",
-              color: "var(--gold-oxford)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              boxShadow: "0 6px 18px rgba(0, 0, 0, 0.45)",
-              zIndex: 10,
-              transition: "all 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--gold-oxford)";
-              e.currentTarget.style.color = "#070D1E";
-              e.currentTarget.style.transform = "translateY(-50%) scale(1.1)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--navy-hero)";
-              e.currentTarget.style.color = "var(--gold-oxford)";
-              e.currentTarget.style.transform = "translateY(-50%) scale(1)";
-            }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="9 18 15 12 9 6" />

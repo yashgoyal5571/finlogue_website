@@ -80,7 +80,7 @@ export default function ContactPage() {
                 borderRadius: "20px",
                 border: "1px solid rgba(7, 13, 30, 0.09)",
                 boxShadow: "0 24px 48px -12px rgba(7, 13, 30, 0.09), 0 4px 16px rgba(7, 13, 30, 0.03)",
-                padding: "40px 36px",
+                padding: "clamp(24px, 4vw, 40px) clamp(16px, 3.5vw, 36px)",
               }}
             >
               <div
