@@ -1,12 +1,12 @@
 export interface GalleryItem {
   id: string;
-  title: string;
-  category: "Summits" | "Pitch Sessions" | "Keynotes" | "Workshops" | "Community";
   image: string;
-  date: string;
-  location: string;
-  description: string;
-  tag: string;
+  title?: string;
+  category?: string;
+  date?: string;
+  location?: string;
+  description?: string;
+  tag?: string;
 }
 
 export interface GalleryContent {
@@ -92,14 +92,80 @@ export const gallery: GalleryContent = {
     },
     {
       id: "gal-06",
-      title: "Executive Deliberations & Mentorship Track",
+      title: "Executive Fireside Chat: Capital Markets",
+      category: "Keynotes",
+      image: "/assets/gallery/gallery-fireside-chat.jpg",
+      date: "Spring 2026",
+      location: "Auditorium Main Stage",
+      description:
+        "Senior partners and visiting market specialists discussing macroeconomic shifts and corporate strategy during the flagship symposium.",
+      tag: "FIRESIDE CHAT",
+    },
+    {
+      id: "gal-07",
+      title: "Grand Champions Case Podium",
+      category: "Summits",
+      image: "/assets/gallery/celebrating-success.jpg",
+      date: "Spring 2026",
+      location: "Main Auditorium",
+      description:
+        "Winning syndicate receiving the championship trophy and honors after a 48-hour intensive turnaround modeling sprint.",
+      tag: "CHAMPIONS",
+    },
+    {
+      id: "gal-08",
+      title: "Summit Arena Flashlight Celebration",
+      category: "Community",
+      image: "/assets/gallery/gallery-crowd-lights.jpg",
+      date: "Spring 2026",
+      location: "Summit Arena",
+      description:
+        "600+ university delegates and student founders illuminating the auditorium during the summit finals.",
+      tag: "CONCLAVE ARENA",
+    },
+    {
+      id: "gal-09",
+      title: "Finlogue Executive Leadership & Cohort",
+      category: "Community",
+      image: "/assets/gallery/gallery-team-cohort.jpg",
+      date: "Academic Year 2025–26",
+      location: "Campus Central Steps",
+      description:
+        "Student coordinators, heads, and core analysts driving equity research, consulting leagues, and summits.",
+      tag: "LEADERSHIP COHORT",
+    },
+    {
+      id: "gal-10",
+      title: "Boardroom Case Defense & Diligence",
+      category: "Workshops",
+      image: "/assets/gallery/gallery-boardroom-challenge.jpg",
+      date: "Winter 2025",
+      location: "Executive Boardroom",
+      description:
+        "Student analysts presenting quantitative valuation forecasts and strategic recommendations before corporate executive judges.",
+      tag: "BOARDROOM DEFENSE",
+    },
+    {
+      id: "gal-11",
+      title: "National Grant & Venture Award Ceremony",
+      category: "Summits",
+      image: "/assets/gallery/gallery-cheque-ceremony.jpg",
+      date: "Spring 2026",
+      location: "Grand Conclave Stage",
+      description:
+        "Student founders and faculty receiving grant allocation and honors for high-conviction innovative venture ideas.",
+      tag: "VENTURE GRANT",
+    },
+    {
+      id: "gal-12",
+      title: "Flagship Summit Main Arena",
       category: "Summits",
       image: "/assets/hero/flagship-summit.jpg",
       date: "Annual Conclave",
-      location: "Summit Arena",
+      location: "Auditorium Conclave Hall",
       description:
-        "Senior partners and alumni mentors dissecting strategic turnaround plays during the annual Finlogue flagship symposium.",
-      tag: "FLAGSHIP SYMPOSIUM",
+        "Delegates and university attendees participating in the annual flagship finance and entrepreneurship conclave.",
+      tag: "ANNUAL SUMMIT",
     },
   ],
 };

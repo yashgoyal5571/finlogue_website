@@ -34,6 +34,7 @@ export default function LeadershipSection({
           const liveCoords: LeadershipMember[] = liveList
             .filter((m) => m.tier === "coordinators")
             .map((m) => ({
+              id: m.id,
               name: m.name,
               role: m.role,
               focus: m.focus || m.dept || "",
@@ -45,6 +46,7 @@ export default function LeadershipSection({
           const liveHeads: LeadershipMember[] = liveList
             .filter((m) => m.tier === "heads")
             .map((m) => ({
+              id: m.id,
               name: m.name,
               role: m.role,
               dept: m.dept || "",
@@ -58,6 +60,7 @@ export default function LeadershipSection({
           const liveCore: LeadershipMember[] = liveList
             .filter((m) => m.tier === "coreTeam")
             .map((m) => ({
+              id: m.id,
               name: m.name,
               role: m.role,
               dept: m.dept || "",
@@ -114,139 +117,182 @@ export default function LeadershipSection({
           </div>
 
           <div className="grid-3">
-            {coordinators.map((coord) => (
+            {coordinators.map((coord, idx) => (
               <div
-                key={coord.name}
+                key={(coord as any).id || `${coord.name}-${idx}`}
                 style={{
-                  background: "linear-gradient(180deg, #0C172E 0%, #060D1E 100%)",
-                  border: "1px solid rgba(197, 168, 128, 0.4)",
-                  boxShadow: "0 14px 38px -4px rgba(7, 13, 30, 0.4)",
-                  padding: "32px 28px",
+                  background: "linear-gradient(145deg, #0E1A34 0%, #060D1E 100%)",
+                  border: "1.5px solid rgba(197, 168, 128, 0.45)",
+                  boxShadow: "0 10px 28px -4px rgba(7, 13, 30, 0.5), inset 0 1px 0 rgba(197, 168, 128, 0.2)",
+                  padding: "20px 22px",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
-                  borderRadius: "var(--radius-sm)",
+                  borderRadius: "10px",
                   position: "relative",
                   overflow: "hidden",
-                  transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease",
+                  transition: "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease",
                 }}
               >
-                <div>
-
-                  {/* Circular Portrait Header */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "18px", marginBottom: "20px" }}>
-                    <div
-                      style={{
-                        width: "80px",
-                        height: "80px",
-                        borderRadius: "50%",
-                        border: "2px solid var(--gold-oxford)",
-                        boxShadow: "0 4px 16px rgba(0, 0, 0, 0.5)",
-                        position: "relative",
-                        overflow: "hidden",
-                        flexShrink: 0,
-                        backgroundColor: "var(--navy-surface)",
-                      }}
-                    >
-                      {coord.image ? (
-                        <Image
-                          src={coord.image}
-                          alt={coord.name}
-                          fill
-                          sizes="80px"
-                          unoptimized
-                          style={{ objectFit: "cover" }}
-                        />
-                      ) : (
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontFamily: "var(--font-serif)",
-                            fontSize: "24px",
-                            color: "var(--gold-oxford)",
-                            backgroundColor: "var(--navy-surface)",
-                          }}
-                        >
-                          {coord.name.split(" ").map((n: string) => n[0]).join("")}
-                        </div>
-                      )}
-                    </div>
-
-                    <div>
-                      <h4 className="font-display-serif" style={{ fontSize: "26px", color: "#FFFFFF", lineHeight: 1.15 }}>
-                        {coord.name}
-                      </h4>
-                    </div>
+                {/* Circular Portrait Header + Authoritative Badge & Name */}
+                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                  <div
+                    style={{
+                      width: "66px",
+                      height: "66px",
+                      borderRadius: "50%",
+                      border: "2px solid var(--gold-oxford)",
+                      boxShadow: "0 0 12px rgba(197, 168, 128, 0.25)",
+                      position: "relative",
+                      overflow: "hidden",
+                      flexShrink: 0,
+                      backgroundColor: "var(--navy-surface)",
+                    }}
+                  >
+                    {coord.image ? (
+                      <Image
+                        src={coord.image}
+                        alt={coord.name}
+                        fill
+                        sizes="66px"
+                        unoptimized
+                        style={{ objectFit: "cover" }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontFamily: "var(--font-serif)",
+                          fontSize: "20px",
+                          color: "var(--gold-oxford)",
+                          backgroundColor: "var(--navy-surface)",
+                        }}
+                      >
+                        {coord.name.split(" ").map((n: string) => n[0]).join("")}
+                      </div>
+                    )}
                   </div>
 
-                  <p style={{ fontSize: "14px", color: "var(--platinum-muted)", lineHeight: 1.55 }}>
-                    {coord.focus}
-                  </p>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginBottom: "3px" }}>
+                      <span
+                        style={{
+                          width: "5px",
+                          height: "5px",
+                          borderRadius: "50%",
+                          backgroundColor: "var(--gold-oxford)",
+                          boxShadow: "0 0 6px var(--gold-oxford)",
+                          display: "inline-block",
+                        }}
+                      />
+                      <span
+                        className="font-metadata-mono"
+                        style={{
+                          fontSize: "10px",
+                          color: "var(--gold-oxford)",
+                          letterSpacing: "0.12em",
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        COORDINATOR
+                      </span>
+                    </div>
+
+                    <h4
+                      className="font-display-serif"
+                      style={{
+                        fontSize: "22px",
+                        color: "#FFFFFF",
+                        lineHeight: 1.15,
+                        margin: 0,
+                        fontWeight: 600,
+                      }}
+                    >
+                      {coord.name}
+                    </h4>
+                  </div>
                 </div>
 
-                {/* Contact & Social Action Strip */}
+                {/* Department line on Left, Social & Mail icons on the Right corner */}
                 <div
                   style={{
-                    marginTop: "24px",
-                    paddingTop: "16px",
-                    borderTop: "1px solid rgba(226, 232, 240, 0.12)",
+                    marginTop: "14px",
+                    paddingTop: "12px",
+                    borderTop: "1px solid rgba(197, 168, 128, 0.16)",
                     display: "flex",
                     alignItems: "center",
+                    justifyContent: "space-between",
                     gap: "12px",
                   }}
                 >
-                  <a
-                    href={coord.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${coord.name} LinkedIn`}
-                    title={`${coord.name} on LinkedIn`}
+                  <p
                     style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      border: "1px solid rgba(197, 168, 128, 0.4)",
-                      backgroundColor: "rgba(255, 255, 255, 0.05)",
-                      color: "var(--gold-oxford)",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      transition: "background-color 0.2s, color 0.2s, border-color 0.2s",
+                      fontSize: "13px",
+                      color: "var(--platinum-muted)",
+                      lineHeight: 1.35,
+                      margin: 0,
+                      flex: 1,
+                      minWidth: 0,
                     }}
                   >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64c-.88 0-1.6.72-1.6 1.6 0 .88.72 1.6 1.6 1.6.88 0 1.6-.72 1.6-1.6 0-.88-.72-1.6-1.6-1.6Z" />
-                    </svg>
-                  </a>
+                    {coord.focus || coord.dept}
+                  </p>
 
-                  <a
-                    href={`mailto:${coord.email}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Email ${coord.name}`}
-                    title={`Email ${coord.name}`}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      border: "1px solid rgba(197, 168, 128, 0.4)",
-                      backgroundColor: "rgba(255, 255, 255, 0.05)",
-                      color: "var(--gold-oxford)",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      transition: "background-color 0.2s, color 0.2s, border-color 0.2s",
-                    }}
-                  >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect width="20" height="16" x="2" y="4" rx="2" />
-                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                    </svg>
-                  </a>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+                    <a
+                      href={coord.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${coord.name} LinkedIn`}
+                      title={`${coord.name} on LinkedIn`}
+                      style={{
+                        width: "28px",
+                        height: "28px",
+                        borderRadius: "50%",
+                        border: "1px solid rgba(197, 168, 128, 0.4)",
+                        backgroundColor: "rgba(255, 255, 255, 0.05)",
+                        color: "var(--gold-oxford)",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        transition: "background-color 0.2s, color 0.2s, border-color 0.2s",
+                      }}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64c-.88 0-1.6.72-1.6 1.6 0 .88.72 1.6 1.6 1.6.88 0 1.6-.72 1.6-1.6 0-.88-.72-1.6-1.6-1.6Z" />
+                      </svg>
+                    </a>
+
+                    <a
+                      href={`mailto:${coord.email}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Email ${coord.name}`}
+                      title={`Email ${coord.name}`}
+                      style={{
+                        width: "28px",
+                        height: "28px",
+                        borderRadius: "50%",
+                        border: "1px solid rgba(197, 168, 128, 0.4)",
+                        backgroundColor: "rgba(255, 255, 255, 0.05)",
+                        color: "var(--gold-oxford)",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        transition: "background-color 0.2s, color 0.2s, border-color 0.2s",
+                      }}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect width="20" height="16" x="2" y="4" rx="2" />
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                      </svg>
+                    </a>
+                  </div>
                 </div>
               </div>
             ))}
@@ -287,9 +333,9 @@ export default function LeadershipSection({
               gap: "20px",
             }}
           >
-            {heads.map((head) => (
+            {heads.map((head, idx) => (
               <div
-                key={head.name}
+                key={(head as any).id || `${head.name}-${idx}`}
                 style={{
                   backgroundColor: "var(--white-pure)",
                   border: "1px solid var(--white-border)",
@@ -411,9 +457,9 @@ export default function LeadershipSection({
               justifyContent: "center",
             }}
           >
-            {coreTeam?.map((member) => (
+            {coreTeam?.map((member, idx) => (
               <div
-                key={member.name}
+                key={(member as any).id || `${member.name}-${idx}`}
                 style={{
                   display: "flex",
                   flexDirection: "column",

@@ -101,8 +101,8 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
           width: "100%",
         }}
       >
-        {items.map((item) => {
-          const cardId = item.id || item.fileNumber;
+        {items.map((item, idx) => {
+          const cardId = item.id || item.fileNumber || `card-${idx}`;
           const isFlipped = !!flippedCards[cardId];
           const isClosed = item.status === "CLOSED";
           const isActive = item.status === "ACTIVE";

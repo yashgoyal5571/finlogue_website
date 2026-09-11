@@ -1,7 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { home } from "@/content/home";
+import { home as defaultHome } from "@/content/home";
+import { getCmsData } from "@/lib/cms";
 import InspirationalSpeakers from "@/components/InspirationalSpeakers";
 import HeroParallax from "@/components/HeroParallax";
 import MomentsAccordion from "@/components/MomentsAccordion";
@@ -13,11 +14,14 @@ export const metadata = {
     "LNMIIT's premier student-run Finance and Corporate Strategy body. Catalyzing valuation research, quantitative case solving, and venture capital deployment.",
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const cms = await getCmsData();
+  const home = cms.home || defaultHome;
+
   return (
     <main style={{ flex: 1, width: "100%", overflow: "hidden" }}>
       {/* 1. HERO SECTION — Natural Parallax Drift (Blue Keynote Auditorium) */}
-      <HeroParallax />
+      <HeroParallax hero={home.hero} />
 
       {/* 2. ABOUT FINLOGUE (White section that smoothly glides above the hero) */}
       <section

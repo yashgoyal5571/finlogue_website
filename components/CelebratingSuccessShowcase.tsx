@@ -63,11 +63,46 @@ const tickerImages = [
   { src: "/assets/hero/flagship-summit.jpg", label: "Conclave Flagship Arena" },
 ];
 
-export default function CelebratingSuccessShowcase() {
+interface CelebratingSuccessShowcaseProps {
+  galleryItems?: { image: string }[];
+}
+
+export default function CelebratingSuccessShowcase({ galleryItems }: CelebratingSuccessShowcaseProps = {}) {
+  const [moments, setMoments] = useState<SuccessMoment[]>(defaultSuccessMoments);
+  const [headline, setHeadline] = useState("CELEBRATING SUCCESS");
+  const [tagline, setTagline] = useState("Meet the past champions and winning cohorts of Finlogue competitions and get inspired by their journey.");
+  const [dynamicReel, setDynamicReel] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  const total = defaultSuccessMoments.length;
+  useEffect(() => {
+    fetch("/api/admin/content?section=gallery")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d && d.celebratingSuccess) {
+          if (d.celebratingSuccess.title) setHeadline(d.celebratingSuccess.title);
+          if (d.celebratingSuccess.tagline) setTagline(d.celebratingSuccess.tagline);
+          if (Array.isArray(d.celebratingSuccess.moments) && d.celebratingSuccess.moments.length > 0) {
+            setMoments(d.celebratingSuccess.moments);
+          } else if (d.celebratingSuccess.image) {
+            setMoments((prev) => [
+              {
+                ...prev[0],
+                image: d.celebratingSuccess.image,
+                title: d.celebratingSuccess.caption || prev[0].title,
+              },
+              ...prev.slice(1),
+            ]);
+          }
+        }
+        if (d && Array.isArray(d.items) && d.items.length > 0) {
+          setDynamicReel(d.items.map((it: any) => it.image).filter(Boolean));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const total = moments.length;
 
   const nextMoment = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % total);
@@ -86,11 +121,18 @@ export default function CelebratingSuccessShowcase() {
     return () => clearInterval(interval);
   }, [isPaused, nextMoment]);
 
-  const activeMoment = defaultSuccessMoments[currentIndex];
+  const activeMoment = moments[currentIndex] || moments[0];
+
+  const reelImages: string[] =
+    galleryItems && galleryItems.length > 0
+      ? galleryItems.map((it) => it.image)
+      : dynamicReel.length > 0
+      ? dynamicReel
+      : tickerImages.map((it) => it.src);
 
   return (
     <section className="section-pure-white" style={{ padding: "60px 0 80px", overflow: "hidden" }}>
-      {/* 1. Continuous Auto-Moving Top Photo Reel (Inspired by E-Cell screenshot) */}
+      {/* 1. Continuous Auto-Moving Top Photo Reel (Dynamic Gallery Photos, No Text/Labels) */}
       <div
         style={{
           width: "100%",
@@ -110,41 +152,28 @@ export default function CelebratingSuccessShowcase() {
             animation: "marqueeScroll 35s linear infinite",
           }}
         >
-          {[...tickerImages, ...tickerImages].map((img, idx) => (
+          {[...reelImages, ...reelImages].map((imgSrc, idx) => (
             <div
-              key={`${img.label}-${idx}`}
+              key={`reel-${idx}`}
               style={{
                 width: "280px",
-                height: "160px",
+                height: "175px",
                 position: "relative",
-                borderRadius: "14px",
+                borderRadius: "12px",
                 overflow: "hidden",
                 border: "1.5px solid rgba(197, 168, 128, 0.3)",
                 flexShrink: 0,
                 boxShadow: "0 4px 14px rgba(7, 13, 30, 0.15)",
+                backgroundColor: "var(--navy-deep)",
               }}
             >
               <Image
-                src={img.src}
-                alt={img.label}
+                src={imgSrc}
+                alt="Finlogue visual archive moment"
                 fill
                 sizes="280px"
                 style={{ objectFit: "cover" }}
               />
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background: "linear-gradient(to top, rgba(7, 13, 30, 0.85) 0%, transparent 60%)",
-                  display: "flex",
-                  alignItems: "flex-end",
-                  padding: "10px 14px",
-                }}
-              >
-                <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--gold-oxford)", fontWeight: 600 }}>
-                  {img.label}
-                </span>
-              </div>
             </div>
           ))}
         </div>
@@ -164,7 +193,7 @@ export default function CelebratingSuccessShowcase() {
               fontWeight: 700,
             }}
           >
-            CELEBRATING SUCCESS
+            {headline}
           </h2>
           <p
             style={{
@@ -175,7 +204,7 @@ export default function CelebratingSuccessShowcase() {
               lineHeight: 1.6,
             }}
           >
-            Meet the past champions and winning cohorts of Finlogue competitions and get inspired by their journey.
+            {tagline}
           </p>
         </div>
 
@@ -210,66 +239,57 @@ export default function CelebratingSuccessShowcase() {
               style={{ objectFit: "cover", transition: "opacity 0.4s ease" }}
             />
 
-            {/* Gradient Dark Scrim for Perfect Typography Contrast */}
+            {/* Sleek One-Liner Image Footer Strip */}
             <div
               style={{
                 position: "absolute",
-                inset: 0,
-                background: "linear-gradient(to top, rgba(6, 12, 28, 0.96) 0%, rgba(6, 12, 28, 0.5) 50%, transparent 100%)",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                background: "linear-gradient(to top, rgba(6, 12, 28, 0.94) 0%, rgba(6, 12, 28, 0.75) 65%, transparent 100%)",
+                padding: "clamp(14px, 2.5vw, 22px) clamp(20px, 3.5vw, 32px)",
                 display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-end",
-                padding: "clamp(20px, 4vw, 36px)",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "14px",
+                flexWrap: "wrap",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px", flexWrap: "wrap" }}>
-                <span className="status-badge status-badge-active" style={{ fontSize: "10px" }}>
-                  {activeMoment.badge}
-                </span>
-                <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--gold-oxford)" }}>
-                  {activeMoment.highlight}
-                </span>
-              </div>
-
               <h3
-                className="font-display-serif"
                 style={{
-                  fontSize: "clamp(22px, 3.2vw, 36px)",
+                  fontFamily: "var(--font-sans)",
+                  fontSize: "clamp(14px, 1.6vw, 17px)",
+                  fontWeight: 700,
                   color: "#FFFFFF",
-                  lineHeight: 1.2,
-                  margin: "0 0 6px",
-                  overflowWrap: "break-word",
-                  wordBreak: "break-word",
+                  margin: 0,
+                  letterSpacing: "0.02em",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  flexWrap: "wrap",
                 }}
               >
-                {activeMoment.title}
+                <span>{activeMoment.title}</span>
+                <span style={{ color: "var(--gold-oxford)", fontWeight: 500, fontSize: "clamp(13px, 1.3vw, 15px)" }}>
+                  | {activeMoment.subtitle}
+                </span>
               </h3>
 
-              <p
+              <span
                 className="font-metadata-mono"
                 style={{
-                  fontSize: "clamp(11px, 1.4vw, 12px)",
-                  color: "var(--platinum-muted)",
-                  margin: "0 0 10px",
-                  letterSpacing: "0.06em",
-                  overflowWrap: "break-word",
-                }}
-              >
-                {activeMoment.subtitle}
-              </p>
-
-              <p
-                style={{
-                  fontSize: "clamp(12.5px, 1.5vw, 13.5px)",
+                  fontSize: "11px",
                   color: "#E2E8F0",
-                  lineHeight: 1.55,
-                  maxWidth: "700px",
-                  margin: 0,
-                  overflowWrap: "break-word",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  backgroundColor: "rgba(255, 255, 255, 0.12)",
+                  padding: "4px 10px",
+                  borderRadius: "4px",
+                  backdropFilter: "blur(6px)",
                 }}
               >
-                {activeMoment.details}
-              </p>
+                {activeMoment.highlight}
+              </span>
             </div>
           </div>
 

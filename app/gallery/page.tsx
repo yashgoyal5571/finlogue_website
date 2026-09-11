@@ -7,7 +7,6 @@ import LightboxModal from "@/components/LightboxModal";
 import CelebratingSuccessShowcase from "@/components/CelebratingSuccessShowcase";
 
 export default function GalleryPage() {
-  const [selectedCategory, setSelectedCategory] = useState("All");
   const [activeModalItem, setActiveModalItem] = useState<GalleryItem | null>(null);
   const [items, setItems] = useState<GalleryItem[]>(gallery.items);
 
@@ -29,14 +28,6 @@ export default function GalleryPage() {
     }
     loadDynamicGallery();
   }, []);
-
-  // Compute categories dynamically based on available items
-  const categories = ["All", ...Array.from(new Set(items.map((it) => it.category)))];
-
-  const filteredItems = items.filter((item) => {
-    if (selectedCategory === "All") return true;
-    return item.category === selectedCategory;
-  });
 
   return (
     <main style={{ flex: 1, width: "100%", overflow: "hidden" }}>
@@ -67,124 +58,83 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* 2. CELEBRATING SUCCESS Showcase (Continuous Marquee + Rotating Stage Slider) */}
-      <CelebratingSuccessShowcase />
+      {/* 2. CELEBRATING SUCCESS Showcase (Continuous Marquee + Rotating Stage Slider with Clean One-Liner) */}
+      <CelebratingSuccessShowcase galleryItems={items} />
 
-      {/* 3. Filter Bar & Media Archive Grid — Crisp Pure White (#FFFFFF) */}
-      <section className="section-pure-white" style={{ paddingTop: "20px" }}>
+      {/* 3. Pure Photo Gallery Grid (Placed BELOW Celebrating Success — E-Cell Clean Photo Grid Style) */}
+      <section className="section-pure-white" style={{ padding: "40px 0 90px" }}>
         <div className="container">
-          <div style={{ marginBottom: "32px" }}>
-            <span className="section-eyebrow">CURATED VISUAL VAULT</span>
-            <h2 className="section-title" style={{ margin: "8px 0 0" }}>
-              Archival Conclave Dispatches
-            </h2>
-            <p className="section-description" style={{ margin: "10px 0 0" }}>
-              High-resolution photo records from historical negotiations, guest lectures, and institutional forums.
-            </p>
-          </div>
-
-          {/* Category Filter Tabs */}
+          {/* 4-Column Pure Photo Grid (Clean Borders, Pure Photos, No Text/Overlay, Click to Expand) */}
           <div
+            className="gallery-photo-grid"
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              paddingBottom: "24px",
-              borderBottom: "1px solid var(--white-border)",
-              marginBottom: "40px",
-              flexWrap: "wrap",
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap: "18px",
             }}
           >
-            {categories.map((cat) => {
-              const isSelected = selectedCategory === cat;
-              return (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat)}
-                  className="stamp-button"
-                  style={{
-                    padding: "8px 18px",
-                    fontSize: "12px",
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase",
-                    backgroundColor: isSelected ? "var(--navy-hero)" : "var(--white-pure)",
-                    color: isSelected ? "#FFFFFF" : "var(--ink-title)",
-                    borderColor: isSelected ? "var(--navy-hero)" : "var(--white-border)",
-                    boxShadow: isSelected ? "0 2px 8px rgba(10, 19, 41, 0.2)" : "none",
-                    letterSpacing: "0.08em",
-                  }}
-                >
-                  {cat}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Media Grid */}
-          <div className="grid-3" style={{ marginBottom: "20px" }}>
-            {filteredItems.map((item) => (
+            {items.map((item) => (
               <div
                 key={item.id}
                 onClick={() => setActiveModalItem(item)}
-                className="gallery-card"
-                style={{ cursor: "pointer" }}
+                className="gallery-photo-tile"
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  aspectRatio: "16 / 10.5",
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  border: "1.5px solid var(--white-border-strong)",
+                  backgroundColor: "var(--navy-deep)",
+                  boxShadow: "0 4px 16px rgba(7, 13, 30, 0.08)",
+                  cursor: "pointer",
+                  transition: "transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease",
+                }}
               >
-                {/* Image Frame */}
-                <div className="gallery-frame" style={{ position: "relative", height: "240px" }}>
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    style={{ objectFit: "cover" }}
-                  />
-                  <span className="gallery-tag">{item.tag}</span>
-                </div>
-
-                {/* Text Meta Content */}
-                <div className="gallery-content">
-                  <div>
-                    <div className="gallery-meta">
-                      <span style={{ color: "var(--burgundy-crest)", fontWeight: 600 }}>{item.category}</span>
-                      <span>{item.date}</span>
-                    </div>
-
-                    <h3 className="gallery-title">{item.title}</h3>
-
-                    <p style={{ fontSize: "14px", color: "var(--ink-body)", marginTop: "10px", lineHeight: 1.55 }}>
-                      {item.description}
-                    </p>
-                  </div>
-
-                  <div
-                    style={{
-                      marginTop: "20px",
-                      paddingTop: "14px",
-                      borderTop: "1px solid var(--white-border)",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      fontFamily: "var(--font-mono)",
-                      fontSize: "11px",
-                      color: "var(--ink-muted)",
-                    }}
-                  >
-                    <span>📍 {item.location}</span>
-                    <span style={{ color: "var(--navy-hero)", fontWeight: 600 }}>Expand Photo →</span>
-                  </div>
-                </div>
+                {/* Pure Photo Image — No overlay text, no expand badge */}
+                <Image
+                  src={item.image}
+                  alt={item.title || "Finlogue gallery photograph"}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  style={{ objectFit: "cover", transition: "transform 0.35s ease" }}
+                />
               </div>
             ))}
           </div>
         </div>
+
+        {/* Embedded CSS for hover and responsive 4-column layout */}
+        <style jsx>{`
+          .gallery-photo-tile:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(7, 13, 30, 0.16);
+            border-color: var(--gold-oxford);
+          }
+          .gallery-photo-tile:hover img {
+            transform: scale(1.04);
+          }
+          @media (max-width: 1024px) {
+            .gallery-photo-grid {
+              grid-template-columns: repeat(2, 1fr) !important;
+              gap: 14px !important;
+            }
+          }
+          @media (max-width: 640px) {
+            .gallery-photo-grid {
+              grid-template-columns: 1fr !important;
+              gap: 12px !important;
+            }
+          }
+        `}</style>
       </section>
 
-
-      {/* Fullscreen Lightbox Modal */}
+      {/* Fullscreen Lightbox Modal with Next/Prev and Full View */}
       <LightboxModal
         item={activeModalItem}
+        items={items}
         onClose={() => setActiveModalItem(null)}
+        onNavigate={(item) => setActiveModalItem(item)}
       />
     </main>
   );

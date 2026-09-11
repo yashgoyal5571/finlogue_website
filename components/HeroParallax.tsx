@@ -5,7 +5,27 @@ import Image from "next/image";
 import Link from "next/link";
 import { home } from "@/content/home";
 
-export default function HeroParallax() {
+export interface DynamicHeroProps {
+  badge?: string;
+  title?: string;
+  subtitle?: string;
+  ctaPrimaryText?: string;
+  ctaSecondaryText?: string;
+}
+
+interface HeroParallaxProps {
+  hero?: DynamicHeroProps;
+}
+
+export default function HeroParallax({ hero }: HeroParallaxProps = {}) {
+  const badge = hero?.badge || home.hero.badge;
+  const title = hero?.title || "Finance is more than numbers, It's a conversation.";
+  const subtitle =
+    hero?.subtitle ||
+    "Finance isn’t just about numbers, markets, or balance sheets. It’s about understanding the decisions, ideas, and forces that shape businesses and economies.";
+  const ctaPrimaryText = hero?.ctaPrimaryText || "Know More";
+  const ctaSecondaryText = hero?.ctaSecondaryText || "Explore Initiatives";
+
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
@@ -111,7 +131,7 @@ export default function HeroParallax() {
                 flexShrink: 0,
               }}
             />
-            <span style={{ fontWeight: 600 }}>{home.hero.badge}</span>
+            <span style={{ fontWeight: 600 }}>{badge}</span>
           </div>
 
           {/* Main Title */}
@@ -130,7 +150,7 @@ export default function HeroParallax() {
               hyphens: "auto",
             }}
           >
-            Finance is more than numbers, It's a conversation.
+            {title}
           </h1>
 
           {/* Description Subtitle */}
@@ -146,7 +166,7 @@ export default function HeroParallax() {
               wordBreak: "break-word",
             }}
           >
-            Finance isn’t just about numbers, markets, or balance sheets. It’s about understanding the decisions, ideas, and forces that shape businesses and economies.
+            {subtitle}
           </p>
 
           {/* Action Buttons */}
@@ -168,7 +188,7 @@ export default function HeroParallax() {
                 boxShadow: "0 6px 20px rgba(7, 13, 30, 0.25)",
               }}
             >
-              <span>Know More</span>
+              <span>{ctaPrimaryText}</span>
               <span style={{ fontSize: "16px", color: "var(--gold-oxford)" }}>→</span>
             </Link>
 
@@ -185,7 +205,7 @@ export default function HeroParallax() {
                 fontWeight: 600,
               }}
             >
-              <span>Explore Initiatives</span>
+              <span>{ctaSecondaryText}</span>
             </Link>
           </div>
         </div>

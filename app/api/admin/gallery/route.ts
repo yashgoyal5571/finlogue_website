@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import { gallery as defaultGalleryData, GalleryItem } from "@/content/gallery";
+import { getCmsData, saveCmsData } from "@/lib/cms";
+import { GalleryItem } from "@/content/gallery";
 
 export const runtime = "nodejs";
-
-let dynamicGalleryCache: GalleryItem[] = [...defaultGalleryData.items];
 
 export async function GET() {
   const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
@@ -28,11 +27,13 @@ export async function GET() {
     }
   }
 
+  const cms = await getCmsData();
   return NextResponse.json({
     success: true,
-    gallery: dynamicGalleryCache,
-    items: dynamicGalleryCache,
-    source: "local_cache",
+    gallery: cms.gallery.items,
+    items: cms.gallery.items,
+    celebratingSuccess: cms.gallery.celebratingSuccess,
+    source: "cms_store",
   });
 }
 
@@ -47,9 +48,9 @@ export async function POST(request: Request) {
     }
 
     const { item } = body;
-    if (!item || !item.title) {
+    if (!item || !item.image) {
       return NextResponse.json(
-        { success: false, error: "Title is required for gallery moments." },
+        { success: false, error: "Photo image is required." },
         { status: 400 }
       );
     }
@@ -57,23 +58,32 @@ export async function POST(request: Request) {
     const itemId = item.id || `gal-${Date.now()}`;
     const normalizedItem: GalleryItem = {
       id: itemId,
-      title: item.title,
-      category: item.category || "Summits",
-      image: item.image || "/assets/gallery/summit-keynote.jpg",
-      date: item.date || "Spring 2026",
-      location: item.location || "LNMIIT Campus",
+      image: item.image,
+      title: item.title || "",
+      category: item.category || "Gallery",
+      date: item.date || "",
+      location: item.location || "",
       description: item.description || "",
-      tag: item.tag || "CONCLAVE MOMENT",
+      tag: item.tag || "",
     };
 
-    const existingIdx = dynamicGalleryCache.findIndex((g) => g.id === itemId);
+    const cms = await getCmsData();
+    const currentList = [...cms.gallery.items];
+    const existingIdx = currentList.findIndex((g) => g.id === itemId);
     if (existingIdx >= 0) {
-      dynamicGalleryCache[existingIdx] = normalizedItem;
+      currentList[existingIdx] = normalizedItem;
     } else {
-      dynamicGalleryCache.unshift(normalizedItem);
+      currentList.unshift(normalizedItem);
     }
 
-    // Forward to Google Sheets
+    await saveCmsData({
+      gallery: {
+        ...cms.gallery,
+        items: currentList,
+      },
+    });
+
+    // Forward to Google Sheets if configured
     const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
     if (webhookUrl) {
       try {
@@ -112,7 +122,15 @@ export async function DELETE(request: Request) {
       );
     }
 
-    dynamicGalleryCache = dynamicGalleryCache.filter((g) => g.id !== id);
+    const cms = await getCmsData();
+    const filteredList = cms.gallery.items.filter((g) => g.id !== id);
+
+    await saveCmsData({
+      gallery: {
+        ...cms.gallery,
+        items: filteredList,
+      },
+    });
 
     const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
     if (webhookUrl) {
@@ -139,3 +157,4 @@ export async function DELETE(request: Request) {
     );
   }
 }
+

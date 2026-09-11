@@ -1675,13 +1675,17 @@ img {
   position: relative;
   width: 154px;
   height: 150px;
-  cursor: pointer;
+  cursor: default;
   transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   user-select: none;
 }
 
+a .sponsor-tile-wrapper {
+  cursor: pointer;
+}
+
 .sponsor-tile-wrapper:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
 }
 
 .sponsor-tile-backdrop {
@@ -2309,5 +2313,31 @@ img {
   50% {
     transform: translateX(-50%) translateY(7px);
   }
+}
+
+/* POTR Interactive Elements */
+.animated-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px -4px rgba(10, 19, 41, 0.08) !important;
+  border-color: rgba(212, 160, 23, 0.5) !important;
+}
+
+.investor-post-card {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer !important;
+  text-decoration: none !important;
+  color: inherit !important;
+}
+
+.investor-post-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px -4px rgba(10, 19, 41, 0.1) !important;
+  border-color: var(--navy-hero) !important;
+}
+
+.investor-post-card:hover h4 {
+  color: var(--navy-hero) !important;
 }
 

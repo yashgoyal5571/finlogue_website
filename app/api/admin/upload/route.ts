@@ -37,11 +37,16 @@ export async function POST(req: NextRequest) {
 
     const finalFileName = `${baseName || `member-${Date.now()}`}${ext.toLowerCase()}`;
 
+    const requestedFolder = ((formData.get("folder") as string) || "general").toLowerCase();
+    const safeFolder = ["team", "gallery", "hero", "events"].includes(requestedFolder)
+      ? requestedFolder
+      : "general";
+
     // Target upload directory
-    const targetDir = path.join(process.cwd(), "public", "assets", "team");
+    const targetDir = path.join(process.cwd(), "public", "assets", safeFolder);
     await fs.mkdir(targetDir, { recursive: true });
 
-    // Write file to public/assets/team/
+    // Write file to public/assets/${safeFolder}/
     const filePath = path.join(targetDir, finalFileName);
     const bytes = await file.arrayBuffer();
     await fs.writeFile(filePath, Buffer.from(bytes));
@@ -49,7 +54,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       fileName: finalFileName,
-      url: `/assets/team/${finalFileName}`,
+      url: `/assets/${safeFolder}/${finalFileName}`,
       size: file.size,
     });
   } catch (err: any) {

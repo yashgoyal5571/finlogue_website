@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
-import { events as defaultEventsData, CaseFile } from "@/content/events";
+import { getCmsData, saveCmsData } from "@/lib/cms";
+import { CaseFile } from "@/content/events";
 
 export const runtime = "nodejs";
-
-// In-memory cache for dynamic changes within server runtime (fallback when webhook not yet configured)
-let dynamicEventsCache: CaseFile[] = [...defaultEventsData.caseFiles];
 
 export async function GET() {
   const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
@@ -24,7 +22,6 @@ export async function GET() {
       if (res.ok) {
         const data = await res.json();
         if (data.success && Array.isArray(data.events) && data.events.length > 0) {
-          // Normalize status
           const sheetEvents = data.events.map((e: any) => ({
             id: e.id || e.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
             fileNumber: e.fileNumber || "",
@@ -40,14 +37,15 @@ export async function GET() {
         }
       }
     } catch (err) {
-      console.warn("[ADMIN EVENTS API] Google Sheets fetch failed or timed out, using fallback cache:", err);
+      console.warn("[ADMIN EVENTS API] Google Sheets fetch failed, using CMS store:", err);
     }
   }
 
+  const cms = await getCmsData();
   return NextResponse.json({
     success: true,
-    events: dynamicEventsCache,
-    source: "local_cache",
+    events: cms.events.caseFiles,
+    source: "cms_store",
   });
 }
 
@@ -82,13 +80,21 @@ export async function POST(request: Request) {
       eligibility: event.eligibility || "Open Pan-India",
     };
 
-    // Update in-memory cache
-    const existingIndex = dynamicEventsCache.findIndex((e) => e.id === eventId);
+    const cms = await getCmsData();
+    const currentList = [...cms.events.caseFiles];
+    const existingIndex = currentList.findIndex((e) => e.id === eventId);
     if (existingIndex >= 0) {
-      dynamicEventsCache[existingIndex] = normalizedEvent;
+      currentList[existingIndex] = normalizedEvent;
     } else {
-      dynamicEventsCache.unshift(normalizedEvent);
+      currentList.unshift(normalizedEvent);
     }
+
+    await saveCmsData({
+      events: {
+        ...cms.events,
+        caseFiles: currentList,
+      },
+    });
 
     // Sync to Google Sheets if configured
     const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
@@ -139,10 +145,17 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const target = dynamicEventsCache.find((e) => e.id === id);
-    if (target) {
-      target.status = status;
-    }
+    const cms = await getCmsData();
+    const updatedList = cms.events.caseFiles.map((e) =>
+      e.id === id ? { ...e, status } : e
+    );
+
+    await saveCmsData({
+      events: {
+        ...cms.events,
+        caseFiles: updatedList,
+      },
+    });
 
     // Sync status to Google Sheets
     const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
@@ -188,7 +201,15 @@ export async function DELETE(request: Request) {
       );
     }
 
-    dynamicEventsCache = dynamicEventsCache.filter((e) => e.id !== id);
+    const cms = await getCmsData();
+    const filteredList = cms.events.caseFiles.filter((e) => e.id !== id);
+
+    await saveCmsData({
+      events: {
+        ...cms.events,
+        caseFiles: filteredList,
+      },
+    });
 
     // Sync delete to Google Sheets
     const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;

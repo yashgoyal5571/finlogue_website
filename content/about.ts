@@ -16,6 +16,7 @@ export interface Pillar {
 }
 
 export interface LeadershipMember {
+  id?: string;
   name: string;
   role: string;
   dept?: string;

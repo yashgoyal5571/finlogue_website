@@ -5,9 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { events, CaseFile } from "@/content/events";
 import InitiativesFlipGrid from "@/components/InitiativesFlipGrid";
+import AnimatedStatCard from "@/components/AnimatedStatCard";
 
 export default function EventsPage() {
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [eventsData, setEventsData] = useState(events);
   const [caseFiles, setCaseFiles] = useState<CaseFile[]>(events.caseFiles);
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
   const [registeredEvent, setRegisteredEvent] = useState<string | null>(null);
@@ -57,10 +58,15 @@ export default function EventsPage() {
   useEffect(() => {
     const loadDynamicEvents = async () => {
       try {
-        const res = await fetch("/api/admin/events");
-        const data = await res.json();
-        if (data.success && Array.isArray(data.events) && data.events.length > 0) {
-          setCaseFiles(data.events);
+        const res = await fetch("/api/admin/content?section=events");
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.flagship) {
+            setEventsData(data);
+            if (Array.isArray(data.caseFiles) && data.caseFiles.length > 0) {
+              setCaseFiles(data.caseFiles);
+            }
+          }
         }
       } catch {
         // Fallback to static default
@@ -76,7 +82,6 @@ export default function EventsPage() {
       if (rawHash) {
         // Alias support if someone accesses #pitch-on-the-rocks
         const hash = rawHash === "pitch-on-the-rocks" ? "potr" : rawHash;
-        setSelectedCategory("All");
         setTimeout(() => {
           const el = document.getElementById(hash);
           if (el) {
@@ -95,16 +100,6 @@ export default function EventsPage() {
     return () => window.removeEventListener("hashchange", handleHash);
   }, []);
 
-  const filteredCaseFiles = caseFiles.filter((cf) => {
-    if (selectedCategory === "All") return true;
-    if (selectedCategory === "Case Competitions")
-      return cf.category === "Consulting" || cf.category === "Strategy";
-    if (selectedCategory === "Valuation Labs") return cf.category === "Finance";
-    if (selectedCategory === "Flagship Summits") return cf.category === "Venture" || cf.id === "potr";
-    if (selectedCategory === "Workshops") return cf.category === "Strategy" || cf.category === "Finance";
-    return true;
-  });
-
   return (
     <main style={{ flex: 1, width: "100%", overflow: "hidden" }}>
       {/* 1. Page Hero Header — Deep Executive Midnight Navy (#0A1329) */}
@@ -121,15 +116,15 @@ export default function EventsPage() {
                 display: "inline-block",
               }}
             />
-            <span>{events.header.badge}</span>
+            <span>{eventsData.header.badge}</span>
           </div>
 
           <h1 className="hero-title" style={{ textAlign: "left", margin: 0 }}>
-            {events.header.title}
+            {eventsData.header.title}
           </h1>
 
           <p className="hero-subline" style={{ textAlign: "left", margin: "24px 0 0", maxWidth: "780px" }}>
-            {events.header.subtitle}
+            {eventsData.header.subtitle}
           </p>
         </div>
       </section>
@@ -137,202 +132,168 @@ export default function EventsPage() {
       {/* 2. Filter Bar & Flagship Conclave (POTR) — Crisp Pure White (#FFFFFF) */}
       <section className="section-pure-white">
         <div className="container">
-          {/* Category Filter Tabs */}
+          {/* Flagship Summit Feature: PITCH ON THE ROCKS */}
           <div
+            id="potr"
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              paddingBottom: "28px",
-              borderBottom: "1px solid var(--white-border)",
-              marginBottom: "48px",
-              flexWrap: "wrap",
+              backgroundColor: "var(--white-pure)",
+              border: "1px solid var(--white-border)",
+              boxShadow: "var(--card-shadow)",
+              overflow: "hidden",
+              marginBottom: "40px",
+              scrollMarginTop: "120px",
+              transition: "box-shadow 0.3s ease, outline 0.3s ease",
             }}
           >
-            {events.categories.map((cat) => {
-              const isSelected = selectedCategory === cat;
-              return (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat)}
-                  className="stamp-button"
-                  style={{
-                    padding: "8px 18px",
-                    fontSize: "12px",
-                    fontFamily: "var(--font-mono)",
-                    textTransform: "uppercase",
-                    backgroundColor: isSelected ? "var(--navy-hero)" : "var(--white-pure)",
-                    color: isSelected ? "#FFFFFF" : "var(--ink-title)",
-                    borderColor: isSelected ? "var(--navy-hero)" : "var(--white-border)",
-                    boxShadow: isSelected ? "0 2px 8px rgba(10, 19, 41, 0.2)" : "none",
-                    letterSpacing: "0.08em",
-                  }}
-                >
-                  {cat}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Flagship Summit Feature: PITCH ON THE ROCKS */}
-          {(selectedCategory === "All" || selectedCategory === "Flagship Summits") && (
-            <div
-              id="potr"
-              style={{
-                backgroundColor: "var(--white-pure)",
-                border: "1px solid var(--white-border)",
-                boxShadow: "var(--card-shadow)",
-                overflow: "hidden",
-                marginBottom: "40px",
-                scrollMarginTop: "120px",
-                transition: "box-shadow 0.3s ease, outline 0.3s ease",
-              }}
-            >
-              {/* Banner Media Frame */}
-              <div style={{ position: "relative", width: "100%", height: "360px", backgroundColor: "var(--navy-deep)" }}>
-                <Image
-                  src="/assets/hero/flagship-summit.jpg"
-                  alt="Pitch on the Rocks Flagship Conclave"
-                  fill
-                  priority
-                  style={{ objectFit: "cover", opacity: 0.75 }}
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background: "linear-gradient(to top, rgba(7, 13, 30, 0.95) 0%, rgba(7, 13, 30, 0.4) 60%, transparent 100%)",
-                    padding: "36px",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
-                    <span className="status-badge status-badge-active">{events.flagship.badge}</span>
-                    <span className="font-metadata-mono" style={{ fontSize: "11px", color: "#FFFFFF", textTransform: "uppercase" }}>
-                      {events.flagship.edition}
-                    </span>
-                  </div>
-                  <h2 className="font-display-serif" style={{ fontSize: "clamp(30px, 4.5vw, 54px)", color: "#FFFFFF" }}>
-                    {events.flagship.title}
-                  </h2>
-                  <p className="font-metadata-mono" style={{ fontSize: "12px", color: "var(--gold-oxford)", letterSpacing: "0.12em", marginTop: "6px", textTransform: "uppercase" }}>
-                    {events.flagship.tagline}
-                  </p>
+            {/* Banner Media Frame */}
+            <div style={{ position: "relative", width: "100%", height: "360px", backgroundColor: "var(--navy-deep)" }}>
+              <Image
+                src="/assets/hero/flagship-summit.jpg"
+                alt="Pitch on the Rocks Flagship Conclave"
+                fill
+                priority
+                style={{ objectFit: "cover", opacity: 0.75 }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "linear-gradient(to top, rgba(7, 13, 30, 0.95) 0%, rgba(7, 13, 30, 0.4) 60%, transparent 100%)",
+                  padding: "36px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
+                  <span className="status-badge status-badge-active">{eventsData.flagship.badge}</span>
+                  <span className="font-metadata-mono" style={{ fontSize: "11px", color: "#FFFFFF", textTransform: "uppercase" }}>
+                    {eventsData.flagship.edition}
+                  </span>
                 </div>
-              </div>
-
-              {/* Summit Narrative & Application CTA */}
-              <div style={{ padding: "36px", borderBottom: "1px solid var(--white-border)" }}>
-                <div className="grid-2" style={{ alignItems: "center", gap: "32px" }}>
-                  <div>
-                    <h3 className="font-display-serif" style={{ fontSize: "24px", color: "var(--ink-title)", marginBottom: "12px" }}>
-                      About The Summit
-                    </h3>
-                    <p style={{ color: "var(--ink-body)", lineHeight: 1.65 }}>
-                      {events.flagship.about}
-                    </p>
-                  </div>
-
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                    <button
-                      type="button"
-                      onClick={() => handleRegisterClick(events.flagship.title)}
-                      className="stamp-button stamp-button-primary"
-                      style={{ padding: "14px 28px", fontSize: "14px", backgroundColor: "var(--navy-hero)", color: "#FFFFFF", borderColor: "var(--navy-hero)" }}
-                    >
-                      APPLY AS FOUNDER / ATTENDEE →
-                    </button>
-                    <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--ink-muted)", marginTop: "8px", textTransform: "uppercase" }}>
-                      Direct investor meetings · Curated diligence
-                    </span>
-                  </div>
-                </div>
-
-                {/* Stat Highlights Bar */}
-                <div className="stats-grid" style={{ marginTop: "32px", paddingTop: "32px", borderTop: "1px solid var(--white-border)" }}>
-                  {events.flagship.stats.map((st) => (
-                    <div key={st.label} style={{ padding: "18px", backgroundColor: "var(--white-alabaster)", border: "1px solid var(--white-border)" }}>
-                      <span className="stat-label" style={{ fontSize: "11px", color: "var(--ink-muted)" }}>{st.label}</span>
-                      <span className="stat-value" style={{ fontSize: "28px", color: "var(--ink-title)", marginTop: "4px", display: "block" }}>{st.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Mentors & Judges Roster */}
-              <div style={{ padding: "36px", borderBottom: "1px solid var(--white-border)" }}>
-                <span className="section-badge" style={{ color: "var(--burgundy-crest)" }}>ESTEEMED JURY & MENTOR PANEL</span>
-                <h3 className="font-display-serif" style={{ fontSize: "26px", color: "var(--ink-title)", marginBottom: "24px" }}>
-                  Active Investors in Attendance
-                </h3>
-
-                <div className="grid-4">
-                  {events.flagship.investorsMentors.map((inv) => (
-                    <div
-                      key={inv.name}
-                      style={{
-                        padding: "20px",
-                        backgroundColor: "var(--white-pure)",
-                        border: "1px solid var(--white-border)",
-                        boxShadow: "var(--card-shadow)",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <div>
-                        <span className="font-metadata-mono" style={{ fontSize: "10px", color: "var(--burgundy-crest)", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>
-                          {inv.role}
-                        </span>
-                        <h4 className="font-display-serif" style={{ fontSize: "19px", color: "var(--ink-title)" }}>
-                          {inv.name}
-                        </h4>
-                      </div>
-                      <p style={{ fontSize: "12.5px", color: "var(--ink-body)", marginTop: "12px", lineHeight: 1.5 }}>
-                        {inv.credential}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Featured Startups Showcase */}
-              <div style={{ padding: "36px", backgroundColor: "var(--white-alabaster)" }}>
-                <span className="section-badge" style={{ color: "var(--ink-muted)" }}>STARTUP DEMO TRACK</span>
-                <h3 className="font-display-serif" style={{ fontSize: "26px", color: "var(--ink-title)", marginBottom: "24px" }}>
-                  Selected Ventures From The Cohort
-                </h3>
-
-                <div className="grid-4">
-                  {events.flagship.startupPortfolio.map((st) => (
-                    <div
-                      key={st.name}
-                      style={{
-                        padding: "16px",
-                        backgroundColor: "var(--white-pure)",
-                        border: "1px solid var(--white-border)",
-                        boxShadow: "var(--card-shadow)",
-                        textAlign: "center",
-                      }}
-                    >
-                      <span className="font-display-serif-sm" style={{ fontSize: "18px", color: "var(--ink-title)", display: "block" }}>
-                        {st.name}
-                      </span>
-                      <span className="font-metadata-mono" style={{ fontSize: "10px", color: "var(--burgundy-crest)", textTransform: "uppercase", marginTop: "4px", display: "block" }}>
-                        {st.category}
-                      </span>
-                      <span className="font-metadata-mono" style={{ fontSize: "10px", color: "var(--ink-muted)", marginTop: "2px", display: "block" }}>
-                        Stage: {st.stage}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <h2 className="font-display-serif" style={{ fontSize: "clamp(30px, 4.5vw, 54px)", color: "#FFFFFF" }}>
+                  {eventsData.flagship.title}
+                </h2>
+                <p className="font-metadata-mono" style={{ fontSize: "12px", color: "var(--gold-oxford)", letterSpacing: "0.12em", marginTop: "6px", textTransform: "uppercase" }}>
+                  {eventsData.flagship.tagline}
+                </p>
               </div>
             </div>
-          )}
+
+            {/* Summit Narrative & Application CTA */}
+            <div style={{ padding: "36px", borderBottom: "1px solid var(--white-border)" }}>
+              <div className="grid-2" style={{ alignItems: "center", gap: "32px" }}>
+                <div>
+                  <h3 className="font-display-serif" style={{ fontSize: "24px", color: "var(--ink-title)", marginBottom: "12px" }}>
+                    About The Summit
+                  </h3>
+                  <p style={{ color: "var(--ink-body)", lineHeight: 1.65 }}>
+                    {eventsData.flagship.about}
+                  </p>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                  <button
+                    type="button"
+                    onClick={() => handleRegisterClick(eventsData.flagship.title)}
+                    className="stamp-button stamp-button-primary"
+                    style={{ padding: "14px 28px", fontSize: "14px", backgroundColor: "var(--navy-hero)", color: "#FFFFFF", borderColor: "var(--navy-hero)" }}
+                  >
+                    APPLY AS FOUNDER / ATTENDEE →
+                  </button>
+                  <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--ink-muted)", marginTop: "8px", textTransform: "uppercase" }}>
+                    Direct investor meetings · Curated diligence
+                  </span>
+                </div>
+              </div>
+
+              {/* Stat Highlights Bar with Scroll-Triggered Count-Up Animation */}
+              <div
+                style={{
+                  marginTop: "32px",
+                  paddingTop: "32px",
+                  borderTop: "1px solid var(--white-border)",
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                  gap: "20px",
+                }}
+              >
+                {eventsData.flagship.stats.map((st) => (
+                  <AnimatedStatCard
+                    key={st.label}
+                    label={st.label}
+                    value={st.value}
+                    description={st.description}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Mentors & Judges Roster */}
+            <div style={{ padding: "36px" }}>
+              <div style={{ marginBottom: "28px" }}>
+                <span className="section-badge" style={{ color: "var(--burgundy-crest)" }}>
+                  ESTEEMED JURY & MENTOR PANEL
+                </span>
+                <h3 className="font-display-serif" style={{ fontSize: "26px", color: "var(--ink-title)", margin: "4px 0 0" }}>
+                  Active Investors in Attendance
+                </h3>
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+                  gap: "20px",
+                }}
+              >
+                {eventsData.flagship.investorsMentors.map((inv) => (
+                  <a
+                    key={inv.name}
+                    href={inv.linkedInPostUrl || "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={`View official LinkedIn post for ${inv.name}`}
+                    className="investor-post-card"
+                    style={{
+                      padding: "24px 22px",
+                      backgroundColor: "var(--white-pure)",
+                      border: "1px solid var(--white-border)",
+                      borderRadius: "6px",
+                      boxShadow: "0 2px 8px rgba(10, 19, 41, 0.04)",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <h4
+                      className="font-display-serif"
+                      style={{
+                        fontSize: "20px",
+                        color: "var(--ink-title)",
+                        margin: 0,
+                        lineHeight: 1.25,
+                        transition: "color 0.2s ease",
+                      }}
+                    >
+                      {inv.name}
+                    </h4>
+                    <p
+                      style={{
+                        fontSize: "13px",
+                        color: "var(--ink-body)",
+                        marginTop: "8px",
+                        lineHeight: 1.5,
+                        marginBottom: 0,
+                      }}
+                    >
+                      {inv.credential}
+                    </p>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -347,7 +308,7 @@ export default function EventsPage() {
             </p>
           </div>
 
-          <InitiativesFlipGrid items={filteredCaseFiles} onRegisterClick={handleRegisterClick} />
+          <InitiativesFlipGrid items={caseFiles} onRegisterClick={handleRegisterClick} />
         </div>
       </section>
 

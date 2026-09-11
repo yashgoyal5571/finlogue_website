@@ -1,19 +1,31 @@
 "use client";
 
-import React, { useState } from "react";
-import { contact } from "@/content/contact";
+import React, { useState, useEffect } from "react";
+import { contact as staticContact } from "@/content/contact";
 
 export default function ContactPage() {
+  const [contactData, setContactData] = useState(staticContact);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     organization: "",
-    inquiryType: contact.inquiryTypes[0],
+    inquiryType: staticContact.inquiryTypes[0],
     message: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationTicket, setConfirmationTicket] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/content?section=contact")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && data.office) {
+          setContactData(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,15 +67,15 @@ export default function ContactPage() {
                 display: "inline-block",
               }}
             />
-            <span>{contact.header.badge}</span>
+            <span>{contactData.header.badge}</span>
           </div>
 
           <h1 className="hero-title" style={{ textAlign: "left", margin: 0 }}>
-            {contact.header.title}
+            {contactData.header.title}
           </h1>
 
           <p className="hero-subline" style={{ textAlign: "left", margin: "24px 0 0", maxWidth: "780px" }}>
-            {contact.header.subtitle}
+            {contactData.header.subtitle}
           </p>
         </div>
       </section>
@@ -139,7 +151,7 @@ export default function ContactPage() {
                           name: "",
                           email: "",
                           organization: "",
-                          inquiryType: contact.inquiryTypes[0],
+                          inquiryType: contactData.inquiryTypes[0],
                           message: "",
                         });
                       }}
@@ -197,7 +209,7 @@ export default function ContactPage() {
                         onChange={(e) => setFormData({ ...formData, inquiryType: e.target.value })}
                         className="form-select"
                       >
-                        {contact.inquiryTypes.map((type) => (
+                        {contactData.inquiryTypes.map((type) => (
                           <option key={type} value={type}>
                             {type}
                           </option>
@@ -260,22 +272,22 @@ export default function ContactPage() {
               >
                 <span className="section-badge" style={{ color: "var(--navy-hero)" }}>CAMPUS ARCHIVE</span>
                 <h3 className="font-display-serif" style={{ fontSize: "28px", color: "var(--navy-hero)", fontWeight: 700, marginBottom: "16px" }}>
-                  {contact.office.title}
+                  {contactData.office.title}
                 </h3>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14.5px", color: "var(--ink-body)" }}>
                   <p style={{ color: "var(--navy-hero)", fontWeight: 600 }}>
-                    {contact.office.campus}
+                    {contactData.office.campus}
                   </p>
-                  <p>{contact.office.building}</p>
+                  <p>{contactData.office.building}</p>
                   <p style={{ fontSize: "13.5px", lineHeight: 1.5, color: "var(--ink-muted)" }}>
-                    {contact.office.address}
+                    {contactData.office.address}
                   </p>
                   <p
                     className="font-metadata-mono"
                     style={{ fontSize: "12px", color: "var(--navy-hero)", paddingTop: "14px", borderTop: "1px solid rgba(7, 13, 30, 0.08)", fontWeight: 600 }}
                   >
-                    🕒 {contact.office.hours}
+                    🕒 {contactData.office.hours}
                   </p>
                   <p
                     className="font-metadata-mono"
@@ -283,12 +295,12 @@ export default function ContactPage() {
                   >
                     <span>✉ Official Dispatch:</span>
                     <a
-                      href={`mailto:${contact.office.email}`}
+                      href={`mailto:${contactData.office.email}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{ color: "var(--navy-hero)", textDecoration: "underline" }}
                     >
-                      {contact.office.email}
+                      {contactData.office.email}
                     </a>
                   </p>
                 </div>
@@ -310,7 +322,7 @@ export default function ContactPage() {
                 </h3>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                  {contact.coordinators.map((c) => (
+                  {contactData.coordinators.map((c) => (
                     <div
                       key={c.name}
                       style={{
