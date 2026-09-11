@@ -399,7 +399,21 @@
     "celebratingSuccess": {
       "title": "Celebrating Success",
       "oneLiner": "Finlogue Conclave: High-conviction student ventures pitching live to institutional investors.",
-      "image": "/assets/gallery/celebrating-success.jpg"
+      "image": "/assets/gallery/celebrating-success.jpg",
+      "photos": [
+        {
+          "id": "cs-1",
+          "image": "/assets/gallery/celebrating-success.jpg"
+        },
+        {
+          "id": "cs-1789131278201",
+          "image": "/assets/gallery/me1.jpeg"
+        },
+        {
+          "id": "cs-1789131295598",
+          "image": "/assets/gallery/screenshot-898.png"
+        }
+      ]
     },
     "items": [
       {

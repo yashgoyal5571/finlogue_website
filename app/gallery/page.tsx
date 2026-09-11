@@ -9,17 +9,26 @@ import CelebratingSuccessShowcase from "@/components/CelebratingSuccessShowcase"
 export default function GalleryPage() {
   const [activeModalItem, setActiveModalItem] = useState<GalleryItem | null>(null);
   const [items, setItems] = useState<GalleryItem[]>(gallery.items);
+  const [celebratingPhotos, setCelebratingPhotos] = useState<{ id: string; image: string }[]>([]);
 
   // Hydrate items dynamically from the Admin/Sheets API, fallback to default
   useEffect(() => {
     async function loadDynamicGallery() {
       try {
-        const res = await fetch("/api/admin/gallery");
+        const res = await fetch("/api/admin/gallery", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           const list = data.gallery || data.items;
           if (Array.isArray(list) && list.length > 0) {
             setItems(list);
+          }
+          const cs = data.celebratingSuccess;
+          if (cs) {
+            if (Array.isArray(cs.photos) && cs.photos.length > 0) {
+              setCelebratingPhotos(cs.photos);
+            } else if (cs.image) {
+              setCelebratingPhotos([{ id: "cs-1", image: cs.image }]);
+            }
           }
         }
       } catch (err) {
@@ -59,7 +68,7 @@ export default function GalleryPage() {
       </section>
 
       {/* 2. CELEBRATING SUCCESS Showcase (Continuous Marquee + Rotating Stage Slider with Clean One-Liner) */}
-      <CelebratingSuccessShowcase galleryItems={items} />
+      <CelebratingSuccessShowcase galleryItems={items} celebratingPhotos={celebratingPhotos} />
 
       {/* 3. Pure Photo Gallery Grid (Placed BELOW Celebrating Success — E-Cell Clean Photo Grid Style) */}
       <section className="section-pure-white" style={{ padding: "40px 0 90px" }}>

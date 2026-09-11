@@ -65,9 +65,13 @@ const tickerImages = [
 
 interface CelebratingSuccessShowcaseProps {
   galleryItems?: { image: string }[];
+  celebratingPhotos?: { id: string; image: string }[];
 }
 
-export default function CelebratingSuccessShowcase({ galleryItems }: CelebratingSuccessShowcaseProps = {}) {
+export default function CelebratingSuccessShowcase({
+  galleryItems,
+  celebratingPhotos,
+}: CelebratingSuccessShowcaseProps = {}) {
   const [moments, setMoments] = useState<SuccessMoment[]>(defaultSuccessMoments);
   const [headline, setHeadline] = useState("CELEBRATING SUCCESS");
   const [tagline, setTagline] = useState("Meet the past champions and winning cohorts of Finlogue competitions and get inspired by their journey.");
@@ -75,64 +79,87 @@ export default function CelebratingSuccessShowcase({ galleryItems }: Celebrating
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
+  // If passed directly via prop, apply celebratingPhotos immediately
   useEffect(() => {
-    fetch("/api/admin/content?section=gallery")
+    if (celebratingPhotos && celebratingPhotos.length > 0) {
+      setMoments(
+        celebratingPhotos.map((p, idx) => ({
+          id: p.id || `cs-prop-${idx}`,
+          title: "Celebrating Success",
+          subtitle: "Finlogue Conclave & Laureates",
+          image: p.image,
+          badge: "CHAMPIONS PODIUM",
+          highlight: `Moment ${idx + 1} of ${celebratingPhotos.length}`,
+          details: "Celebrating the past champions and winning cohorts of Finlogue competitions.",
+        }))
+      );
+      setCurrentIndex(0);
+    }
+  }, [celebratingPhotos]);
+
+  useEffect(() => {
+    fetch("/api/admin/gallery", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        if (d && d.celebratingSuccess) {
-          if (d.celebratingSuccess.title) setHeadline(d.celebratingSuccess.title);
-          if (Array.isArray(d.celebratingSuccess.photos) && d.celebratingSuccess.photos.length > 0) {
+        if (!d) return;
+        const cs = d.celebratingSuccess || d.data?.celebratingSuccess;
+        if (cs) {
+          if (cs.title) setHeadline(cs.title);
+          if (cs.tagline) setTagline(cs.tagline);
+          const rawPhotos =
+            Array.isArray(cs.photos) && cs.photos.length > 0
+              ? cs.photos
+              : cs.image
+              ? [{ id: "cs-1", image: cs.image }]
+              : null;
+
+          if (rawPhotos && rawPhotos.length > 0) {
             setMoments(
-              d.celebratingSuccess.photos.map((p: any, idx: number) => ({
+              rawPhotos.map((p: any, idx: number) => ({
                 id: p.id || `cs-moment-${idx}`,
-                title: "Finlogue Conclave",
-                subtitle: "High-Conviction Student Ventures & Pitch Laureates",
+                title: "Celebrating Success",
+                subtitle: cs.oneLiner || "Finlogue Conclave & Laureates",
                 image: p.image,
                 badge: "CHAMPIONS PODIUM",
-                highlight: "Institutional Honors & Capital Diligence",
+                highlight: `Moment ${idx + 1} of ${rawPhotos.length}`,
                 details: "Celebrating the past champions and winning cohorts of Finlogue competitions.",
               }))
             );
-          } else if (Array.isArray(d.celebratingSuccess.moments) && d.celebratingSuccess.moments.length > 0) {
-            setMoments(d.celebratingSuccess.moments);
-          } else if (d.celebratingSuccess.image) {
-            setMoments((prev) => [
-              {
-                ...prev[0],
-                image: d.celebratingSuccess.image,
-                title: d.celebratingSuccess.caption || prev[0].title,
-              },
-              ...prev.slice(1),
-            ]);
+          } else if (Array.isArray(cs.moments) && cs.moments.length > 0) {
+            setMoments(cs.moments);
           }
         }
-        if (d && Array.isArray(d.items) && d.items.length > 0) {
-          setDynamicReel(d.items.map((it: any) => it.image).filter(Boolean));
+        const vaultItems = d.gallery || d.items || d.data?.items;
+        if (Array.isArray(vaultItems) && vaultItems.length > 0) {
+          setDynamicReel(vaultItems.map((it: any) => it.image).filter(Boolean));
         }
       })
       .catch(() => {});
   }, []);
 
   const total = moments.length;
+  const safeIndex = total > 0 ? currentIndex % total : 0;
 
   const nextMoment = useCallback(() => {
+    if (total <= 1) return;
     setCurrentIndex((prev) => (prev + 1) % total);
   }, [total]);
 
   const prevMoment = useCallback(() => {
+    if (total <= 1) return;
     setCurrentIndex((prev) => (prev - 1 + total) % total);
   }, [total]);
 
-  // Automatic slide rotation every 3.5 seconds
+  // Automatic slide rotation every 4 seconds if more than 1 moment
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || total <= 1) return;
     const interval = setInterval(() => {
       nextMoment();
-    }, 3500);
+    }, 4000);
     return () => clearInterval(interval);
-  }, [isPaused, nextMoment]);
+  }, [isPaused, total, nextMoment]);
 
-  const activeMoment = moments[currentIndex] || moments[0];
+  const activeMoment = moments[safeIndex] || moments[0];
 
   const reelImages: string[] =
     galleryItems && galleryItems.length > 0
@@ -305,57 +332,63 @@ export default function CelebratingSuccessShowcase({ galleryItems }: Celebrating
           </div>
 
           {/* Left Arrow Button */}
-          <button
-            type="button"
-            onClick={prevMoment}
-            className="success-slider-arrow success-slider-prev"
-            aria-label="Previous success moment"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
+          {total > 1 && (
+            <button
+              type="button"
+              onClick={prevMoment}
+              className="success-slider-arrow success-slider-prev"
+              aria-label="Previous success moment"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+          )}
 
           {/* Right Arrow Button */}
-          <button
-            type="button"
-            onClick={nextMoment}
-            className="success-slider-arrow success-slider-next"
-            aria-label="Next success moment"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
+          {total > 1 && (
+            <button
+              type="button"
+              onClick={nextMoment}
+              className="success-slider-arrow success-slider-next"
+              aria-label="Next success moment"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          )}
 
           {/* Pagination Indicators Below Slider */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "8px",
-              marginTop: "20px",
-            }}
-          >
-            {defaultSuccessMoments.map((m, idx) => (
-              <button
-                key={m.id}
-                type="button"
-                onClick={() => setCurrentIndex(idx)}
-                aria-label={`Go to moment ${idx + 1}`}
-                style={{
-                  width: currentIndex === idx ? "28px" : "8px",
-                  height: "8px",
-                  borderRadius: "4px",
-                  backgroundColor: currentIndex === idx ? "var(--gold-oxford)" : "rgba(7, 13, 30, 0.25)",
-                  border: "none",
-                  cursor: "pointer",
-                  transition: "all 0.25s ease",
-                }}
-              />
-            ))}
-          </div>
+          {total > 1 && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "8px",
+                marginTop: "20px",
+              }}
+            >
+              {moments.map((m, idx) => (
+                <button
+                  key={m.id || `dot-${idx}`}
+                  type="button"
+                  onClick={() => setCurrentIndex(idx)}
+                  aria-label={`Go to moment ${idx + 1}`}
+                  style={{
+                    width: safeIndex === idx ? "28px" : "8px",
+                    height: "8px",
+                    borderRadius: "4px",
+                    backgroundColor: safeIndex === idx ? "var(--gold-oxford)" : "rgba(7, 13, 30, 0.25)",
+                    border: "none",
+                    cursor: "pointer",
+                    transition: "all 0.25s ease",
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
