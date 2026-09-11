@@ -29,15 +29,22 @@ export default function AdminGalleryTab({ data, onSave, showToast }: AdminGaller
 
   // Photo modal state
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
+  const [modalTarget, setModalTarget] = useState<"gallery" | "celebratingSuccess">("gallery");
   const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
   const [editingSlotNum, setEditingSlotNum] = useState<number>(1);
-  const [photoForm, setPhotoForm] = useState<GalleryItem>({
+  const [photoForm, setPhotoForm] = useState<{ id: string; image: string }>({
     id: "",
     image: "/assets/gallery/celebrating-success.jpg",
   });
 
-  const bannerFileInputRef = useRef<HTMLInputElement>(null);
   const photoFileInputRef = useRef<HTMLInputElement>(null);
+
+  const celebratingPhotos: { id: string; image: string }[] =
+    Array.isArray(galleryData.celebratingSuccess?.photos) && galleryData.celebratingSuccess.photos.length > 0
+      ? galleryData.celebratingSuccess.photos
+      : galleryData.celebratingSuccess?.image
+      ? [{ id: "cs-1", image: galleryData.celebratingSuccess.image }]
+      : [{ id: "cs-1", image: "/assets/gallery/celebrating-success.jpg" }];
 
   const handleSaveAll = async (override?: GalleryDataPayload) => {
     setIsSaving(true);
@@ -81,25 +88,6 @@ export default function AdminGalleryTab({ data, onSave, showToast }: AdminGaller
     }
   };
 
-  // Banner image upload
-  const handleBannerFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const uploadedUrl = await handleFileUpload(file, "gallery");
-    if (uploadedUrl) {
-      const updated = {
-        ...galleryData,
-        celebratingSuccess: {
-          ...galleryData.celebratingSuccess,
-          image: uploadedUrl,
-        },
-      };
-      setGalleryData(updated);
-      handleSaveAll(updated);
-    }
-  };
-
   // Photo modal image upload from device
   const handleModalPhotoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -112,16 +100,22 @@ export default function AdminGalleryTab({ data, onSave, showToast }: AdminGaller
   };
 
   // Open photo modal to change or add photo
-  const handleOpenPhotoModal = (item?: GalleryItem, slotIndex?: number) => {
+  const handleOpenPhotoModal = (
+    item?: { id: string; image: string },
+    slotIndex?: number,
+    target: "gallery" | "celebratingSuccess" = "gallery"
+  ) => {
+    setModalTarget(target);
     if (item) {
       setEditingPhotoId(item.id);
       setEditingSlotNum(slotIndex !== undefined ? slotIndex + 1 : 1);
-      setPhotoForm({ ...item });
+      setPhotoForm({ id: item.id, image: item.image });
     } else {
       setEditingPhotoId(null);
-      setEditingSlotNum(galleryData.items.length + 1);
+      const totalCount = target === "celebratingSuccess" ? celebratingPhotos.length : galleryData.items.length;
+      setEditingSlotNum(totalCount + 1);
       setPhotoForm({
-        id: `gal-${Date.now()}`,
+        id: target === "celebratingSuccess" ? `cs-${Date.now()}` : `gal-${Date.now()}`,
         image: "/assets/gallery/celebrating-success.jpg",
       });
     }
@@ -136,12 +130,39 @@ export default function AdminGalleryTab({ data, onSave, showToast }: AdminGaller
       return;
     }
 
+    if (modalTarget === "celebratingSuccess") {
+      const currentList = [...celebratingPhotos];
+      if (editingPhotoId) {
+        const idx = currentList.findIndex((p) => p.id === editingPhotoId);
+        if (idx >= 0) currentList[idx] = { id: editingPhotoId, image: photoForm.image };
+      } else {
+        currentList.push({ id: `cs-${Date.now()}`, image: photoForm.image });
+      }
+
+      const updated: GalleryDataPayload = {
+        ...galleryData,
+        celebratingSuccess: {
+          ...galleryData.celebratingSuccess,
+          image: currentList[0]?.image || photoForm.image,
+          photos: currentList,
+        },
+      };
+      setGalleryData(updated);
+      setIsPhotoModalOpen(false);
+      handleSaveAll(updated);
+      return;
+    }
+
+    // Default: Gallery items
     const list = [...galleryData.items];
     if (editingPhotoId) {
       const idx = list.findIndex((p) => p.id === editingPhotoId);
-      if (idx >= 0) list[idx] = photoForm;
+      if (idx >= 0) list[idx] = { ...list[idx], image: photoForm.image };
     } else {
-      list.push(photoForm);
+      list.push({
+        id: `gal-${Date.now()}`,
+        image: photoForm.image,
+      });
     }
 
     const updated = { ...galleryData, items: list };
@@ -151,152 +172,113 @@ export default function AdminGalleryTab({ data, onSave, showToast }: AdminGaller
   };
 
   const handleDeletePhoto = (id: string, slotNum: number) => {
+    if (modalTarget === "celebratingSuccess") {
+      if (!window.confirm(`Delete Celebrating Success Photo #${slotNum}?`)) return;
+      const currentList = celebratingPhotos.filter((p) => p.id !== id);
+      const updated: GalleryDataPayload = {
+        ...galleryData,
+        celebratingSuccess: {
+          ...galleryData.celebratingSuccess,
+          image: currentList[0]?.image || "/assets/gallery/celebrating-success.jpg",
+          photos: currentList,
+        },
+      };
+      setGalleryData(updated);
+      setIsPhotoModalOpen(false);
+      handleSaveAll(updated);
+      return;
+    }
+
     if (!window.confirm(`Delete Photo #${slotNum}?`)) return;
     const list = galleryData.items.filter((p) => p.id !== id);
     const updated = { ...galleryData, items: list };
     setGalleryData(updated);
-    handleSaveAll(updated);
-  };
-
-  const handleMovePhoto = (index: number, direction: "up" | "down") => {
-    const list = [...galleryData.items];
-    const targetIdx = direction === "up" ? index - 1 : index + 1;
-    if (targetIdx < 0 || targetIdx >= list.length) return;
-
-    const temp = list[index];
-    list[index] = list[targetIdx];
-    list[targetIdx] = temp;
-
-    const updated = { ...galleryData, items: list };
-    setGalleryData(updated);
+    setIsPhotoModalOpen(false);
     handleSaveAll(updated);
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-      {/* 1. Celebrating Success Spotlight Editor */}
+      {/* 1. Celebrating Success Spotlight Photos (Exact same clean photo tile grid, no title/one-liner inputs) */}
       <div className="admin-card" style={{ padding: "28px", backgroundColor: "var(--white-pure)", border: "1px solid var(--white-border)", borderRadius: "8px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "22px", flexWrap: "wrap", gap: "12px" }}>
           <div>
             <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--burgundy-crest)", textTransform: "uppercase", fontWeight: 700 }}>
               SPOTLIGHT FEATURE
             </span>
             <h3 className="font-display-serif" style={{ fontSize: "22px", color: "var(--ink-title)", margin: "4px 0 0" }}>
-              Celebrating Success Hero Showcase
+              Celebrating Success Photos ({celebratingPhotos.length})
             </h3>
           </div>
           <button
             type="button"
-            onClick={() => handleSaveAll()}
-            disabled={isSaving}
+            onClick={() => handleOpenPhotoModal(undefined, undefined, "celebratingSuccess")}
             className="stamp-button stamp-button-primary"
-            style={{ padding: "8px 20px", fontSize: "12px", backgroundColor: "var(--navy-hero)", color: "#FFFFFF", borderColor: "var(--navy-hero)" }}
+            style={{ padding: "8px 18px", fontSize: "12px", backgroundColor: "var(--gold-oxford)", color: "var(--navy-deep)", borderColor: "var(--gold-oxford)", fontWeight: 700 }}
           >
-            {isSaving ? "SAVING..." : "SAVE SPOTLIGHT →"}
+            + ADD PHOTO
           </button>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
-          <div>
-            <div style={{ marginBottom: "16px" }}>
-              <label className="form-label" style={{ fontSize: "12px", marginBottom: "6px", display: "block", fontWeight: 600 }}>
-                SPOTLIGHT TITLE
-              </label>
-              <input
-                type="text"
-                value={galleryData.celebratingSuccess?.title || "Celebrating Success"}
-                onChange={(e) =>
-                  setGalleryData({
-                    ...galleryData,
-                    celebratingSuccess: {
-                      ...galleryData.celebratingSuccess,
-                      title: e.target.value,
-                    },
-                  })
-                }
-                className="form-input"
-                style={{ width: "100%", padding: "10px 14px", fontSize: "13px" }}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "20px" }}>
+          {celebratingPhotos.map((item, idx) => (
+            <div
+              key={item.id || idx}
+              onClick={() => handleOpenPhotoModal(item, idx, "celebratingSuccess")}
+              title="Click anywhere to change this photo"
+              style={{
+                backgroundColor: "var(--white-alabaster)",
+                border: "1.5px solid var(--white-border)",
+                borderRadius: "10px",
+                overflow: "hidden",
+                cursor: "pointer",
+                position: "relative",
+                aspectRatio: "16 / 10.5",
+                transition: "transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease",
+                boxShadow: "0 2px 6px rgba(10, 19, 41, 0.03)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-3px)";
+                e.currentTarget.style.boxShadow = "0 10px 24px rgba(10, 19, 41, 0.08)";
+                e.currentTarget.style.borderColor = "var(--gold-oxford)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 6px rgba(10, 19, 41, 0.03)";
+                e.currentTarget.style.borderColor = "var(--white-border)";
+              }}
+            >
+              {/* Pure Photo Tile with Slot Badge */}
+              <Image
+                src={item.image || "/assets/gallery/celebrating-success.jpg"}
+                alt={`Celebrating Success slot #${idx + 1}`}
+                fill
+                style={{ objectFit: "cover" }}
               />
+              <span
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  left: "10px",
+                  backgroundColor: "rgba(10, 19, 41, 0.88)",
+                  color: "#FFFFFF",
+                  fontSize: "11px",
+                  fontFamily: "var(--font-mono)",
+                  fontWeight: 700,
+                  padding: "3px 9px",
+                  borderRadius: "4px",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  zIndex: 2,
+                }}
+              >
+                #{idx + 1}
+              </span>
             </div>
-
-            <div>
-              <label className="form-label" style={{ fontSize: "12px", marginBottom: "6px", display: "block", fontWeight: 600 }}>
-                ONE-LINER FOOTER TEXT (ON IMAGE)
-              </label>
-              <textarea
-                rows={3}
-                value={galleryData.celebratingSuccess?.oneLiner || ""}
-                onChange={(e) =>
-                  setGalleryData({
-                    ...galleryData,
-                    celebratingSuccess: {
-                      ...galleryData.celebratingSuccess,
-                      oneLiner: e.target.value,
-                    },
-                  })
-                }
-                className="form-input"
-                style={{ width: "100%", padding: "10px 14px", fontSize: "13px", lineHeight: 1.5 }}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="form-label" style={{ fontSize: "12px", marginBottom: "6px", display: "block", fontWeight: 600 }}>
-              HERO IMAGE
-            </label>
-            <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-              <div style={{ width: "180px", height: "110px", position: "relative", border: "1px solid var(--white-border)", borderRadius: "6px", overflow: "hidden", backgroundColor: "#0A1329" }}>
-                {galleryData.celebratingSuccess?.image && (
-                  <Image
-                    src={galleryData.celebratingSuccess.image}
-                    alt="Celebrating Success Preview"
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                )}
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                <input
-                  type="file"
-                  ref={bannerFileInputRef}
-                  onChange={handleBannerFileChange}
-                  accept="image/*"
-                  style={{ display: "none" }}
-                />
-                <button
-                  type="button"
-                  onClick={() => bannerFileInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="stamp-button"
-                  style={{ padding: "8px 16px", fontSize: "12px" }}
-                >
-                  {isUploading ? "Uploading..." : "📷 Upload New Photo"}
-                </button>
-                <input
-                  type="text"
-                  placeholder="Or enter image URL..."
-                  value={galleryData.celebratingSuccess?.image || ""}
-                  onChange={(e) =>
-                    setGalleryData({
-                      ...galleryData,
-                      celebratingSuccess: {
-                        ...galleryData.celebratingSuccess,
-                        image: e.target.value,
-                      },
-                    })
-                  }
-                  className="form-input"
-                  style={{ width: "240px", padding: "6px 10px", fontSize: "11.5px" }}
-                />
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* 2. Photo Grid — Pure visual cards, no title/category/date, click to change via drag/drop, trash icon */}
+      {/* 2. Visual Vault Moments Photo Grid (Pure visual cards, no title/category/date, click to change via drag/drop) */}
       <div className="admin-card" style={{ padding: "28px", backgroundColor: "var(--white-pure)", border: "1px solid var(--white-border)", borderRadius: "8px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
           <div>
@@ -309,11 +291,11 @@ export default function AdminGalleryTab({ data, onSave, showToast }: AdminGaller
           </div>
           <button
             type="button"
-            onClick={() => handleOpenPhotoModal()}
+            onClick={() => handleOpenPhotoModal(undefined, undefined, "gallery")}
             className="stamp-button stamp-button-primary"
             style={{ padding: "8px 18px", fontSize: "12px", backgroundColor: "var(--gold-oxford)", color: "var(--navy-deep)", borderColor: "var(--gold-oxford)", fontWeight: 700 }}
           >
-            + ADD NEW PHOTO CAPTURE
+            + ADD PHOTO
           </button>
         </div>
 
@@ -321,7 +303,7 @@ export default function AdminGalleryTab({ data, onSave, showToast }: AdminGaller
           {galleryData.items.map((item, idx) => (
             <div
               key={item.id || idx}
-              onClick={() => handleOpenPhotoModal(item, idx)}
+              onClick={() => handleOpenPhotoModal(item, idx, "gallery")}
               title="Click anywhere to change this photo"
               style={{
                 backgroundColor: "var(--white-alabaster)",
@@ -517,7 +499,6 @@ export default function AdminGalleryTab({ data, onSave, showToast }: AdminGaller
                     type="button"
                     onClick={() => {
                       handleDeletePhoto(editingPhotoId, editingSlotNum);
-                      setIsPhotoModalOpen(false);
                     }}
                     className="stamp-button"
                     style={{

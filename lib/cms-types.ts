@@ -17,10 +17,16 @@ export interface TeamMemberItem {
   image: string;
 }
 
-export interface CelebratingSuccessContent {
-  title: string;
-  oneLiner: string;
+export interface CelebratingSuccessPhoto {
+  id: string;
   image: string;
+}
+
+export interface CelebratingSuccessContent {
+  title?: string;
+  oneLiner?: string;
+  image?: string;
+  photos?: CelebratingSuccessPhoto[];
 }
 
 export interface GoogleSheetsConfig {

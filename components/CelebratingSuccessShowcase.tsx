@@ -81,8 +81,19 @@ export default function CelebratingSuccessShowcase({ galleryItems }: Celebrating
       .then((d) => {
         if (d && d.celebratingSuccess) {
           if (d.celebratingSuccess.title) setHeadline(d.celebratingSuccess.title);
-          if (d.celebratingSuccess.tagline) setTagline(d.celebratingSuccess.tagline);
-          if (Array.isArray(d.celebratingSuccess.moments) && d.celebratingSuccess.moments.length > 0) {
+          if (Array.isArray(d.celebratingSuccess.photos) && d.celebratingSuccess.photos.length > 0) {
+            setMoments(
+              d.celebratingSuccess.photos.map((p: any, idx: number) => ({
+                id: p.id || `cs-moment-${idx}`,
+                title: "Finlogue Conclave",
+                subtitle: "High-Conviction Student Ventures & Pitch Laureates",
+                image: p.image,
+                badge: "CHAMPIONS PODIUM",
+                highlight: "Institutional Honors & Capital Diligence",
+                details: "Celebrating the past champions and winning cohorts of Finlogue competitions.",
+              }))
+            );
+          } else if (Array.isArray(d.celebratingSuccess.moments) && d.celebratingSuccess.moments.length > 0) {
             setMoments(d.celebratingSuccess.moments);
           } else if (d.celebratingSuccess.image) {
             setMoments((prev) => [
