@@ -325,13 +325,12 @@ export default function AdminGalleryTab({ data, onSave, showToast }: AdminGaller
               title="Click anywhere to change this photo"
               style={{
                 backgroundColor: "var(--white-alabaster)",
-                border: "1px solid var(--white-border)",
+                border: "1.5px solid var(--white-border)",
                 borderRadius: "10px",
                 overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
                 cursor: "pointer",
                 position: "relative",
+                aspectRatio: "16 / 10.5",
                 transition: "transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease",
                 boxShadow: "0 2px 6px rgba(10, 19, 41, 0.03)",
               }}
@@ -347,109 +346,30 @@ export default function AdminGalleryTab({ data, onSave, showToast }: AdminGaller
               }}
             >
               {/* Pure Photo Tile with Slot Badge */}
-              <div style={{ position: "relative", width: "100%", aspectRatio: "16 / 10.5", backgroundColor: "#0A1329" }}>
-                <Image
-                  src={item.image || "/assets/gallery/celebrating-success.jpg"}
-                  alt={`Photo slot #${idx + 1}`}
-                  fill
-                  style={{ objectFit: "cover" }}
-                />
-                <span
-                  style={{
-                    position: "absolute",
-                    top: "10px",
-                    left: "10px",
-                    backgroundColor: "rgba(10, 19, 41, 0.88)",
-                    color: "#FFFFFF",
-                    fontSize: "11px",
-                    fontFamily: "var(--font-mono)",
-                    fontWeight: 700,
-                    padding: "3px 9px",
-                    borderRadius: "4px",
-                    border: "1px solid rgba(255, 255, 255, 0.15)",
-                  }}
-                >
-                  #{idx + 1}
-                </span>
-              </div>
-
-              {/* Clean Bottom Action Strip — Reorder Controls and Single Red Trash Can */}
-              <div
+              <Image
+                src={item.image || "/assets/gallery/celebrating-success.jpg"}
+                alt={`Photo slot #${idx + 1}`}
+                fill
+                style={{ objectFit: "cover" }}
+              />
+              <span
                 style={{
-                  padding: "12px 14px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  backgroundColor: "var(--white-pure)",
-                  borderTop: "1px solid var(--white-border)",
+                  position: "absolute",
+                  top: "10px",
+                  left: "10px",
+                  backgroundColor: "rgba(10, 19, 41, 0.88)",
+                  color: "#FFFFFF",
+                  fontSize: "11px",
+                  fontFamily: "var(--font-mono)",
+                  fontWeight: 700,
+                  padding: "3px 9px",
+                  borderRadius: "4px",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  zIndex: 2,
                 }}
               >
-                {/* Reorder Arrows */}
-                <div style={{ display: "flex", gap: "6px" }}>
-                  <button
-                    type="button"
-                    disabled={idx === 0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleMovePhoto(idx, "up");
-                    }}
-                    className="stamp-button"
-                    style={{ padding: "4px 9px", fontSize: "11px" }}
-                    title="Move Earlier"
-                  >
-                    ←
-                  </button>
-                  <button
-                    type="button"
-                    disabled={idx === galleryData.items.length - 1}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleMovePhoto(idx, "down");
-                    }}
-                    className="stamp-button"
-                    style={{ padding: "4px 9px", fontSize: "11px" }}
-                    title="Move Later"
-                  >
-                    →
-                  </button>
-                </div>
-
-                {/* Single Red Trash Delete Icon */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeletePhoto(item.id, idx + 1);
-                  }}
-                  title={`Delete Photo #${idx + 1}`}
-                  style={{
-                    width: "30px",
-                    height: "30px",
-                    borderRadius: "6px",
-                    border: "1px solid rgba(220, 38, 38, 0.2)",
-                    backgroundColor: "rgba(220, 38, 38, 0.06)",
-                    color: "#dc2626",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    transition: "background 0.15s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "rgba(220, 38, 38, 0.15)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "rgba(220, 38, 38, 0.06)";
-                  }}
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="3 6 5 6 21 6" />
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                    <line x1="10" y1="11" x2="10" y2="17" />
-                    <line x1="14" y1="11" x2="14" y2="17" />
-                  </svg>
-                </button>
-              </div>
+                #{idx + 1}
+              </span>
             </div>
           ))}
         </div>
@@ -464,7 +384,7 @@ export default function AdminGalleryTab({ data, onSave, showToast }: AdminGaller
             style={{
               maxWidth: "520px",
               width: "100%",
-              padding: "28px",
+              padding: "24px 28px 28px",
               position: "relative",
               zIndex: 10,
               backgroundColor: "var(--white-pure)",
@@ -472,16 +392,8 @@ export default function AdminGalleryTab({ data, onSave, showToast }: AdminGaller
               boxShadow: "0 20px 50px rgba(7, 13, 30, 0.35)",
             }}
           >
-            {/* Modal Header */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "18px" }}>
-              <div>
-                <span className="font-metadata-mono" style={{ fontSize: "11px", color: "var(--burgundy-crest)", textTransform: "uppercase", fontWeight: 700 }}>
-                  PHOTO VAULT REPOSITORY
-                </span>
-                <h3 className="font-display-serif" style={{ fontSize: "22px", color: "var(--ink-title)", margin: "4px 0 0" }}>
-                  {editingPhotoId ? `Change Photo #${editingSlotNum}` : "Add New Photo"}
-                </h3>
-              </div>
+            {/* Top Close Button (No Header Text) */}
+            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "4px" }}>
               <button
                 type="button"
                 onClick={() => setIsPhotoModalOpen(false)}
@@ -491,8 +403,10 @@ export default function AdminGalleryTab({ data, onSave, showToast }: AdminGaller
                   color: "var(--ink-muted)",
                   fontSize: "20px",
                   cursor: "pointer",
-                  padding: "4px 8px",
+                  padding: "2px 6px",
+                  lineHeight: 1,
                 }}
+                aria-label="Close"
               >
                 ✕
               </button>
@@ -596,31 +510,64 @@ export default function AdminGalleryTab({ data, onSave, showToast }: AdminGaller
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "8px" }}>
-                <button
-                  type="button"
-                  onClick={() => setIsPhotoModalOpen(false)}
-                  className="stamp-button"
-                  style={{ padding: "9px 18px", fontSize: "12.5px" }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isUploading || isSaving}
-                  className="stamp-button stamp-button-primary"
-                  style={{
-                    padding: "9px 24px",
-                    fontSize: "12.5px",
-                    backgroundColor: "var(--navy-hero)",
-                    color: "#FFFFFF",
-                    borderColor: "var(--navy-hero)",
-                    fontWeight: 700,
-                  }}
-                >
-                  {isSaving ? "Saving..." : "Save Photo"}
-                </button>
+              {/* Action Buttons with Delete inside Modal */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "8px" }}>
+                {editingPhotoId ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleDeletePhoto(editingPhotoId, editingSlotNum);
+                      setIsPhotoModalOpen(false);
+                    }}
+                    className="stamp-button"
+                    style={{
+                      padding: "9px 16px",
+                      fontSize: "12.5px",
+                      color: "#dc2626",
+                      borderColor: "rgba(220, 38, 38, 0.35)",
+                      backgroundColor: "rgba(220, 38, 38, 0.05)",
+                      fontWeight: 600,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6" />
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      <line x1="10" y1="11" x2="10" y2="17" />
+                      <line x1="14" y1="11" x2="14" y2="17" />
+                    </svg>
+                    <span>Delete Photo</span>
+                  </button>
+                ) : <div />}
+
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <button
+                    type="button"
+                    onClick={() => setIsPhotoModalOpen(false)}
+                    className="stamp-button"
+                    style={{ padding: "9px 18px", fontSize: "12.5px" }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isUploading || isSaving}
+                    className="stamp-button stamp-button-primary"
+                    style={{
+                      padding: "9px 24px",
+                      fontSize: "12.5px",
+                      backgroundColor: "var(--navy-hero)",
+                      color: "#FFFFFF",
+                      borderColor: "var(--navy-hero)",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {isSaving ? "Saving..." : "Save Photo"}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
