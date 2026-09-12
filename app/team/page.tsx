@@ -12,7 +12,7 @@ export default function TeamPage() {
       <section className="page-hero-navy">
         <div className="hero-architectural-grid" />
         <div className="container" style={{ position: "relative", zIndex: 10 }}>
-          <div className="badge-pill">
+          <div className="badge-pill hero-anim-badge">
             <span
               style={{
                 width: "8px",
@@ -25,15 +25,16 @@ export default function TeamPage() {
             <span>INSTITUTIONAL GOVERNANCE & PERSONNEL</span>
           </div>
 
-          <h1 className="hero-title" style={{ textAlign: "left", margin: 0 }}>
+          <h1 className="hero-title hero-anim-title" style={{ textAlign: "left", margin: 0 }}>
             The People Behind The House
           </h1>
 
-          <p className="hero-subline" style={{ textAlign: "left", margin: "24px 0 0", maxWidth: "820px" }}>
+          <p className="hero-subline hero-anim-sub" style={{ textAlign: "left", margin: "24px 0 0", maxWidth: "820px" }}>
             An institutional hierarchy governed by discipline, strategic rigor, and student leadership across LNMIIT. Meet the coordinators, department heads, and core associates driving our financial research, strategy advisory, and flagship conclaves.
           </p>
 
           <div
+            className="hero-anim-actions"
             style={{
               display: "flex",
               alignItems: "center",
@@ -49,16 +50,15 @@ export default function TeamPage() {
               COUNCIL · HEADS · CORE ASSOCIATES
             </div>
 
-            {/* Quick jump to recruitment modal */}
+            {/* Quick jump to recruitment page */}
             <Link
               href="/register-pi"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="pi-recruitment-btn"
+              className="pi-recruitment-btn shimmer-sweep"
               style={{ fontSize: "12px", padding: "7px 16px", textDecoration: "none" }}
             >
               <span className="pi-pulse-dot" />
               <span>Register for PI</span>
+              <span className="btn-arrow">→</span>
             </Link>
           </div>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CaseFile } from "@/content/events";
 
 interface InitiativesFlipGridProps {
@@ -68,6 +68,22 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
   const [activeDossierTab, setActiveDossierTab] = useState<"overview" | "rounds" | "prizes" | "rules">("overview");
   const [copiedLink, setCopiedLink] = useState(false);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && selectedDossier) {
+        setSelectedDossier(null);
+      }
+    };
+    if (selectedDossier) {
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedDossier]);
+
   const toggleFlip = (id: string, e: React.MouseEvent) => {
     // Only toggle if not clicking a button inside
     const target = e.target as HTMLElement;
@@ -124,7 +140,7 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
                     {/* Top Status Strip */}
                     <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <span className="font-metadata-mono" style={{ fontSize: "10.5px", color: "var(--gold-oxford)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
-                        {item.category}
+                        {item.id === "potr" ? "★ FEATURED FLAGSHIP" : item.category}
                       </span>
                       <span
                         className={`status-badge ${
@@ -137,15 +153,15 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
                     </div>
 
                     {/* Center Emblem & Branding */}
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", padding: "10px 0" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", padding: "4px 0" }}>
                       <div
                         style={{
-                          width: "88px",
-                          height: "88px",
+                          width: "72px",
+                          height: "72px",
                           borderRadius: "50%",
                           background: "radial-gradient(circle, rgba(197, 168, 128, 0.16) 0%, rgba(7, 14, 32, 0.8) 100%)",
                           border: "1.5px solid rgba(197, 168, 128, 0.45)",
-                          boxShadow: "0 8px 24px rgba(0, 0, 0, 0.5), inset 0 0 16px rgba(197, 168, 128, 0.15)",
+                          boxShadow: "0 6px 20px rgba(0, 0, 0, 0.5), inset 0 0 14px rgba(197, 168, 128, 0.15)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -157,10 +173,10 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
                       <h3
                         className="font-display-serif"
                         style={{
-                          fontSize: "24px",
+                          fontSize: "21px",
                           color: "var(--gold-oxford)",
                           lineHeight: 1.25,
-                          maxWidth: "260px",
+                          maxWidth: "240px",
                           textShadow: "0 2px 8px rgba(0,0,0,0.6)",
                           margin: 0,
                         }}
@@ -170,11 +186,11 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
                     </div>
 
                     {/* Bottom Tagline */}
-                    <div style={{ width: "100%", textAlign: "center", borderTop: "1px solid rgba(197, 168, 128, 0.2)", paddingTop: "14px" }}>
+                    <div style={{ width: "100%", textAlign: "center", borderTop: "1px solid rgba(197, 168, 128, 0.2)", paddingTop: "10px" }}>
                       <p
                         className="font-metadata-mono"
                         style={{
-                          fontSize: "11.5px",
+                          fontSize: "11px",
                           color: "#FFFFFF",
                           margin: 0,
                           letterSpacing: "0.06em",
@@ -193,9 +209,9 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
 
                   <div className="ecell-card-body">
                     {/* Top Title & Batch Header */}
-                    <div style={{ width: "100%", textAlign: "left", borderBottom: "1px solid rgba(197, 168, 128, 0.2)", paddingBottom: "10px" }}>
+                    <div style={{ width: "100%", textAlign: "left", borderBottom: "1px solid rgba(197, 168, 128, 0.2)", paddingBottom: "8px" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <h4 className="font-display-serif" style={{ fontSize: "19px", color: "var(--gold-oxford)", margin: 0 }}>
+                        <h4 className="font-display-serif" style={{ fontSize: "17px", color: "var(--gold-oxford)", margin: 0 }}>
                           {item.title}
                         </h4>
                         <span className="font-metadata-mono" style={{ fontSize: "10px", color: "var(--platinum-muted)" }}>
@@ -205,15 +221,15 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
                     </div>
 
                     {/* Middle Overview Paragraph (Matching screenshot description box) */}
-                    <div style={{ padding: "10px 4px", textAlign: "left", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                    <div style={{ padding: "6px 2px", textAlign: "left", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                       <p
                         style={{
-                          fontSize: "13.5px",
+                          fontSize: "12.5px",
                           color: "var(--platinum-muted)",
-                          lineHeight: 1.6,
+                          lineHeight: 1.5,
                           margin: 0,
                           display: "-webkit-box",
-                          WebkitLineClamp: 5,
+                          WebkitLineClamp: 3,
                           WebkitBoxOrient: "vertical",
                           overflow: "hidden",
                         }}
@@ -221,12 +237,12 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
                         {item.description}
                       </p>
 
-                      <div style={{ marginTop: "14px", display: "flex", flexDirection: "column", gap: "6px" }}>
-                        <div style={{ fontSize: "12px", color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                      <div style={{ marginTop: "8px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                        <div style={{ fontSize: "11.5px", color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
                           <span style={{ color: "var(--gold-oxford)" }}>• Honors:</span>
                           <span style={{ color: "var(--emerald)" }}>{item.prizeOrOutput}</span>
                         </div>
-                        <div style={{ fontSize: "12px", color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <div style={{ fontSize: "11.5px", color: "#FFFFFF", display: "flex", alignItems: "center", gap: "6px" }}>
                           <span style={{ color: "var(--gold-oxford)" }}>• Format:</span>
                           <span style={{ color: "var(--platinum-muted)" }}>{item.eligibility}</span>
                         </div>
@@ -234,15 +250,15 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
                     </div>
 
                     {/* Bottom Action Area: "Know More ➔" Pill Button (Matching E-Cell Screenshot) */}
-                    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "10px", alignItems: "center", borderTop: "1px solid rgba(197, 168, 128, 0.2)", paddingTop: "14px" }}>
+                    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "8px", alignItems: "center", borderTop: "1px solid rgba(197, 168, 128, 0.2)", paddingTop: "10px" }}>
                       <button
                         type="button"
                         onClick={(e) => handleOpenDossier(item, e)}
                         className="ecell-know-more-btn"
-                        style={{ width: "100%", maxWidth: "220px" }}
+                        style={{ width: "100%", maxWidth: "200px", padding: "7px 16px", fontSize: "12px" }}
                       >
                         <span>Know More</span>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10" />
                           <polyline points="12 16 16 12 12 8" />
                           <line x1="8" y1="12" x2="16" y2="12" />
@@ -270,6 +286,29 @@ export default function InitiativesFlipGrid({ items, onRegisterClick }: Initiati
                         >
                           Quick Register →
                         </button>
+                      )}
+
+                      {item.id === "potr" && (
+                        <a
+                          href="#potr"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const el = document.getElementById("potr");
+                            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                          }}
+                          className="font-metadata-mono"
+                          style={{
+                            fontSize: "10.5px",
+                            color: "var(--platinum-muted)",
+                            textDecoration: "underline",
+                            cursor: "pointer",
+                            textAlign: "center",
+                            marginTop: "2px",
+                            letterSpacing: "0.04em",
+                          }}
+                        >
+                          ↑ View Flagship Conclave Showcase
+                        </a>
                       )}
                     </div>
                   </div>

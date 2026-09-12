@@ -332,7 +332,7 @@
         "shortLine": "Where founders pitch. Investors listen.",
         "description": "A startup–investor platform where founders pitch their ventures and engage with investors, industry leaders and ecosystem enablers.",
         "typeIndicator": "ANNUAL CONCLAVE",
-        "status": "ACTIVE",
+        "status": "CLOSED",
         "prizeOrOutput": "Founder–Investor Platform",
         "eligibility": "Collegiate Founders & Startups"
       },
@@ -345,7 +345,7 @@
         "shortLine": "Uncover what moves a stock — and what could move it next.",
         "description": "An equity research challenge built around understanding the story behind a stock's price, what moves it and what could move it next.",
         "typeIndicator": "EQUITY CHALLENGE",
-        "status": "ACTIVE",
+        "status": "CLOSED",
         "prizeOrOutput": "Equity Research",
         "eligibility": "Student Analysts & Researchers"
       },
@@ -358,7 +358,7 @@
         "shortLine": "The people and stories behind the pitches.",
         "description": "An Instagram interview series featuring founders from Pitch on the Rocks, exploring their journeys, challenges, decisions and the stories behind the businesses they are building.",
         "typeIndicator": "INTERVIEW SERIES",
-        "status": "ACTIVE",
+        "status": "CLOSED",
         "prizeOrOutput": "Founder Stories",
         "eligibility": "POTR Founders & Ecosystem Builders"
       },
@@ -371,7 +371,7 @@
         "shortLine": "Research a company. Understand its product. Pitch it to the panel.",
         "description": "A company research and pitching challenge built around understanding a business, its product and the opportunity behind it.",
         "typeIndicator": "RESEARCH & PITCH",
-        "status": "ACTIVE",
+        "status": "CLOSED",
         "prizeOrOutput": "Company Research & Pitch",
         "eligibility": "Student Participants"
       },
@@ -384,7 +384,7 @@
         "shortLine": "Real startups. Real problems. Real solutions.",
         "description": "A real-world problem-solving initiative where students work on actual challenges shared by startups and develop practical solutions for the businesses themselves.",
         "typeIndicator": "PROBLEM SPRINT",
-        "status": "ACTIVE",
+        "status": "CLOSED",
         "prizeOrOutput": "Practical Business Solutions",
         "eligibility": "Cross-Disciplinary Problem Solvers"
       }
@@ -456,9 +456,9 @@
       "tier": "coordinators",
       "focus": "Institutional Strategy & Leadership",
       "dept": "Institutional Strategy & Leadership",
-      "email": "24uec533@lnmiit.ac.in",
-      "linkedin": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
-      "image": "/assets/team/screenshot-2026-09-03-212444.png"
+      "email": "24ucs155@lnmiit.ac.in",
+      "linkedin": "https://www.linkedin.com/in/aditya-tiwari-97711032b/",
+      "image": "/assets/team/tiwari.jpeg"
     },
     {
       "id": "coord-2",
@@ -622,10 +622,10 @@
       "name": "Manav Kabra",
       "role": "Associate",
       "tier": "coreTeam",
-      "dept": "",
+      "dept": "Startup",
       "email": "25dcs018@lnmiit.ac.in",
       "linkedin": "https://www.linkedin.com/in/manav-kabra-448560251?utm_source=share_via&utm_content=profile&utm_medium=member_android",
-      "image": "/assets/team/photo-from-manavkabra-manav-mukesh-kabra.jpg"
+      "image": "/assets/team/m1.jpg"
     },
     {
       "id": "team-1789125890330",

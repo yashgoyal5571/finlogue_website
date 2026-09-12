@@ -1,35 +1,16 @@
 import { NextResponse } from "next/server";
+import { parseRequestBody, sanitizeString } from "@/lib/api-utils";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
-    let body: any = {};
-    const contentType = request.headers.get("content-type") || "";
-
-    if (contentType.includes("application/json")) {
-      const text = await request.text();
-      try {
-        body = JSON.parse(text);
-      } catch {
-        return NextResponse.json(
-          { success: false, error: "Invalid JSON format in payload." },
-          { status: 400 }
-        );
-      }
-    } else if (contentType.includes("application/x-www-form-urlencoded")) {
-      const formData = await request.formData();
-      body = Object.fromEntries(formData);
-    } else {
-      const text = await request.text();
-      try {
-        body = JSON.parse(text);
-      } catch {
-        body = {};
-      }
-    }
-
-    const { name, email, organization, inquiryType, message } = body;
+    const body = await parseRequestBody<Record<string, string>>(request);
+    const name = sanitizeString(body.name, 100);
+    const email = sanitizeString(body.email, 120);
+    const organization = sanitizeString(body.organization, 150);
+    const inquiryType = sanitizeString(body.inquiryType, 100);
+    const message = sanitizeString(body.message, 3000);
 
     if (!name || !email || !message) {
       return NextResponse.json(

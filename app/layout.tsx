@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Inter, IBM_Plex_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ScrollProgressBar from "@/components/ScrollProgressBar";
+import BackToTop from "@/components/BackToTop";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -55,11 +57,13 @@ export default function RootLayout({
       className={`${cormorant.variable} ${inter.variable} ${ibmPlexMono.variable}`}
     >
       <body>
+        <ScrollProgressBar />
         <Navbar />
         <div className="page-content-offset">
           {children}
         </div>
         <Footer />
+        <BackToTop />
       </body>
     </html>
   );

@@ -5,9 +5,19 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
+const NAV_LINKS = [
+  { label: "Home", href: "/" },
+  { label: "About Us", href: "/about" },
+  { label: "Events", href: "/events" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Team", href: "/team" },
+  { label: "Contact Us", href: "/contact" },
+];
+
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [hoveredHref, setHoveredHref] = useState<string | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -50,17 +60,6 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [mobileDrawerOpen]);
 
-  const [hoveredHref, setHoveredHref] = useState<string | null>(null);
-
-  const navLinks = [
-    { label: "Home", href: "/" },
-    { label: "About Us", href: "/about" },
-    { label: "Events", href: "/events" },
-    { label: "Gallery", href: "/gallery" },
-    { label: "Team", href: "/team" },
-    { label: "Contact Us", href: "/contact" },
-  ];
-
   return (
     <>
       <header className="site-header-wrapper">
@@ -72,7 +71,7 @@ export default function Navbar() {
               aria-label="Primary Navigation Left"
               onMouseLeave={() => setHoveredHref(null)}
             >
-              {navLinks.slice(0, 3).map((link) => {
+              {NAV_LINKS.slice(0, 3).map((link) => {
                 const isSelected = hoveredHref
                   ? hoveredHref === link.href
                   : pathname === link.href;
@@ -121,7 +120,7 @@ export default function Navbar() {
                 aria-label="Primary Navigation Right"
                 onMouseLeave={() => setHoveredHref(null)}
               >
-                {navLinks.slice(3).map((link) => {
+                {NAV_LINKS.slice(3).map((link) => {
                   const isSelected = hoveredHref
                     ? hoveredHref === link.href
                     : pathname === link.href;
@@ -140,12 +139,10 @@ export default function Navbar() {
                 })}
               </nav>
 
-              {/* Recruitment Callout (Waterfield-Inspired Serif Text with Top Bronze Pill) */}
+              {/* Recruitment Callout (Clean Single-Tab Transition) */}
               <div className="nav-callout-wrapper">
                 <Link
                   href="/register-pi"
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="nav-waterfield-callout"
                   aria-label="Register for Personal Interviews (PI)"
                   title="Recruitments Open · Register for Personal Interviews"
@@ -170,7 +167,6 @@ export default function Navbar() {
           </div>
         </div>
       </header>
-
 
       {/* Mobile Drawer Overlay */}
       {mobileDrawerOpen && (
@@ -229,16 +225,14 @@ export default function Navbar() {
                 </button>
               </div>
 
-              {/* Navigation Links */}
+              {/* Navigation Links (Clean Same-Tab SPA Navigation) */}
               <nav className="drawer-nav" aria-label="Mobile Navigation">
-                {navLinks.map((link, idx) => {
+                {NAV_LINKS.map((link, idx) => {
                   const isActive = pathname === link.href;
                   return (
                     <Link
                       key={link.href}
                       href={link.href}
-                      target={link.href === "/" ? undefined : "_blank"}
-                      rel={link.href === "/" ? undefined : "noopener noreferrer"}
                       onClick={() => setMobileDrawerOpen(false)}
                       className={`drawer-link ${isActive ? "active" : ""}`}
                     >
@@ -258,8 +252,6 @@ export default function Navbar() {
               <div style={{ marginTop: "24px", paddingTop: "20px", borderTop: "1px solid rgba(226, 232, 240, 0.1)" }}>
                 <Link
                   href="/register-pi"
-                  target="_blank"
-                  rel="noopener noreferrer"
                   onClick={() => setMobileDrawerOpen(false)}
                   className="pi-recruitment-btn"
                   style={{ width: "100%", justifyContent: "center", padding: "12px 18px", textDecoration: "none" }}
@@ -282,8 +274,6 @@ export default function Navbar() {
           </aside>
         </div>
       )}
-
     </>
   );
 }
-

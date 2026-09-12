@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import ScrollReveal from "@/components/ScrollReveal";
 
 interface Chamber {
   title: string;
@@ -114,69 +115,69 @@ export default function CollegiateCharterShowcase() {
         {/* ===================================================================
             THE VISION HEADER
             =================================================================== */}
-        <div style={{ textAlign: "center", maxWidth: "940px", margin: "0 auto 52px" }}>
-
-
-          {/* Central Medallion Crest */}
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: "22px" }}>
-            <div
-              style={{
-                width: "54px",
-                height: "54px",
-                borderRadius: "50%",
-                border: "1px solid var(--gold-border)",
-                backgroundColor: "var(--white-alabaster)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 4px 14px rgba(197, 168, 128, 0.16)",
-              }}
-            >
-              <svg
-                viewBox="0 0 100 100"
+        <ScrollReveal direction="up" delay={40}>
+          <div style={{ textAlign: "center", maxWidth: "940px", margin: "0 auto 52px" }}>
+            {/* Central Medallion Crest */}
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "22px" }}>
+              <div
                 style={{
-                  width: "40px",
-                  height: "40px",
-                  animation: "charterSealSpinReverse 50s linear infinite",
+                  width: "54px",
+                  height: "54px",
+                  borderRadius: "50%",
+                  border: "1px solid var(--gold-border)",
+                  backgroundColor: "var(--white-alabaster)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 4px 14px rgba(197, 168, 128, 0.16)",
                 }}
               >
-                <circle cx="50" cy="50" r="46" fill="none" stroke="var(--gold-oxford)" strokeWidth="1.2" strokeDasharray="3 3" />
-                <circle cx="50" cy="50" r="38" fill="none" stroke="var(--gold-oxford)" strokeWidth="0.8" />
-                <polygon points="50,15 62,38 85,50 62,62 50,85 38,62 15,50 38,38" fill="none" stroke="var(--gold-oxford)" strokeWidth="0.9" />
-                <circle cx="50" cy="50" r="5" fill="var(--gold-oxford)" />
-              </svg>
+                <svg
+                  viewBox="0 0 100 100"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    animation: "charterSealSpinReverse 50s linear infinite",
+                  }}
+                >
+                  <circle cx="50" cy="50" r="46" fill="none" stroke="var(--gold-oxford)" strokeWidth="1.2" strokeDasharray="3 3" />
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="var(--gold-oxford)" strokeWidth="0.8" />
+                  <polygon points="50,15 62,38 85,50 62,62 50,85 38,62 15,50 38,38" fill="none" stroke="var(--gold-oxford)" strokeWidth="0.9" />
+                  <circle cx="50" cy="50" r="5" fill="var(--gold-oxford)" />
+                </svg>
+              </div>
             </div>
+
+            {/* Monumental Vision Title */}
+            <h2
+              className="font-display-serif"
+              style={{
+                fontSize: "clamp(30px, 3.6vw, 46px)",
+                color: "var(--ink-title)",
+                lineHeight: 1.22,
+                margin: "0 auto 20px",
+                fontWeight: 400,
+                letterSpacing: "-0.015em",
+              }}
+            >
+              Forging India&apos;s premier collegiate ecosystem for venture intelligence, corporate strategy, and financial engineering.
+            </h2>
+
+            {/* Purpose Statement for the Student-Led Club */}
+            <p
+              style={{
+                fontSize: "clamp(15px, 1.15vw, 17px)",
+                color: "var(--ink-muted)",
+                maxWidth: "760px",
+                margin: "0 auto",
+                lineHeight: 1.7,
+                fontFamily: "var(--font-sans)",
+              }}
+            >
+              A 100% student-founded and student-led society at LNMIIT. We take finance and business strategy beyond textbook theory through four operational working chambers driven by peer mentorship, analytical rigor, and competitive execution.
+            </p>
           </div>
-
-          {/* Monumental Vision Title */}
-          <h2
-            className="font-display-serif"
-            style={{
-              fontSize: "clamp(30px, 3.6vw, 46px)",
-              color: "var(--ink-title)",
-              lineHeight: 1.22,
-              margin: "0 auto 20px",
-              fontWeight: 400,
-              letterSpacing: "-0.015em",
-            }}
-          >
-            Forging India&apos;s premier collegiate ecosystem for venture intelligence, corporate strategy, and financial engineering.
-          </h2>
-
-          {/* Purpose Statement for the Student-Led Club */}
-          <p
-            style={{
-              fontSize: "clamp(15px, 1.15vw, 17px)",
-              color: "var(--ink-muted)",
-              maxWidth: "760px",
-              margin: "0 auto",
-              lineHeight: 1.7,
-              fontFamily: "var(--font-sans)",
-            }}
-          >
-            A 100% student-founded and student-led society at LNMIIT. We take finance and business strategy beyond textbook theory through four operational working chambers driven by peer mentorship, analytical rigor, and competitive execution.
-          </p>
-        </div>
+        </ScrollReveal>
 
         {/* ===================================================================
             THE 4 OPERATIONAL CHAMBERS (CLEAN, DISTINCT BORDERED CARDS)
@@ -193,26 +194,28 @@ export default function CollegiateCharterShowcase() {
             const isHovered = activeChamber === index;
 
             return (
-              <div
-                key={chamber.title}
-                onMouseEnter={() => setActiveChamber(index)}
-                onMouseLeave={() => setActiveChamber(null)}
-                style={{
-                  backgroundColor: isHovered ? "var(--white-alabaster)" : "var(--white-pure)",
-                  border: isHovered ? "1px solid var(--white-border-strong)" : "1px solid var(--white-border)",
-                  borderRadius: "8px",
-                  boxShadow: isHovered
-                    ? "0 10px 26px -4px rgba(7, 13, 30, 0.08), 0 3px 8px -2px rgba(7, 13, 30, 0.04)"
-                    : "0 2px 8px -2px rgba(7, 13, 30, 0.03)",
-                  padding: "clamp(26px, 2.8vw, 36px) clamp(20px, 2.2vw, 26px)",
-                  display: "flex",
-                  flexDirection: "column",
-                  position: "relative",
-                  overflow: "hidden",
-                  transition: "border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease, transform 0.22s ease",
-                  transform: isHovered ? "translateY(-3px)" : "translateY(0)",
-                }}
-              >
+              <ScrollReveal key={chamber.title} direction="up" delay={index * 75}>
+                <div
+                  className="shimmer-sweep gold-glow-hover"
+                  onMouseEnter={() => setActiveChamber(index)}
+                  onMouseLeave={() => setActiveChamber(null)}
+                  style={{
+                    backgroundColor: isHovered ? "var(--white-alabaster)" : "var(--white-pure)",
+                    border: isHovered ? "1px solid var(--white-border-strong)" : "1px solid var(--white-border)",
+                    borderRadius: "8px",
+                    boxShadow: isHovered
+                      ? "0 10px 26px -4px rgba(7, 13, 30, 0.08), 0 3px 8px -2px rgba(7, 13, 30, 0.04)"
+                      : "0 2px 8px -2px rgba(7, 13, 30, 0.03)",
+                    padding: "clamp(26px, 2.8vw, 36px) clamp(20px, 2.2vw, 26px)",
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative",
+                    overflow: "hidden",
+                    height: "100%",
+                    transition: "border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease, transform 0.22s ease",
+                    transform: isHovered ? "translateY(-3px)" : "translateY(0)",
+                  }}
+                >
                 {/* Subtle top accent hairline upon hover */}
                 <div
                   style={{
@@ -292,9 +295,10 @@ export default function CollegiateCharterShowcase() {
                   </ul>
                 </div>
               </div>
-            );
-          })}
-        </div>
+            </ScrollReveal>
+          );
+        })}
+      </div>
       </div>
 
       {/* Embedded CSS for Rotations and Responsive Grid */}

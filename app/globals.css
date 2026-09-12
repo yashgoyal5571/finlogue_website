@@ -236,6 +236,182 @@ img {
   animation: formalFadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Cinematic Hero Entrance Keyframes */
+@keyframes heroBadgeEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes heroTitleEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroSubtitleEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroActionsEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-anim-badge {
+  animation: heroBadgeEnter 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+.hero-anim-title {
+  animation: heroTitleEnter 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+}
+
+.hero-anim-sub {
+  animation: heroSubtitleEnter 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+.hero-anim-actions {
+  animation: heroActionsEnter 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+}
+
+/* Scroll-Driven Reveal System */
+.reveal-init {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-init.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-fade {
+  opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity;
+}
+
+.reveal-fade.is-revealed {
+  opacity: 1;
+}
+
+/* Gold Shimmer Sweep (Refined 45-degree angled luxury refraction) */
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-150%) rotate(25deg);
+  }
+  100% {
+    transform: translateX(250%) rotate(25deg);
+  }
+}
+
+.shimmer-sweep {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-sweep::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: 0;
+  width: 50%;
+  height: 220%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(197, 168, 128, 0.22) 50%,
+    rgba(255, 255, 255, 0.35) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-150%) rotate(25deg);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.shimmer-sweep:hover::after {
+  opacity: 1;
+  animation: shimmerSweep 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Ambient Gold Border & Depth Lift on Hover */
+.gold-glow-hover {
+  transition: box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease;
+}
+
+.gold-glow-hover:hover {
+  border-color: rgba(197, 168, 128, 0.65) !important;
+  box-shadow: 0 10px 28px -6px rgba(197, 168, 128, 0.25), 0 4px 12px rgba(10, 19, 41, 0.15) !important;
+  transform: translateY(-2.5px);
+}
+
+/* Arrow Micro-Interaction for Buttons and Links */
+.btn-arrow {
+  display: inline-block;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  vertical-align: middle;
+}
+
+.stamp-button:hover .btn-arrow,
+.secondary-button:hover .btn-arrow,
+a:hover .btn-arrow,
+button:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Reduced Motion Fallback for Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .hero-anim-badge,
+  .hero-anim-title,
+  .hero-anim-sub,
+  .hero-anim-actions,
+  .animate-formal-fade-up {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .reveal-init,
+  .reveal-fade {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .shimmer-sweep::after {
+    display: none !important;
+  }
+  .btn-arrow {
+    transform: none !important;
+  }
+}
+
 /* 6. Buttons & Interactive Controls */
 .stamp-button {
   display: inline-flex;
@@ -776,6 +952,40 @@ img {
   padding: 84px 0 60px;
   overflow: hidden;
   border-bottom: 1px solid var(--navy-border);
+}
+
+.page-hero-navy::before {
+  content: "";
+  position: absolute;
+  top: -25%;
+  left: 15%;
+  width: 70%;
+  height: 150%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(197, 168, 128, 0.08) 0%,
+    rgba(22, 36, 71, 0.35) 45%,
+    transparent 72%
+  );
+  pointer-events: none;
+  z-index: 1;
+  filter: blur(48px);
+  animation: heroAmbientDrift 18s ease-in-out infinite alternate;
+}
+
+@keyframes heroAmbientDrift {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(-4%, 6%) scale(1.12);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(5%, -3%) scale(0.96);
+    opacity: 0.75;
+  }
 }
 
 .page-hero-navy.hero-full {
@@ -2090,10 +2300,10 @@ a .sponsor-tile-wrapper {
     gap: 16px 10px !important;
   }
   .ecell-card-container {
-    height: 460px !important;
+    height: 385px !important;
   }
   .ecell-card-face {
-    padding: 24px 16px !important;
+    padding: 20px 14px !important;
   }
   .hero-title-display {
     font-size: clamp(26px, 7.5vw, 36px) !important;
@@ -2112,7 +2322,7 @@ a .sponsor-tile-wrapper {
 /* 17. IIT Bombay E-Cell Inspired 3D Flip Card System & Double Border Frames */
 .ecell-card-container {
   perspective: 1200px;
-  height: 480px;
+  height: 395px;
   width: 100%;
   position: relative;
   cursor: pointer;
@@ -2129,10 +2339,23 @@ a .sponsor-tile-wrapper {
   border-radius: 24px;
 }
 
-/* Hover or clicked flipped state */
-.ecell-card-container:hover .ecell-card-inner,
+/* Flipped state via active toggle (tap on mobile or click on desktop) */
 .ecell-card-container.is-flipped .ecell-card-inner {
   transform: rotateY(180deg);
+}
+
+/* Mouse Hover Flip on Desktop PC Only (Prevents sticky flips on touch devices) */
+@media (hover: hover) and (pointer: fine) {
+  .ecell-card-container:hover .ecell-card-inner {
+    transform: rotateY(180deg);
+  }
+  .ecell-card-container:hover .ecell-card-face {
+    border-color: var(--gold-oxford);
+    box-shadow: 0 20px 42px -4px rgba(4, 9, 22, 0.8), 0 0 24px rgba(197, 168, 128, 0.25);
+  }
+  .ecell-card-container:hover .ecell-card-frame {
+    border-color: rgba(197, 168, 128, 0.6);
+  }
 }
 
 .ecell-card-face {
@@ -2148,16 +2371,11 @@ a .sponsor-tile-wrapper {
   box-shadow: 0 16px 36px -4px rgba(4, 9, 22, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
-  justifyContent: space-between;
+  justify-content: space-between;
   align-items: center;
-  padding: 32px 24px;
+  padding: 22px 20px;
   overflow: hidden;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-.ecell-card-container:hover .ecell-card-face {
-  border-color: var(--gold-oxford);
-  box-shadow: 0 20px 42px -4px rgba(4, 9, 22, 0.8), 0 0 24px rgba(197, 168, 128, 0.25);
 }
 
 .ecell-card-face-front {
@@ -2183,10 +2401,6 @@ a .sponsor-tile-wrapper {
   transition: border-color 0.25s ease;
 }
 
-.ecell-card-container:hover .ecell-card-frame {
-  border-color: rgba(197, 168, 128, 0.6);
-}
-
 /* Card Content Container inside the inner frame */
 .ecell-card-body {
   position: relative;
@@ -2195,7 +2409,7 @@ a .sponsor-tile-wrapper {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justifyContent: space-between;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -2340,4 +2554,68 @@ a .sponsor-tile-wrapper {
 .investor-post-card:hover h4 {
   color: var(--navy-hero) !important;
 }
+
+/* Back to Top Interactive Hover */
+.back-to-top-btn:hover {
+  background-color: #070D1E !important;
+  border-color: #C5A880 !important;
+  box-shadow: 0 12px 28px rgba(7, 13, 30, 0.6), 0 0 20px rgba(197, 168, 128, 0.35) !important;
+  transform: translateY(-3px) scale(1.05) !important;
+}
+.back-to-top-btn:hover .back-to-top-arrow {
+  transform: translateY(-2px);
+}
+.back-to-top-btn:active {
+  transform: translateY(0) scale(0.96) !important;
+}
+
+/* CSS Scroll-Driven Animation for Progress Bar (Zero JS main-thread churn) */
+@keyframes growProgressBar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.scroll-progress-bar-fill.scroll-driven-progress {
+  animation: growProgressBar auto linear;
+  animation-timeline: scroll(root);
+}
+
+/* Responsive Gallery Photo Grid */
+.gallery-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.gallery-photo-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(7, 13, 30, 0.16);
+  border-color: var(--gold-oxford) !important;
+}
+.gallery-photo-tile:hover img {
+  transform: scale(1.04);
+}
+.gallery-photo-tile:hover .gallery-frosted-caption {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+}
+
+@media (max-width: 1024px) {
+  .gallery-photo-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .gallery-photo-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}
+
 

@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -147,27 +145,27 @@ export default function Footer() {
             </h4>
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
               <li>
-                <Link href="/events#potr" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/events#potr" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Pitch on the Rocks (POTR)
                 </Link>
               </li>
               <li>
-                <Link href="/events#case-crackers" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/events#case-crackers" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   National Case Crackers
                 </Link>
               </li>
               <li>
-                <Link href="/events#valuation-lab" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/events#valuation-lab" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Valuation & Equity Research Lab
                 </Link>
               </li>
               <li>
-                <Link href="/events#market-watch" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/events#market-watch" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Market Watch Series
                 </Link>
               </li>
               <li>
-                <Link href="/events#ma-simulation" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/events#ma-simulation" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   M&A Boardroom Simulation
                 </Link>
               </li>
@@ -201,27 +199,27 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/events" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/events" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Events & Conclaves
                 </Link>
               </li>
               <li>
-                <Link href="/gallery" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/gallery" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Media & Archival Vault
                 </Link>
               </li>
               <li>
-                <Link href="/team" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/team" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Team & Leadership
                 </Link>
               </li>
               <li>
-                <Link href="/contact" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
+                <Link href="/contact" style={{ fontSize: "13.5px", color: "var(--platinum-muted)", transition: "color 0.15s" }}>
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link href="/admin" target="_blank" rel="noopener noreferrer" style={{ fontSize: "13.5px", color: "var(--gold-oxford)", transition: "color 0.15s" }}>
+                <Link href="/admin" style={{ fontSize: "13.5px", color: "var(--gold-oxford)", transition: "color 0.15s" }}>
                   Coordinator Desk ↗
                 </Link>
               </li>

@@ -2,9 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { gallery, GalleryItem } from "@/content/gallery";
-import LightboxModal from "@/components/LightboxModal";
 import CelebratingSuccessShowcase from "@/components/CelebratingSuccessShowcase";
+import ScrollReveal from "@/components/ScrollReveal";
+
+const LightboxModal = dynamic(() => import("@/components/LightboxModal"), {
+  ssr: false,
+});
 
 export default function GalleryPage() {
   const [activeModalItem, setActiveModalItem] = useState<GalleryItem | null>(null);
@@ -44,7 +49,7 @@ export default function GalleryPage() {
       <section className="page-hero-navy">
         <div className="hero-architectural-grid" />
         <div className="container" style={{ position: "relative", zIndex: 10 }}>
-          <div className="badge-pill">
+          <div className="badge-pill hero-anim-badge">
             <span
               style={{
                 width: "8px",
@@ -57,94 +62,115 @@ export default function GalleryPage() {
             <span>{gallery.header.badge}</span>
           </div>
 
-          <h1 className="hero-title" style={{ textAlign: "left", margin: 0 }}>
+          <h1 className="hero-title hero-anim-title" style={{ textAlign: "left", margin: 0 }}>
             {gallery.header.title}
           </h1>
 
-          <p className="hero-subline" style={{ textAlign: "left", margin: "24px 0 0", maxWidth: "780px" }}>
+          <p className="hero-subline hero-anim-sub" style={{ textAlign: "left", margin: "24px 0 0", maxWidth: "780px" }}>
             {gallery.header.subtitle}
           </p>
         </div>
       </section>
 
-      {/* 2. CELEBRATING SUCCESS Showcase (Continuous Marquee + Rotating Stage Slider with Clean One-Liner) */}
-      <CelebratingSuccessShowcase galleryItems={items} celebratingPhotos={celebratingPhotos} />
+      {/* 2. CELEBRATING SUCCESS Showcase (Clean Laureates Podium Slider) */}
+      <ScrollReveal direction="up" delay={40}>
+        <CelebratingSuccessShowcase celebratingPhotos={celebratingPhotos} />
+      </ScrollReveal>
 
-      {/* 3. Pure Photo Gallery Grid (Placed BELOW Celebrating Success — E-Cell Clean Photo Grid Style) */}
+      {/* 3. Pure Photo Gallery Grid (Archival Vault) */}
       <section className="section-pure-white" style={{ padding: "40px 0 90px" }}>
         <div className="container">
-          {/* 4-Column Pure Photo Grid (Clean Borders, Pure Photos, No Text/Overlay, Click to Expand) */}
-          <div
-            className="gallery-photo-grid"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap: "18px",
-            }}
-          >
-            {items.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => setActiveModalItem(item)}
-                className="gallery-photo-tile"
-                style={{
-                  position: "relative",
-                  width: "100%",
-                  aspectRatio: "16 / 10.5",
-                  borderRadius: "8px",
-                  overflow: "hidden",
-                  border: "1.5px solid var(--white-border-strong)",
-                  backgroundColor: "var(--navy-deep)",
-                  boxShadow: "0 4px 16px rgba(7, 13, 30, 0.08)",
-                  cursor: "pointer",
-                  transition: "transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease",
-                }}
-              >
-                {/* Pure Photo Image — No overlay text, no expand badge */}
-                <Image
-                  src={item.image}
-                  alt={item.title || "Finlogue gallery photograph"}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  style={{ objectFit: "cover", transition: "transform 0.35s ease" }}
-                />
-              </div>
+          <div className="gallery-photo-grid">
+            {items.map((item, idx) => (
+              <ScrollReveal key={item.id} direction="up" delay={idx * 30}>
+                <div
+                  onClick={() => setActiveModalItem(item)}
+                  className="gallery-photo-tile gold-glow-hover shimmer-sweep"
+                  style={{
+                    position: "relative",
+                    width: "100%",
+                    aspectRatio: "16 / 10.5",
+                    borderRadius: "8px",
+                    overflow: "hidden",
+                    border: "1.5px solid var(--white-border-strong)",
+                    backgroundColor: "var(--navy-deep)",
+                    boxShadow: "0 4px 16px rgba(7, 13, 30, 0.08)",
+                    cursor: "pointer",
+                    transition: "transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease",
+                  }}
+                >
+                  {/* Pure Photo Image */}
+                  <Image
+                    src={item.image}
+                    alt={item.title || "Finlogue gallery photograph"}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    style={{ objectFit: "cover", transition: "transform 0.35s ease" }}
+                  />
+
+                  {/* Frosted Glass Caption Reveal on Hover */}
+                  <div
+                    className="gallery-frosted-caption"
+                    style={{
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      padding: "10px 14px",
+                      background: "rgba(7, 13, 30, 0.78)",
+                      backdropFilter: "blur(10px)",
+                      WebkitBackdropFilter: "blur(10px)",
+                      borderTop: "1px solid rgba(197, 168, 128, 0.35)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      transform: "translateY(100%)",
+                      opacity: 0,
+                      transition: "transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease",
+                      zIndex: 2,
+                      pointerEvents: "none",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: "var(--font-sans)",
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        color: "#FFFFFF",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        maxWidth: "85%",
+                      }}
+                    >
+                      {item.title || "Finlogue Archive"}
+                    </span>
+                    <span
+                      style={{
+                        color: "var(--gold-oxford, #C5A880)",
+                        fontSize: "13px",
+                        lineHeight: 1,
+                      }}
+                    >
+                      ↗
+                    </span>
+                  </div>
+                </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
-
-        {/* Embedded CSS for hover and responsive 4-column layout */}
-        <style jsx>{`
-          .gallery-photo-tile:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 28px rgba(7, 13, 30, 0.16);
-            border-color: var(--gold-oxford);
-          }
-          .gallery-photo-tile:hover img {
-            transform: scale(1.04);
-          }
-          @media (max-width: 1024px) {
-            .gallery-photo-grid {
-              grid-template-columns: repeat(2, 1fr) !important;
-              gap: 14px !important;
-            }
-          }
-          @media (max-width: 640px) {
-            .gallery-photo-grid {
-              grid-template-columns: 1fr !important;
-              gap: 12px !important;
-            }
-          }
-        `}</style>
       </section>
 
-      {/* Fullscreen Lightbox Modal with Next/Prev and Full View */}
-      <LightboxModal
-        item={activeModalItem}
-        items={items}
-        onClose={() => setActiveModalItem(null)}
-        onNavigate={(item) => setActiveModalItem(item)}
-      />
+      {/* Fullscreen Lightbox Modal (dynamically loaded when open) */}
+      {activeModalItem && (
+        <LightboxModal
+          item={activeModalItem}
+          items={items}
+          onClose={() => setActiveModalItem(null)}
+          onNavigate={(item) => setActiveModalItem(item)}
+        />
+      )}
     </main>
   );
 }

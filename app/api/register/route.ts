@@ -1,36 +1,17 @@
 import { NextResponse } from "next/server";
 import { dynamicAttendeesCache } from "@/app/api/admin/attendees/route";
+import { parseRequestBody, sanitizeString } from "@/lib/api-utils";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
-    let body: any = {};
-    const contentType = request.headers.get("content-type") || "";
-
-    if (contentType.includes("application/json")) {
-      const text = await request.text();
-      try {
-        body = JSON.parse(text);
-      } catch {
-        return NextResponse.json(
-          { success: false, error: "Invalid JSON format in payload." },
-          { status: 400 }
-        );
-      }
-    } else if (contentType.includes("application/x-www-form-urlencoded")) {
-      const formData = await request.formData();
-      body = Object.fromEntries(formData);
-    } else {
-      const text = await request.text();
-      try {
-        body = JSON.parse(text);
-      } catch {
-        body = {};
-      }
-    }
-
-    const { name, email, institution, statement, event } = body;
+    const body = await parseRequestBody<Record<string, string>>(request);
+    const name = sanitizeString(body.name, 100);
+    const email = sanitizeString(body.email, 120);
+    const institution = sanitizeString(body.institution, 150);
+    const statement = sanitizeString(body.statement, 2000);
+    const event = sanitizeString(body.event || body.eventTitle, 150);
 
     if (!name || !email) {
       return NextResponse.json(
@@ -42,22 +23,7 @@ export async function POST(request: Request) {
     const registrationToken = `REG-${Date.now().toString().slice(-6)}`;
     const eventTitle = event || body.eventTitle || "PITCH ON THE ROCKS (POTR)";
 
-    // Prevent duplicate registrations for the same event by email
-    const existingAttendee = dynamicAttendeesCache.find(
-      (att) =>
-        att.email.toLowerCase().trim() === email.toLowerCase().trim() &&
-        att.event === eventTitle
-    );
-
-    if (existingAttendee) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "You have already submitted an application.",
-        },
-        { status: 409 }
-      );
-    }
+    // Allow multiple submissions (for intake & coordinator testing)
 
     // Append to live attendees roster for admin visibility
     dynamicAttendeesCache.unshift({
@@ -82,20 +48,23 @@ export async function POST(request: Request) {
       statementPreview: statement ? statement.slice(0, 80) : "N/A",
     });
 
-    // Forward to Google Sheets Webhook if configured
+    const rawRoll = body.rollNumber || body.institution || "";
+    const cleanRoll = sanitizeString(rawRoll.replace(/^Roll:\s*/i, ""), 50);
+
+    // Forward to Google Sheets Webhook if configured (strictly: timestamp, name, rollNumber, email, phone, statement)
     const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
     if (webhookUrl) {
       try {
         await fetch(webhookUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          redirect: "follow",
           body: JSON.stringify({
-            action: "register",
-            token: registrationToken,
-            eventTitle,
+            timestamp: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
             name,
+            rollNumber: cleanRoll,
             email,
-            institution: institution || "N/A",
+            phone: sanitizeString(body.phone, 25) || "",
             statement: statement || "",
           }),
         });

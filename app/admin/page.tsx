@@ -3,13 +3,15 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { CmsData, defaultCmsData } from "@/lib/cms-types";
-import AdminHomeTab from "@/components/admin/AdminHomeTab";
-import AdminEventsTab from "@/components/admin/AdminEventsTab";
-import AdminGalleryTab from "@/components/admin/AdminGalleryTab";
-import AdminTeamTab from "@/components/admin/AdminTeamTab";
-import AdminContactTab from "@/components/admin/AdminContactTab";
-import AdminSheetsTab from "@/components/admin/AdminSheetsTab";
+
+const AdminHomeTab = dynamic(() => import("@/components/admin/AdminHomeTab"), { ssr: false });
+const AdminEventsTab = dynamic(() => import("@/components/admin/AdminEventsTab"), { ssr: false });
+const AdminGalleryTab = dynamic(() => import("@/components/admin/AdminGalleryTab"), { ssr: false });
+const AdminTeamTab = dynamic(() => import("@/components/admin/AdminTeamTab"), { ssr: false });
+const AdminContactTab = dynamic(() => import("@/components/admin/AdminContactTab"), { ssr: false });
+const AdminSheetsTab = dynamic(() => import("@/components/admin/AdminSheetsTab"), { ssr: false });
 
 type AdminTab = "home" | "events" | "gallery" | "team" | "contact" | "sheets";
 

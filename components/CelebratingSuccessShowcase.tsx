@@ -52,24 +52,11 @@ const defaultSuccessMoments: SuccessMoment[] = [
   },
 ];
 
-// Moving ticker photo moments for the top reel
-const tickerImages = [
-  { src: "/assets/gallery/celebrating-success.jpg", label: "Grand Champions Podium" },
-  { src: "/assets/gallery/award-ceremony.jpg", label: "National League Victory" },
-  { src: "/assets/gallery/pitch-session.jpg", label: "Live Shark Battle" },
-  { src: "/assets/gallery/summit-keynote.jpg", label: "Auditorium Keynote" },
-  { src: "/assets/gallery/networking-hall.jpg", label: "Investor Lounge Exchange" },
-  { src: "/assets/gallery/consulting-workshop.jpg", label: "Valuation Syndicate" },
-  { src: "/assets/hero/flagship-summit.jpg", label: "Conclave Flagship Arena" },
-];
-
 interface CelebratingSuccessShowcaseProps {
-  galleryItems?: { image: string }[];
   celebratingPhotos?: { id: string; image: string }[];
 }
 
 export default function CelebratingSuccessShowcase({
-  galleryItems,
   celebratingPhotos,
 }: CelebratingSuccessShowcaseProps = {}) {
   const [moments, setMoments] = useState<SuccessMoment[]>(defaultSuccessMoments);
@@ -161,62 +148,8 @@ export default function CelebratingSuccessShowcase({
 
   const activeMoment = moments[safeIndex] || moments[0];
 
-  const reelImages: string[] =
-    galleryItems && galleryItems.length > 0
-      ? galleryItems.map((it) => it.image)
-      : dynamicReel.length > 0
-      ? dynamicReel
-      : tickerImages.map((it) => it.src);
-
   return (
-    <section className="section-pure-white" style={{ padding: "60px 0 80px", overflow: "hidden" }}>
-      {/* 1. Continuous Auto-Moving Top Photo Reel (Dynamic Gallery Photos, No Text/Labels) */}
-      <div
-        style={{
-          width: "100%",
-          overflow: "hidden",
-          marginBottom: "50px",
-          position: "relative",
-          maskImage: "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
-        }}
-      >
-        <div
-          className="marquee-track"
-          style={{
-            display: "flex",
-            gap: "16px",
-            width: "max-content",
-            animation: "marqueeScroll 35s linear infinite",
-          }}
-        >
-          {[...reelImages, ...reelImages].map((imgSrc, idx) => (
-            <div
-              key={`reel-${idx}`}
-              style={{
-                width: "280px",
-                height: "175px",
-                position: "relative",
-                borderRadius: "12px",
-                overflow: "hidden",
-                border: "1.5px solid rgba(197, 168, 128, 0.3)",
-                flexShrink: 0,
-                boxShadow: "0 4px 14px rgba(7, 13, 30, 0.15)",
-                backgroundColor: "var(--navy-deep)",
-              }}
-            >
-              <Image
-                src={imgSrc}
-                alt="Finlogue visual archive moment"
-                fill
-                sizes="280px"
-                style={{ objectFit: "cover" }}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
+    <section className="section-pure-white" style={{ padding: "50px 0 70px", overflow: "hidden" }}>
       <div className="container">
         {/* 2. Section Header: "CELEBRATING SUCCESS" (Exact match to E-Cell reference) */}
         <div style={{ textAlign: "center", marginBottom: "36px" }}>
@@ -312,22 +245,6 @@ export default function CelebratingSuccessShowcase({
                   | {activeMoment.subtitle}
                 </span>
               </h3>
-
-              <span
-                className="font-metadata-mono"
-                style={{
-                  fontSize: "11px",
-                  color: "#E2E8F0",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  backgroundColor: "rgba(255, 255, 255, 0.12)",
-                  padding: "4px 10px",
-                  borderRadius: "4px",
-                  backdropFilter: "blur(6px)",
-                }}
-              >
-                {activeMoment.highlight}
-              </span>
             </div>
           </div>
 

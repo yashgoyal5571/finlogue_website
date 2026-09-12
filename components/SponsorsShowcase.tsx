@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import ScrollReveal from "@/components/ScrollReveal";
 
 export interface SponsorItem {
   id: string;
@@ -12,10 +13,44 @@ export interface SponsorItem {
   link?: string;
 }
 
+export const POTR_SPONSORS: SponsorItem[] = [
+  {
+    id: "sp-yoso",
+    name: "YOSO FASHION",
+    category: "Fashion Partner",
+    logo: "/assets/sponsors/yoso-fashion.png",
+  },
+  {
+    id: "sp-kts",
+    name: "KTS CABS",
+    category: "Travel Partner",
+    logo: "/assets/sponsors/kts-cabs.png",
+  },
+  {
+    id: "sp-urban-biotix",
+    name: "URBAN BIOTIX",
+    category: "Gifting Partner",
+    logo: "/assets/sponsors/urban-biotix.png",
+  },
+  {
+    id: "sp-gvm",
+    name: "GVM ENERGY",
+    category: "Sustainable Partner",
+    logo: "/assets/sponsors/gvm-energy.png",
+  },
+  {
+    id: "sp-dezan-shira",
+    name: "DEZAN SHIRA",
+    category: "Media Partner",
+    logo: "/assets/sponsors/dezan-shira.png",
+  },
+];
+
 interface SponsorsShowcaseProps {
   title?: string;
   subtitle?: string;
   sponsors?: SponsorItem[];
+  potrSponsors?: SponsorItem[];
 }
 
 const DEFAULT_SPONSORS: SponsorItem[] = [
@@ -61,19 +96,63 @@ export default function SponsorsShowcase({
   title = "PATRONAGES AND RECOGNITIONS",
   subtitle,
   sponsors = DEFAULT_SPONSORS,
+  potrSponsors = POTR_SPONSORS,
 }: SponsorsShowcaseProps) {
   const renderSponsorMark = (sp: SponsorItem) => {
-    // If a custom image logo is provided, render the image
+    // If a custom image logo is provided, render the clean branded medallion
     if (sp.logo) {
       return (
-        <div style={{ position: "relative", width: "100%", height: "100%", maxHeight: "64px" }}>
-          <Image
-            src={sp.logo}
-            alt={sp.name}
-            fill
-            sizes="140px"
-            style={{ objectFit: "contain" }}
-          />
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", width: "100%", height: "100%", justifyContent: "center" }}>
+          <div
+            style={{
+              position: "relative",
+              width: "66px",
+              height: "66px",
+              borderRadius: "50%",
+              overflow: "hidden",
+              border: "1.5px solid var(--gold-oxford)",
+              boxShadow: "0 4px 14px rgba(0,0,0,0.35)",
+              backgroundColor: "#FFFFFF",
+              flexShrink: 0,
+            }}
+          >
+            <Image
+              src={sp.logo}
+              alt={sp.name}
+              fill
+              sizes="80px"
+              style={{ objectFit: "cover" }}
+            />
+          </div>
+          <div style={{ textAlign: "center", lineHeight: 1.2 }}>
+            <span
+              style={{
+                fontFamily: "var(--font-sans)",
+                fontSize: "11px",
+                fontWeight: 700,
+                color: "#FFFFFF",
+                display: "block",
+                letterSpacing: "0.02em",
+              }}
+            >
+              {sp.name}
+            </span>
+            {sp.category && (
+              <span
+                className="font-metadata-mono"
+                style={{
+                  fontSize: "9px",
+                  color: "var(--gold-oxford)",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  display: "block",
+                  marginTop: "3px",
+                }}
+              >
+                {sp.category}
+              </span>
+            )}
+          </div>
         </div>
       );
     }
@@ -240,43 +319,85 @@ export default function SponsorsShowcase({
   };
 
   return (
-    <section className="sponsors-showcase-section">
+    <section className="sponsors-showcase-section" style={{ padding: "80px 0" }}>
       <div className="container">
-        <div className="sponsors-showcase-header">
-          <h2 className="sponsors-showcase-title">{title}</h2>
-          {subtitle && <p className="sponsors-showcase-subtitle">{subtitle}</p>}
-        </div>
+        {/* 1. POTR Past Edition Sponsors (Last Year Pitch on the Rocks) */}
+        <ScrollReveal direction="up" delay={40}>
+          <div className="sponsors-showcase-header">
+            <div className="badge-pill" style={{ marginBottom: "12px", display: "inline-flex" }}>
+              <span
+                style={{
+                  width: "7px",
+                  height: "7px",
+                  borderRadius: "9999px",
+                  backgroundColor: "var(--gold-oxford)",
+                  display: "inline-block",
+                }}
+              />
+              <span>PITCH ON THE ROCKS</span>
+            </div>
+            <h2 className="sponsors-showcase-title">FLAGSHIP SUMMIT SPONSORS</h2>
+            <p className="sponsors-showcase-subtitle" style={{ maxWidth: "640px", margin: "10px auto 0" }}>
+              Proudly partnering with distinguished industry leaders, innovative brands, and ecosystem partners from the previous edition of Pitch on the Rocks (POTR).
+            </p>
+          </div>
+        </ScrollReveal>
 
-        <div className="sponsors-showcase-grid">
-          {sponsors.map((sp) => {
-            const cardContent = (
-              <div className="sponsor-tile-wrapper" key={sp.id}>
-                {/* Sand/Gold Backing Rim matching Image 1 */}
+        <div className="sponsors-showcase-grid" style={{ marginBottom: "60px" }}>
+          {potrSponsors.map((sp, idx) => (
+            <ScrollReveal key={sp.id} direction="up" delay={idx * 65}>
+              <div className="sponsor-tile-wrapper gold-glow-hover" title={`${sp.name} — ${sp.category}`}>
                 <div className="sponsor-tile-backdrop" />
-                {/* Front Dark Slate/Navy Squircle */}
-                <div className="sponsor-tile-front">
+                <div className="sponsor-tile-front shimmer-sweep">
                   {renderSponsorMark(sp)}
                 </div>
               </div>
-            );
+            </ScrollReveal>
+          ))}
+        </div>
 
-            if (sp.link) {
-              return (
-                <a
-                  key={sp.id}
-                  href={sp.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ textDecoration: "none" }}
-                  aria-label={sp.name}
-                >
-                  {cardContent}
-                </a>
+        {/* 2. Institutional Patronages & Recognitions */}
+        <div style={{ paddingTop: "40px", borderTop: "1px solid rgba(197, 168, 128, 0.2)" }}>
+          <ScrollReveal direction="up" delay={40}>
+            <div className="sponsors-showcase-header" style={{ marginBottom: "28px" }}>
+              <h3 className="sponsors-showcase-title" style={{ fontSize: "22px", color: "var(--gold-oxford)" }}>
+                {title}
+              </h3>
+              {subtitle && <p className="sponsors-showcase-subtitle">{subtitle}</p>}
+            </div>
+          </ScrollReveal>
+
+          <div className="sponsors-showcase-grid">
+            {sponsors.map((sp, idx) => {
+              const cardContent = (
+                <ScrollReveal key={sp.id} direction="up" delay={idx * 65}>
+                  <div className="sponsor-tile-wrapper gold-glow-hover">
+                    <div className="sponsor-tile-backdrop" />
+                    <div className="sponsor-tile-front shimmer-sweep">
+                      {renderSponsorMark(sp)}
+                    </div>
+                  </div>
+                </ScrollReveal>
               );
-            }
 
-            return cardContent;
-          })}
+              if (sp.link) {
+                return (
+                  <a
+                    key={sp.id}
+                    href={sp.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: "none" }}
+                    aria-label={sp.name}
+                  >
+                    {cardContent}
+                  </a>
+                );
+              }
+
+              return cardContent;
+            })}
+          </div>
         </div>
       </div>
     </section>

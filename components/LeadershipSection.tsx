@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { LeadershipMember } from "@/content/about";
 import { TeamMemberItem } from "@/app/api/admin/team/route";
+import ScrollReveal from "@/components/ScrollReveal";
 
 interface LeadershipSectionProps {
   initialCoordinators: LeadershipMember[];
@@ -31,44 +32,47 @@ export default function LeadershipSection({
         if (data.success && Array.isArray(data.team) && data.team.length > 0) {
           const liveList: TeamMemberItem[] = data.team;
 
-          const liveCoords: LeadershipMember[] = liveList
-            .filter((m) => m.tier === "coordinators")
-            .map((m) => ({
-              id: m.id,
-              name: m.name,
-              role: m.role,
-              focus: m.focus || m.dept || "",
-              email: m.email,
-              linkedin: m.linkedin,
-              image: m.image,
-            }));
+          const liveCoords: LeadershipMember[] = [];
+          const liveHeads: LeadershipMember[] = [];
+          const liveCore: LeadershipMember[] = [];
 
-          const liveHeads: LeadershipMember[] = liveList
-            .filter((m) => m.tier === "heads")
-            .map((m) => ({
-              id: m.id,
-              name: m.name,
-              role: m.role,
-              dept: m.dept || "",
-              batch: m.batch || "Y24",
-              focus: m.focus || "",
-              email: m.email,
-              linkedin: m.linkedin,
-              image: m.image,
-            }));
-
-          const liveCore: LeadershipMember[] = liveList
-            .filter((m) => m.tier === "coreTeam")
-            .map((m) => ({
-              id: m.id,
-              name: m.name,
-              role: m.role,
-              dept: m.dept || "",
-              batch: m.batch || "Y25",
-              email: m.email,
-              linkedin: m.linkedin,
-              image: m.image,
-            }));
+          for (let i = 0; i < liveList.length; i++) {
+            const m = liveList[i];
+            if (m.tier === "coordinators") {
+              liveCoords.push({
+                id: m.id,
+                name: m.name,
+                role: m.role,
+                focus: m.focus || m.dept || "",
+                email: m.email,
+                linkedin: m.linkedin,
+                image: m.image,
+              });
+            } else if (m.tier === "heads") {
+              liveHeads.push({
+                id: m.id,
+                name: m.name,
+                role: m.role,
+                dept: m.dept || "",
+                batch: m.batch || "Y24",
+                focus: m.focus || "",
+                email: m.email,
+                linkedin: m.linkedin,
+                image: m.image,
+              });
+            } else if (m.tier === "coreTeam") {
+              liveCore.push({
+                id: m.id,
+                name: m.name,
+                role: m.role,
+                dept: m.dept || "",
+                batch: m.batch || "Y25",
+                email: m.email,
+                linkedin: m.linkedin,
+                image: m.image,
+              });
+            }
+          }
 
           if (liveCoords.length > 0) setCoordinators(liveCoords);
           if (liveHeads.length > 0) setHeads(liveHeads);
@@ -118,22 +122,24 @@ export default function LeadershipSection({
 
           <div className="grid-3">
             {coordinators.map((coord, idx) => (
-              <div
-                key={(coord as any).id || `${coord.name}-${idx}`}
-                style={{
-                  background: "linear-gradient(145deg, #0E1A34 0%, #060D1E 100%)",
-                  border: "1.5px solid rgba(197, 168, 128, 0.45)",
-                  boxShadow: "0 10px 28px -4px rgba(7, 13, 30, 0.5), inset 0 1px 0 rgba(197, 168, 128, 0.2)",
-                  padding: "20px 22px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  borderRadius: "10px",
-                  position: "relative",
-                  overflow: "hidden",
-                  transition: "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease",
-                }}
-              >
+              <ScrollReveal key={(coord as any).id || `${coord.name}-${idx}`} direction="up" delay={idx * 75}>
+                <div
+                  className="shimmer-sweep gold-glow-hover"
+                  style={{
+                    background: "linear-gradient(145deg, #0E1A34 0%, #060D1E 100%)",
+                    border: "1.5px solid rgba(197, 168, 128, 0.45)",
+                    boxShadow: "0 10px 28px -4px rgba(7, 13, 30, 0.5), inset 0 1px 0 rgba(197, 168, 128, 0.2)",
+                    padding: "20px 22px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    borderRadius: "10px",
+                    position: "relative",
+                    overflow: "hidden",
+                    height: "100%",
+                    transition: "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease",
+                  }}
+                >
                 {/* Circular Portrait Header + Authoritative Badge & Name */}
                 <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                   <div
@@ -295,7 +301,8 @@ export default function LeadershipSection({
                   </div>
                 </div>
               </div>
-            ))}
+            </ScrollReveal>
+          ))}
           </div>
         </div>
 
@@ -334,91 +341,94 @@ export default function LeadershipSection({
             }}
           >
             {heads.map((head, idx) => (
-              <div
-                key={(head as any).id || `${head.name}-${idx}`}
-                style={{
-                  backgroundColor: "var(--white-pure)",
-                  border: "1px solid var(--white-border)",
-                  boxShadow: "var(--card-shadow)",
-                  padding: "22px 24px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "20px",
-                  borderRadius: "14px",
-                  transition: "transform 0.25s ease, box-shadow 0.25s ease",
-                }}
-              >
+              <ScrollReveal key={(head as any).id || `${head.name}-${idx}`} direction="up" delay={idx * 60}>
                 <div
+                  className="shimmer-sweep gold-glow-hover"
                   style={{
-                    width: "100px",
-                    height: "100px",
-                    borderRadius: "50%",
-                    border: "3px solid var(--white-border-strong)",
-                    boxShadow: "0 4px 14px rgba(7, 13, 30, 0.12)",
-                    position: "relative",
-                    overflow: "hidden",
-                    flexShrink: 0,
-                    backgroundColor: "var(--white-alabaster)",
+                    backgroundColor: "var(--white-pure)",
+                    border: "1px solid var(--white-border)",
+                    boxShadow: "var(--card-shadow)",
+                    padding: "22px 24px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "20px",
+                    borderRadius: "14px",
+                    height: "100%",
+                    transition: "transform 0.25s ease, box-shadow 0.25s ease",
                   }}
                 >
-                  <Image
-                    src={head.image ?? "/assets/team/aryan-mittal.jpg"}
-                    alt={head.name}
-                    fill
-                    sizes="100px"
-                    unoptimized
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
+                  <div
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      borderRadius: "50%",
+                      border: "3px solid var(--white-border-strong)",
+                      boxShadow: "0 4px 14px rgba(7, 13, 30, 0.12)",
+                      position: "relative",
+                      overflow: "hidden",
+                      flexShrink: 0,
+                      backgroundColor: "var(--white-alabaster)",
+                    }}
+                  >
+                    <Image
+                      src={head.image ?? "/assets/team/aryan-mittal.jpg"}
+                      alt={head.name}
+                      fill
+                      sizes="100px"
+                      unoptimized
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
 
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <h4 className="font-display-serif" style={{ fontSize: "23px", color: "var(--ink-title)", margin: 0, lineHeight: 1.2 }}>
-                    {head.name}
-                  </h4>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h4 className="font-display-serif" style={{ fontSize: "23px", color: "var(--ink-title)", margin: 0, lineHeight: 1.2 }}>
+                      {head.name}
+                    </h4>
 
-                  {head.dept && (
-                    <span
-                      style={{
-                        fontSize: "13px",
-                        color: "var(--burgundy-crest)",
-                        fontWeight: 600,
-                        marginTop: "5px",
-                        display: "block",
-                        lineHeight: 1.25,
-                      }}
-                    >
-                      {head.dept}
-                    </span>
-                  )}
+                    {head.dept && (
+                      <span
+                        style={{
+                          fontSize: "13px",
+                          color: "var(--burgundy-crest)",
+                          fontWeight: 600,
+                          marginTop: "5px",
+                          display: "block",
+                          lineHeight: 1.25,
+                        }}
+                      >
+                        {head.dept}
+                      </span>
+                    )}
 
-                  <div style={{ display: "flex", gap: "12px", marginTop: "14px" }}>
-                    <a
-                      href={head.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`${head.name} LinkedIn`}
-                      style={{ color: "var(--navy-hero)", display: "inline-flex", alignItems: "center" }}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64c-.88 0-1.6.72-1.6 1.6 0 .88.72 1.6 1.6 1.6.88 0 1.6-.72 1.6-1.6 0-.88-.72-1.6-1.6-1.6Z" />
-                      </svg>
-                    </a>
-                    <a
-                      href={`mailto:${head.email}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`Email ${head.name}`}
-                      title={`Email ${head.name}`}
-                      style={{ color: "var(--navy-hero)", display: "inline-flex", alignItems: "center" }}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect width="20" height="16" x="2" y="4" rx="2" />
-                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                      </svg>
-                    </a>
+                    <div style={{ display: "flex", gap: "12px", marginTop: "14px" }}>
+                      <a
+                        href={head.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${head.name} LinkedIn`}
+                        style={{ color: "var(--navy-hero)", display: "inline-flex", alignItems: "center" }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64c-.88 0-1.6.72-1.6 1.6 0 .88.72 1.6 1.6 1.6.88 0 1.6-.72 1.6-1.6 0-.88-.72-1.6-1.6-1.6Z" />
+                        </svg>
+                      </a>
+                      <a
+                        href={`mailto:${head.email}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Email ${head.name}`}
+                        title={`Email ${head.name}`}
+                        style={{ color: "var(--navy-hero)", display: "inline-flex", alignItems: "center" }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect width="20" height="16" x="2" y="4" rx="2" />
+                          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                        </svg>
+                      </a>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -458,127 +468,130 @@ export default function LeadershipSection({
             }}
           >
             {coreTeam?.map((member, idx) => (
-              <div
-                key={(member as any).id || `${member.name}-${idx}`}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  textAlign: "center",
-                }}
-              >
-                {/* Circular Portrait (IIT Roorkee Reference) */}
+              <ScrollReveal key={(member as any).id || `${member.name}-${idx}`} direction="up" delay={idx * 40}>
                 <div
+                  className="gold-glow-hover"
                   style={{
-                    width: "96px",
-                    height: "96px",
-                    borderRadius: "50%",
-                    border: "3px solid #FFFFFF",
-                    boxShadow: "0 6px 16px rgba(7, 13, 30, 0.16)",
-                    position: "relative",
-                    overflow: "hidden",
-                    backgroundColor: "var(--navy-hero)",
-                    marginBottom: "-18px",
-                    zIndex: 2,
-                  }}
-                >
-                  <Image
-                    src={member.image ?? "/assets/team/aditya-tiwari.jpg"}
-                    alt={member.name}
-                    fill
-                    sizes="96px"
-                    unoptimized
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-
-                {/* Attached Rounded Pill Card */}
-                <div
-                  style={{
-                    width: "100%",
-                    maxWidth: "180px",
-                    backgroundColor: "#F1F5F9",
-                    border: "1px solid #CBD5E1",
-                    borderRadius: "16px",
-                    padding: "24px 10px 14px",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    boxShadow: "0 2px 8px rgba(7, 13, 30, 0.05)",
-                    transition: "transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease",
+                    textAlign: "center",
                   }}
                 >
-                  <h5
+                  {/* Circular Portrait (IIT Roorkee Reference) */}
+                  <div
                     style={{
-                      fontFamily: "var(--font-sans)",
-                      fontSize: "14px",
-                      fontWeight: 700,
-                      color: "var(--navy-hero)",
-                      lineHeight: 1.2,
-                      margin: 0,
+                      width: "96px",
+                      height: "96px",
+                      borderRadius: "50%",
+                      border: "3px solid #FFFFFF",
+                      boxShadow: "0 6px 16px rgba(7, 13, 30, 0.16)",
+                      position: "relative",
+                      overflow: "hidden",
+                      backgroundColor: "var(--navy-hero)",
+                      marginBottom: "-18px",
+                      zIndex: 2,
                     }}
                   >
-                    {member.name}
-                  </h5>
+                    <Image
+                      src={member.image ?? "/assets/team/aditya-tiwari.jpg"}
+                      alt={member.name}
+                      fill
+                      sizes="96px"
+                      unoptimized
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
 
-                  {member.dept && (
-                    <span
+                  {/* Attached Rounded Pill Card */}
+                  <div
+                    className="shimmer-sweep"
+                    style={{
+                      width: "100%",
+                      maxWidth: "180px",
+                      backgroundColor: "#F1F5F9",
+                      border: "1px solid #CBD5E1",
+                      borderRadius: "16px",
+                      padding: "24px 10px 14px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      boxShadow: "0 2px 8px rgba(7, 13, 30, 0.05)",
+                      transition: "transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease",
+                    }}
+                  >
+                    <h5
                       style={{
-                        fontSize: "11px",
-                        color: "var(--burgundy-crest)",
-                        fontWeight: 600,
-                        marginTop: "4px",
-                        display: "block",
-                        lineHeight: 1.25,
-                      }}
-                    >
-                      {member.dept}
-                    </span>
-                  )}
-
-
-                  {/* LinkedIn & Mail Icons */}
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "10px" }}>
-                    <a
-                      href={member.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`${member.name} LinkedIn`}
-                      title="LinkedIn"
-                      style={{
+                        fontFamily: "var(--font-sans)",
+                        fontSize: "14px",
+                        fontWeight: 700,
                         color: "var(--navy-hero)",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        transition: "color 0.15s ease, transform 0.15s ease",
+                        lineHeight: 1.2,
+                        margin: 0,
                       }}
                     >
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64c-.88 0-1.6.72-1.6 1.6 0 .88.72 1.6 1.6 1.6.88 0 1.6-.72 1.6-1.6 0-.88-.72-1.6-1.6-1.6Z" />
-                      </svg>
-                    </a>
-                    <a
-                      href={`mailto:${member.email}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`Email ${member.name}`}
-                      title="Official Email"
-                      style={{
-                        color: "var(--navy-hero)",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        transition: "color 0.15s ease, transform 0.15s ease",
-                      }}
-                    >
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect width="20" height="16" x="2" y="4" rx="2" />
-                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                      </svg>
-                    </a>
+                      {member.name}
+                    </h5>
+
+                    {member.dept && (
+                      <span
+                        style={{
+                          fontSize: "11px",
+                          color: "var(--burgundy-crest)",
+                          fontWeight: 600,
+                          marginTop: "4px",
+                          display: "block",
+                          lineHeight: 1.25,
+                        }}
+                      >
+                        {member.dept}
+                      </span>
+                    )}
+
+
+                    {/* LinkedIn & Mail Icons */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "10px" }}>
+                      <a
+                        href={member.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${member.name} LinkedIn`}
+                        title="LinkedIn"
+                        style={{
+                          color: "var(--navy-hero)",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          transition: "color 0.15s ease, transform 0.15s ease",
+                        }}
+                      >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64c-.88 0-1.6.72-1.6 1.6 0 .88.72 1.6 1.6 1.6.88 0 1.6-.72 1.6-1.6 0-.88-.72-1.6-1.6-1.6Z" />
+                        </svg>
+                      </a>
+                      <a
+                        href={`mailto:${member.email}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Email ${member.name}`}
+                        title="Official Email"
+                        style={{
+                          color: "var(--navy-hero)",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          transition: "color 0.15s ease, transform 0.15s ease",
+                        }}
+                      >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect width="20" height="16" x="2" y="4" rx="2" />
+                          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                        </svg>
+                      </a>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>

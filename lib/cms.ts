@@ -8,12 +8,20 @@ const DATA_DIR = path.join(process.cwd(), "data");
 const CMS_FILE_PATH = path.join(DATA_DIR, "cms-content.json");
 const CMS_BACKUP_PATH = path.join(DATA_DIR, "cms-content.backup.json");
 
+let cmsMemoryCache: { data: CmsData; timestamp: number } | null = null;
+const CACHE_TTL_MS = 15000; // 15 seconds memory cache
+
 /**
- * Reads all CMS data from data/cms-content.json.
+ * Reads all CMS data from data/cms-content.json with O(1) in-memory caching.
  * Uses persistent backup if there is any read or parse error,
  * and NEVER overwrites existing data with sample defaults.
  */
 export async function getCmsData(): Promise<CmsData> {
+  const now = Date.now();
+  if (cmsMemoryCache && now - cmsMemoryCache.timestamp < CACHE_TTL_MS) {
+    return cmsMemoryCache.data;
+  }
+
   await fs.mkdir(DATA_DIR, { recursive: true });
 
   // 1. Try reading primary CMS file
@@ -21,7 +29,7 @@ export async function getCmsData(): Promise<CmsData> {
     const content = await fs.readFile(CMS_FILE_PATH, "utf-8");
     const parsed = JSON.parse(content);
 
-    return {
+    const result: CmsData = {
       home: { ...defaultCmsData.home, ...(parsed.home || {}) },
       events: { ...defaultCmsData.events, ...(parsed.events || {}) },
       gallery: { ...defaultCmsData.gallery, ...(parsed.gallery || {}) },
@@ -29,6 +37,9 @@ export async function getCmsData(): Promise<CmsData> {
       contact: { ...defaultCmsData.contact, ...(parsed.contact || {}) },
       googleSheets: { ...defaultCmsData.googleSheets, ...(parsed.googleSheets || {}) },
     };
+
+    cmsMemoryCache = { data: result, timestamp: now };
+    return result;
   } catch (primaryErr: any) {
     // 2. If primary file doesn't exist, check if backup exists before defaulting
     if (primaryErr?.code !== "ENOENT") {
@@ -91,6 +102,9 @@ export async function saveCmsData(updates: Partial<CmsData>): Promise<CmsData> {
   } catch (backupWriteErr) {
     console.warn("[CMS ENGINE] Could not write backup:", backupWriteErr);
   }
+
+  // Update in-memory cache atomically
+  cmsMemoryCache = { data: merged, timestamp: Date.now() };
 
   return merged;
 }

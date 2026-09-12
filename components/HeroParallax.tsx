@@ -44,9 +44,9 @@ export default function HeroParallax({ hero }: HeroParallaxProps = {}) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Smooth Parallax Calculations inspired by Dribbble motion design
-  const imageTranslateY = scrollY * 0.35;
-  const textTranslateY = scrollY * 0.18;
+  // Smooth Parallax Calculations
+  const imageTranslateY = scrollY * 0.32;
+  const textTranslateY = scrollY * 0.16;
   const textOpacity = Math.max(0, 1 - scrollY / 700);
 
   return (
@@ -61,43 +61,45 @@ export default function HeroParallax({ hero }: HeroParallaxProps = {}) {
         backgroundColor: "#070D1E",
       }}
     >
-      {/* Background Image Container with Smooth Parallax Drift */}
+      {/* Background Image Container with Parallax Drift — Vivid, Crystal-Clear Auditorium Photo */}
       <div
         style={{
           position: "absolute",
-          top: "-5%",
+          top: "-6%",
           left: 0,
           right: 0,
-          bottom: "-5%",
+          bottom: "-6%",
           zIndex: 1,
           transform: `translate3d(0, ${imageTranslateY}px, 0)`,
           willChange: "transform",
         }}
       >
         <Image
-          src="/assets/gallery/summit-keynote.jpg"
-          alt="Finlogue Auditorium & Keynote Arena"
+          src="/assets/gallery/potr-swot-stage.jpg"
+          alt="Pitch on the Rocks (POTR) Live Stage Conclave"
           fill
           sizes="100vw"
           priority
           style={{
             objectFit: "cover",
-            objectPosition: "center 35%",
-            filter: "contrast(102%) brightness(100%)",
+            objectPosition: "80% 36%",
+            filter: "contrast(106%) brightness(96%) saturate(104%)",
           }}
         />
-        {/* Lighter Tone Gradient Overlay */}
+
+        {/* Deep Midnight Navy Directional Scrim: Eliminates milky-whitish wash, masks SWOT double-text, and lets the #POTR stage shine vibrantly on the right */}
         <div
           style={{
             position: "absolute",
             inset: 0,
             background:
-              "linear-gradient(90deg, rgba(255, 255, 255, 0.90) 0%, rgba(255, 255, 255, 0.68) 42%, rgba(255, 255, 255, 0.18) 75%, rgba(255, 255, 255, 0.08) 100%), linear-gradient(180deg, rgba(248, 250, 252, 0.35) 0%, transparent 40%, rgba(248, 250, 252, 0.6) 100%)",
+              "linear-gradient(90deg, rgba(7, 13, 30, 0.95) 0%, rgba(7, 13, 30, 0.88) 35%, rgba(7, 13, 30, 0.52) 62%, rgba(7, 13, 30, 0.12) 84%, transparent 100%), linear-gradient(180deg, rgba(7, 13, 30, 0.5) 0%, transparent 35%, rgba(7, 13, 30, 0.75) 100%)",
+            pointerEvents: "none",
           }}
         />
       </div>
 
-      {/* Hero Content with Subtle Parallax Lag & Smooth Fade */}
+      {/* Hero Content with High-Legibility Pure White & Oxford Gold Styling */}
       <div
         className="container"
         style={{
@@ -108,17 +110,21 @@ export default function HeroParallax({ hero }: HeroParallaxProps = {}) {
           transform: `translate3d(0, ${textTranslateY}px, 0)`,
           opacity: textOpacity,
           willChange: "transform, opacity",
+          width: "100%",
         }}
       >
         <div style={{ maxWidth: "720px", width: "100%" }}>
           {/* Institutional Badge */}
           <div
-            className="badge-pill"
+            className="badge-pill hero-anim-badge"
             style={{
               marginBottom: "18px",
-              backgroundColor: "rgba(7, 13, 30, 0.06)",
-              borderColor: "rgba(7, 13, 30, 0.15)",
-              color: "var(--navy-hero)",
+              backgroundColor: "rgba(197, 168, 128, 0.16)",
+              border: "1px solid rgba(197, 168, 128, 0.42)",
+              color: "var(--gold-oxford, #C5A880)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
             }}
           >
             <span
@@ -126,20 +132,23 @@ export default function HeroParallax({ hero }: HeroParallaxProps = {}) {
                 width: "8px",
                 height: "8px",
                 borderRadius: "9999px",
-                backgroundColor: "var(--navy-hero)",
+                backgroundColor: "var(--gold-oxford, #C5A880)",
                 display: "inline-block",
                 flexShrink: 0,
+                boxShadow: "0 0 8px rgba(197, 168, 128, 0.6)",
               }}
             />
-            <span style={{ fontWeight: 600 }}>{badge}</span>
+            <span style={{ fontWeight: 600, letterSpacing: "0.06em", color: "var(--gold-oxford, #C5A880)" }}>
+              {badge}
+            </span>
           </div>
 
-          {/* Main Title */}
+          {/* Main Title — Razor Sharp Pure White with Soft Shadow for Maximum Legibility */}
           <h1
-            className="font-display-serif hero-title-display"
+            className="font-display-serif hero-title-display hero-anim-title"
             style={{
               fontSize: "clamp(29px, 5.8vw, 72px)",
-              color: "var(--navy-hero)",
+              color: "#FFFFFF",
               lineHeight: 1.08,
               letterSpacing: "0.01em",
               textTransform: "uppercase",
@@ -148,48 +157,54 @@ export default function HeroParallax({ hero }: HeroParallaxProps = {}) {
               overflowWrap: "break-word",
               wordBreak: "break-word",
               hyphens: "auto",
+              textShadow: "0 2px 24px rgba(0, 0, 0, 0.75), 0 1px 4px rgba(0, 0, 0, 0.9)",
             }}
           >
             {title}
           </h1>
 
-          {/* Description Subtitle */}
+          {/* Description Subtitle — Crisp Platinum Slate */}
           <p
+            className="hero-anim-sub"
             style={{
               fontSize: "clamp(14.5px, 1.8vw, 17.5px)",
-              color: "#334155",
+              color: "rgba(226, 232, 240, 0.92)",
               lineHeight: 1.65,
               marginBottom: "32px",
               maxWidth: "640px",
               fontWeight: 400,
               overflowWrap: "break-word",
               wordBreak: "break-word",
+              textShadow: "0 1px 10px rgba(0, 0, 0, 0.7)",
             }}
           >
             {subtitle}
           </p>
 
           {/* Action Buttons */}
-          <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+          <div
+            className="hero-anim-actions"
+            style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}
+          >
             <Link
               href="/about"
-              className="stamp-button stamp-button-primary"
+              className="stamp-button stamp-button-primary shimmer-sweep"
               style={{
                 padding: "14px 32px",
                 borderRadius: "100px",
-                backgroundColor: "var(--navy-hero)",
-                borderColor: "var(--navy-hero)",
-                color: "#FFFFFF",
+                backgroundColor: "var(--gold-oxford, #C5A880)",
+                borderColor: "var(--gold-oxford, #C5A880)",
+                color: "#070D1E",
                 fontWeight: 700,
                 fontSize: "14.5px",
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "8px",
-                boxShadow: "0 6px 20px rgba(7, 13, 30, 0.25)",
+                boxShadow: "0 6px 24px rgba(197, 168, 128, 0.35)",
               }}
             >
-              <span>{ctaPrimaryText}</span>
-              <span style={{ fontSize: "16px", color: "var(--gold-oxford)" }}>→</span>
+              <span style={{ color: "#070D1E" }}>{ctaPrimaryText}</span>
+              <span className="btn-arrow" style={{ fontSize: "16px", color: "#070D1E" }}>→</span>
             </Link>
 
             <Link
@@ -199,9 +214,11 @@ export default function HeroParallax({ hero }: HeroParallaxProps = {}) {
                 padding: "14px 28px",
                 borderRadius: "100px",
                 fontSize: "14px",
-                borderColor: "var(--navy-hero)",
-                color: "var(--navy-hero)",
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                borderColor: "rgba(255, 255, 255, 0.4)",
+                color: "#FFFFFF",
+                backgroundColor: "rgba(255, 255, 255, 0.12)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
                 fontWeight: 600,
               }}
             >
@@ -217,6 +234,13 @@ export default function HeroParallax({ hero }: HeroParallaxProps = {}) {
         aria-label="Scroll down to About Finlogue"
         title="Scroll down to explore"
         className="hero-scroll-down-btn"
+        style={{
+          border: "1px solid rgba(255, 255, 255, 0.35)",
+          backgroundColor: "rgba(7, 13, 30, 0.65)",
+          color: "#FFFFFF",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+        }}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
           <line x1="12" y1="5" x2="12" y2="19" />
