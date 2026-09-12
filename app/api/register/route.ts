@@ -60,12 +60,14 @@ export async function POST(request: Request) {
           headers: { "Content-Type": "application/json" },
           redirect: "follow",
           body: JSON.stringify({
+            action: "register",
             timestamp: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
             name,
             rollNumber: cleanRoll,
             email,
             phone: sanitizeString(body.phone, 25) || "",
             statement: statement || "",
+            eventTitle: eventTitle,
           }),
         });
       } catch (err) {

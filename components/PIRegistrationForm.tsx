@@ -195,11 +195,23 @@ export default function PIRegistrationForm({
           style={{
             fontSize: "clamp(22px, 3.5vw, 28px)",
             color: "var(--navy-hero)",
-            marginBottom: "20px",
+            marginBottom: "12px",
           }}
         >
           Application Submitted Successfully
         </h3>
+
+        <p
+          style={{
+            fontSize: "14px",
+            color: "#475569",
+            lineHeight: 1.6,
+            maxWidth: "480px",
+            margin: "0 auto 24px",
+          }}
+        >
+          Your candidature has been registered. An official email with the <strong>PI Preparation & Study Material</strong> has been dispatched to <strong>{formData.email || "your college email"}</strong>. Please review it thoroughly before your interview slot.
+        </p>
 
         <div>
           <button
@@ -503,7 +515,7 @@ export default function PIRegistrationForm({
           marginTop: "6px",
         }}
       >
-        <span>{isSubmitting ? "TRANSMITTING CANDIDATURE..." : "SUBMIT PI DOSSIER"}</span>
+        <span>{isSubmitting ? "SUBMITTING..." : "SUBMIT"}</span>
         <span style={{ color: "var(--gold-oxford)" }}>→</span>
       </button>
     </form>

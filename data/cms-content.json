@@ -648,6 +648,17 @@
       "email": "25dcs043@lnmiit.ac.in",
       "linkedin": "https://www.linkedin.com/in/anvi-agrawal-44b948385/",
       "image": "/assets/team/anvi.jpeg"
+    },
+    {
+      "id": "team-1789234300834",
+      "name": "Kumkum Joshi",
+      "role": "Associate",
+      "tier": "coreTeam",
+      "dept": "",
+      "email": "25ucs134@lnmiit.ac.in",
+      "linkedin": "https://www.linkedin.com/in/kumkum-joshi-712a25382?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+      "image": "/assets/team/kumkum.jpeg",
+      "focus": ""
     }
   ],
   "contact": {

@@ -73,19 +73,78 @@ function doPost(e) {
     var action = data.action;
     var ss = SpreadsheetApp.getActiveSpreadsheet();
 
-    // 1. EVENT REGISTRATIONS
-    if (action === "register") {
-      var sheet = ss.getSheetByName("Registrations") || ss.insertSheet("Registrations");
+    // 1. EVENT REGISTRATIONS & PI SUBMISSIONS
+    if (action === "register" || data.rollNumber) {
+      var sheet = ss.getSheetByName("Registrations") || ss.getActiveSheet();
       sheet.appendRow([
-        new Date().toISOString(),
-        data.token || "",
-        data.eventTitle || "",
+        data.timestamp || new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
         data.name || "",
+        data.rollNumber || "",
         data.email || "",
-        data.institution || "",
+        data.phone || "",
         data.statement || ""
       ]);
-      return jsonResponse({ success: true, message: "Registration recorded" });
+
+      // AUTOMATED CONFIRMATION EMAIL WITH STUDY MATERIAL
+      if (data.email) {
+        try {
+          var applicantName = data.name || "Candidate";
+          var applicantRoll = data.rollNumber || "";
+          var subject = "Finlogue LNMIIT | PI Interview Confirmation & Study Material";
+
+          // OPTION A: Google Drive Public Link to the Study Material
+          var STUDY_MATERIAL_LINK = "https://drive.google.com/drive/folders/YOUR_DRIVE_FOLDER_OR_FILE_LINK";
+
+          // OPTION B (Optional): Attach actual PDF from Google Drive
+          // Replace 'PASTE_DRIVE_FILE_ID_HERE' with your file's ID from Google Drive URL
+          // e.g. drive.google.com/file/d/1a2b3c.../view -> ID is 1a2b3c...
+          var DRIVE_FILE_ID = ""; // Leave blank if using link only
+
+          var attachments = [];
+          if (DRIVE_FILE_ID && DRIVE_FILE_ID !== "PASTE_DRIVE_FILE_ID_HERE") {
+            try {
+              var file = DriveApp.getFileById(DRIVE_FILE_ID);
+              attachments.push(file.getAs(MimeType.PDF));
+            } catch (fileErr) {
+              Logger.log("Attachment error: " + fileErr);
+            }
+          }
+
+          var htmlBody = 
+            "<div style='font-family: Arial, sans-serif; color: #0A1329; max-width: 600px; margin: 0 auto; line-height: 1.6;'>" +
+              "<div style='background-color: #070D1E; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;'>" +
+                "<h2 style='color: #C5A880; margin: 0; font-family: Georgia, serif; letter-spacing: 1.5px;'>FINLOGUE LNMIIT</h2>" +
+                "<p style='color: #E2E8F0; margin: 6px 0 0; font-size: 12.5px; text-transform: uppercase; letter-spacing: 1px;'>Finance & Investment Society</p>" +
+              "</div>" +
+              "<div style='padding: 26px 24px; border: 1px solid #E2E8F0; border-top: none; border-radius: 0 0 8px 8px; background-color: #FFFFFF;'>" +
+                "<p style='font-size: 15px;'>Dear <strong>" + applicantName + "</strong>" + (applicantRoll ? " (" + applicantRoll + ")" : "") + ",</p>" +
+                "<p style='font-size: 14px;'>Your application for the <strong>Finlogue Personal Interview (PI) Round (Y26 Cohort)</strong> has been successfully received.</p>" +
+                "<div style='background-color: #F8FAFC; border-left: 4px solid #C5A880; padding: 16px 18px; margin: 22px 0; border-radius: 0 6px 6px 0;'>" +
+                  "<p style='margin: 0; font-size: 14.5px; font-weight: bold; color: #070D1E;'>PI Preparation Dossier & Study Material:</p>" +
+                  "<p style='margin: 8px 0 14px; font-size: 13.5px; color: #334155;'>To help you prepare effectively for the interview rounds, please review the preparatory material attached / linked below before reporting for your interview:</p>" +
+                  "<p style='margin: 0;'><a href='" + STUDY_MATERIAL_LINK + "' style='background-color: #070D1E; color: #C5A880; padding: 11px 22px; text-decoration: none; border-radius: 6px; font-size: 13.5px; font-weight: bold; display: inline-block;'>Access PI Study Material →</a></p>" +
+                "</div>" +
+                "<p style='font-size: 13.5px; color: #334155;'>Please carry your student ID card and report at your allocated venue and time slot (which will be communicated via official college channels & WhatsApp).</p>" +
+                "<hr style='border: none; border-top: 1px solid #E2E8F0; margin: 24px 0;' />" +
+                "<p style='font-size: 12px; color: #64748B; margin: 0;'>Warm regards,<br /><strong style='color: #070D1E;'>Steering Council & Recruitment Team</strong><br />Finlogue — The Finance Society of LNMIIT<br />Official Mail: <a href='mailto:finlogue@licai.lnmiit.ac.in' style='color: #C5A880;'>finlogue@licai.lnmiit.ac.in</a></p>" +
+              "</div>" +
+            "</div>";
+
+          var emailOptions = {
+            htmlBody: htmlBody,
+            name: "Finlogue LNMIIT"
+          };
+          if (attachments.length > 0) {
+            emailOptions.attachments = attachments;
+          }
+
+          MailApp.sendEmail(data.email, subject, "Please view this email in an HTML compatible client.", emailOptions);
+        } catch (mailErr) {
+          Logger.log("Automated email dispatch error: " + mailErr);
+        }
+      }
+
+      return jsonResponse({ success: true, message: "Registration recorded & study material email dispatched" });
     }
 
     // 2. CONTACT INQUIRIES
