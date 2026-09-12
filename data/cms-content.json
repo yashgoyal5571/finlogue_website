@@ -404,14 +404,6 @@
         {
           "id": "cs-1",
           "image": "/assets/gallery/celebrating-success.jpg"
-        },
-        {
-          "id": "cs-1789131278201",
-          "image": "/assets/gallery/me1.jpeg"
-        },
-        {
-          "id": "cs-1789131295598",
-          "image": "/assets/gallery/screenshot-898.png"
         }
       ]
     },
@@ -455,21 +447,21 @@
       "role": "Coordinator",
       "tier": "coordinators",
       "focus": "Institutional Strategy & Leadership",
-      "dept": "Institutional Strategy & Leadership",
+      "dept": "",
       "email": "24ucs155@lnmiit.ac.in",
       "linkedin": "https://www.linkedin.com/in/aditya-tiwari-97711032b/",
       "image": "/assets/team/tiwari.jpeg"
     },
     {
       "id": "coord-2",
-      "name": "Akshat Thadani",
+      "name": "Akshat Thadhani",
       "role": "Coordinator",
       "tier": "coordinators",
       "focus": "Operations & Strategic Initiatives",
-      "dept": "Operations & Strategic Initiatives",
-      "email": "24uec533@lnmiit.ac.in",
-      "linkedin": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
-      "image": "/assets/team/screenshot-2026-09-03-212444.png"
+      "dept": "",
+      "email": "24ucc116@lnmiit.ac.in",
+      "linkedin": "https://www.linkedin.com/in/akshatthadhani/",
+      "image": "/assets/team/tp.jpeg"
     },
     {
       "id": "head-1",
@@ -560,7 +552,7 @@
       "name": "Rachita Jain",
       "role": "Associate",
       "tier": "coreTeam",
-      "dept": "",
+      "dept": "Investor Relations",
       "batch": "Y25",
       "focus": "",
       "email": "25ucs275@lnmiit.ac.in",
@@ -572,7 +564,7 @@
       "name": "Aryan Mittal",
       "role": "Coordinator",
       "tier": "coordinators",
-      "dept": "Sponsor",
+      "dept": "",
       "email": "24ucs152@lnmiit.ac.in",
       "linkedin": "https://www.linkedin.com/in/the-aryan-mittal",
       "image": "/assets/team/img_8811-aryan-mittal.jpeg"
@@ -632,10 +624,30 @@
       "name": "Vartika Jain",
       "role": "Associate",
       "tier": "coreTeam",
-      "dept": "",
+      "dept": "Investor & Startup Relations",
       "email": "25ucc059@lnmiit.ac.in",
       "linkedin": "https://www.linkedin.com/in/vartika-jain-1ab995376/",
       "image": "/assets/team/whatsapp-image-2026-09-11-at-12-18-21-vartika-jain.jpeg"
+    },
+    {
+      "id": "team-1789233145340",
+      "name": "Aditya Khandelwal",
+      "role": "Head",
+      "tier": "heads",
+      "dept": "Judge Lead",
+      "email": "24ucs138@lnmiit.ac.in",
+      "linkedin": "https://www.linkedin.com/in/aditya-khandelwal-a33741326?",
+      "image": "/assets/team/aditya.jpeg"
+    },
+    {
+      "id": "team-1789233505163",
+      "name": "Anvi Agrawal",
+      "role": "Associate",
+      "tier": "coreTeam",
+      "dept": "",
+      "email": "25dcs043@lnmiit.ac.in",
+      "linkedin": "https://www.linkedin.com/in/anvi-agrawal-44b948385/",
+      "image": "/assets/team/anvi.jpeg"
     }
   ],
   "contact": {
