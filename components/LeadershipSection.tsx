@@ -39,11 +39,13 @@ export default function LeadershipSection({
           for (let i = 0; i < liveList.length; i++) {
             const m = liveList[i];
             if (m.tier === "coordinators") {
+              const deptVal = m.dept !== undefined ? m.dept : (m.focus || "");
               liveCoords.push({
                 id: m.id,
                 name: m.name,
                 role: m.role,
-                focus: m.focus || m.dept || "",
+                dept: deptVal,
+                focus: deptVal,
                 email: m.email,
                 linkedin: m.linkedin,
                 image: m.image,
@@ -236,18 +238,22 @@ export default function LeadershipSection({
                     gap: "12px",
                   }}
                 >
-                  <p
-                    style={{
-                      fontSize: "13px",
-                      color: "var(--platinum-muted)",
-                      lineHeight: 1.35,
-                      margin: 0,
-                      flex: 1,
-                      minWidth: 0,
-                    }}
-                  >
-                    {coord.focus || coord.dept}
-                  </p>
+                  {(coord.dept || coord.focus) ? (
+                    <p
+                      style={{
+                        fontSize: "13px",
+                        color: "var(--platinum-muted)",
+                        lineHeight: 1.35,
+                        margin: 0,
+                        flex: 1,
+                        minWidth: 0,
+                      }}
+                    >
+                      {coord.dept || coord.focus}
+                    </p>
+                  ) : (
+                    <div style={{ flex: 1 }} />
+                  )}
 
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
                     <a

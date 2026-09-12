@@ -56,7 +56,7 @@ const initialTeamList: TeamMemberItem[] = [
     role: c.role,
     tier: "coordinators" as const,
     focus: c.focus || "",
-    dept: c.focus || "Steering Council",
+    dept: c.dept || c.focus || "",
     email: c.email || "24uec533@lnmiit.ac.in",
     linkedin: c.linkedin || "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
     image: c.image || "/assets/team/aryan-mittal.jpg",

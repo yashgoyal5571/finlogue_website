@@ -204,13 +204,15 @@ export default function AdminTeamTab({ data, onSave, showToast }: AdminTeamTabPr
         ? "Head"
         : memberForm.role || "Associate";
 
+    const cleanDept = memberForm.dept ? memberForm.dept.trim() : "";
     const normalizedMember: TeamMemberItem = {
       ...memberForm,
       name: memberForm.name.trim(),
       email: memberForm.email.trim().toLowerCase(),
       linkedin: memberForm.linkedin.trim(),
       role: derivedRole,
-      dept: memberForm.dept ? memberForm.dept.trim() : "",
+      dept: cleanDept,
+      focus: cleanDept,
     };
 
     if (editingMemberId) {

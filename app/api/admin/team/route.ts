@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       tier: member.tier || "coreTeam",
       dept: member.dept || "",
       batch: member.batch || "Y25",
-      focus: member.focus && member.focus !== member.dept ? member.focus : "",
+      focus: member.dept ? member.dept : (member.focus || ""),
       email: member.email || "24uec533@lnmiit.ac.in",
       linkedin: member.linkedin || "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
       image: member.image || "/assets/team/aditya-tiwari.jpg",
