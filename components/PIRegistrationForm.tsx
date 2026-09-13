@@ -176,42 +176,16 @@ export default function PIRegistrationForm({
           ✓
         </div>
 
-        <span
-          className="font-metadata-mono"
-          style={{
-            fontSize: "11px",
-            color: "var(--gold-oxford)",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            display: "block",
-            marginBottom: "8px",
-          }}
-        >
-          APPLICATION RECEIVED
-        </span>
-
         <h3
           className="font-display-serif"
           style={{
             fontSize: "clamp(22px, 3.5vw, 28px)",
             color: "var(--navy-hero)",
-            marginBottom: "12px",
+            marginBottom: "24px",
           }}
         >
           Application Submitted Successfully
         </h3>
-
-        <p
-          style={{
-            fontSize: "14px",
-            color: "#475569",
-            lineHeight: 1.6,
-            maxWidth: "480px",
-            margin: "0 auto 24px",
-          }}
-        >
-          Your candidature has been registered. An official email with the <strong>PI Preparation & Study Material</strong> has been dispatched to <strong>{formData.email || "your college email"}</strong>. Please review it thoroughly before your interview slot.
-        </p>
 
         <div>
           <button
