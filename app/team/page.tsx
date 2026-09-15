@@ -51,15 +51,17 @@ export default function TeamPage() {
             </div>
 
             {/* Quick jump to recruitment page */}
-            <Link
-              href="/register-pi"
+            <a
+              href="https://forms.gle/sBAacjaqMbE8e3Bg9"
+              target="_blank"
+              rel="noopener noreferrer"
               className="pi-recruitment-btn shimmer-sweep"
               style={{ fontSize: "12px", padding: "7px 16px", textDecoration: "none" }}
             >
               <span className="pi-pulse-dot" />
               <span>Register for PI</span>
               <span className="btn-arrow">→</span>
-            </Link>
+            </a>
           </div>
         </div>
       </section>

@@ -141,15 +141,17 @@ export default function Navbar() {
 
               {/* Recruitment Callout (Clean Single-Tab Transition) */}
               <div className="nav-callout-wrapper">
-                <Link
-                  href="/register-pi"
+                <a
+                  href="https://forms.gle/sBAacjaqMbE8e3Bg9"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="nav-waterfield-callout"
                   aria-label="Register for Personal Interviews (PI)"
                   title="Recruitments Open · Register for Personal Interviews"
                 >
                   <span className="nav-callout-badge">New</span>
                   <span className="nav-callout-text">Register for PI</span>
-                </Link>
+                </a>
               </div>
 
               {/* Mobile Hamburger Trigger */}
@@ -250,15 +252,17 @@ export default function Navbar() {
 
               {/* Mobile Drawer Recruitment Callout */}
               <div style={{ marginTop: "24px", paddingTop: "20px", borderTop: "1px solid rgba(226, 232, 240, 0.1)" }}>
-                <Link
-                  href="/register-pi"
+                <a
+                  href="https://forms.gle/sBAacjaqMbE8e3Bg9"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={() => setMobileDrawerOpen(false)}
                   className="pi-recruitment-btn"
                   style={{ width: "100%", justifyContent: "center", padding: "12px 18px", textDecoration: "none" }}
                 >
                   <span className="pi-pulse-dot" />
                   <span>Register for PI</span>
-                </Link>
+                </a>
               </div>
             </div>
 
