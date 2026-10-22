@@ -101,44 +101,36 @@
     ],
     "speakersMentors": [
       {
-        "name": "Ninad Karpe",
-        "title": "Partner, 100X.VC",
-        "firm": "Lead Conclave Jury & Veteran Angel Investor",
+        "name": "Dhruv Madaan",
+        "title": "Venture Partner",
+        "firm": "",
         "category": "Venture Capital",
         "quote": "The depth of valuation discipline, cash flow stress-testing, and market diligence displayed by Finlogue cohorts matches what we see in seasoned investment syndicates. They are forging genuine financial minds.",
-        "image": "/assets/gallery/summit-keynote.jpg"
-      },
-      {
-        "name": "Aman Tekriwal",
-        "title": "Angel Investor & PE Specialist",
-        "firm": "Strategic Advisor & Private Equity Lead",
-        "category": "Angel Investment",
-        "quote": "Financial modeling rigor, DCF mastery, and strategic acumen are exceptionally rare at the undergraduate level. Finlogue is setting an institutional benchmark for practical boardroom readiness.",
-        "image": "/assets/team/aryan-mittal.jpg"
+        "image": "/assets/team/dhruv-madaan.png"
       },
       {
         "name": "Krishna Dev Pathak",
         "title": "Venture Partner",
-        "firm": "Ecosystem Builder & Startup Strategist",
+        "firm": "",
         "category": "Ecosystem",
         "quote": "Bridging theoretical finance with high-stakes venture pitching and market simulation is exactly how top-tier analysts are forged. Finlogue's conclaves consistently demonstrate elite institutional standards.",
-        "image": "/assets/team/aditya-tiwari.jpg"
+        "image": "/assets/team/krishna-dev-pathak.png"
       },
       {
-        "name": "Sidharth Pandey",
-        "title": "Growth Strategist",
-        "firm": "Private Equity Advisory & Corporate Turnarounds",
+        "name": "Kumar Saurabh",
+        "title": "Venture Professional & Advisor at O2 VC Fund",
+        "firm": "",
         "category": "Strategy",
         "quote": "The caliber of business problem-solving, unit economic diligence, and corporate restructuring cases tackled by Finlogue analysts reflects remarkable dedication to real-world corporate execution.",
-        "image": "/assets/gallery/pitch-session.jpg"
+        "image": "/assets/team/kumar-saurabh.png"
       },
       {
         "name": "Siddhant Gupta",
-        "title": "Venture Founder",
-        "firm": "Early Stage Investor & Market Strategist",
+        "title": "Venture Founder & Startup Founder",
+        "firm": "",
         "category": "Startups",
         "quote": "From pitch defense to capital allocation, the rigorous standards maintained by Finlogue provide student analysts with an undeniable advantage in top consulting firms and investment desks.",
-        "image": "/assets/gallery/networking-hall.jpg"
+        "image": "/assets/team/siddhant-gupta.png"
       }
     ],
     "startups": [
@@ -230,53 +222,60 @@
       ],
       "investorsMentors": [
         {
-          "name": "Ninad Karpe",
-          "credential": "Partner, 100X.VC & Veteran Angel Investor",
-          "role": "Keynote Jury",
-          "initials": "NK",
-          "linkedInPostUrl": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all"
-        },
-        {
-          "name": "Aman Tekriwal",
-          "credential": "Angel Investor & Private Equity Specialist",
-          "role": "Lead Diligence Panel",
-          "initials": "AT",
-          "linkedInPostUrl": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all"
+          "name": "Dhruv Madaan",
+          "credential": "",
+          "role": "Venture Partner",
+          "initials": "DM",
+          "linkedInPostUrl": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+          "image": "/assets/team/dhruv-madaan.png"
         },
         {
           "name": "Krishna Dev Pathak",
-          "credential": "Venture Partner & Ecosystem Builder",
-          "role": "Ecosystem Mentor",
+          "credential": "",
+          "role": "Venture Partner",
           "initials": "KP",
-          "linkedInPostUrl": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all"
+          "linkedInPostUrl": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+          "image": "/assets/team/krishna-dev-pathak.png"
         },
         {
-          "name": "Sidharth Pandey",
-          "credential": "Growth Strategist & PE Advisory",
-          "role": "Corporate Mentor",
-          "initials": "SP",
-          "linkedInPostUrl": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all"
+          "name": "Kumar Saurabh",
+          "credential": "",
+          "role": "Venture Professional & Advisor at O2 VC Fund",
+          "initials": "KS",
+          "linkedInPostUrl": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+          "image": "/assets/team/kumar-saurabh.png"
         },
         {
           "name": "Siddhant Gupta",
-          "credential": "Founder & Early Stage Investor",
-          "role": "Startup Mentor",
+          "credential": "",
+          "role": "Venture Founder & Startup Founder",
           "initials": "SG",
-          "linkedInPostUrl": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all"
+          "linkedInPostUrl": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+          "image": "/assets/team/siddhant-gupta.png"
         },
         {
-          "name": "Vartul Jain",
-          "credential": "Corporate Finance & M&A Specialist",
-          "role": "Valuation Mentor",
-          "initials": "VJ",
-          "linkedInPostUrl": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all"
+          "name": "Shivam Lohiya",
+          "credential": "",
+          "role": "CEO TheFenixLabs",
+          "initials": "SL",
+          "linkedInPostUrl": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+          "image": "/assets/team/shivam-lohiya.png"
         },
         {
-          "name": "Garima Seth",
-          "credential": "Senior Investment Strategist",
-          "role": "Jury Member",
-          "initials": "GS",
-          "linkedInPostUrl": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all"
+          "name": "Raghav Katta",
+          "credential": "",
+          "role": "Venture Capitalist",
+          "initials": "RK",
+          "linkedInPostUrl": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+          "image": "/assets/team/raghav-katta.png"
+        },
+        {
+          "name": "Rakesh Ranjan",
+          "credential": "",
+          "role": "Partner at O2 Angels Network",
+          "initials": "RR",
+          "linkedInPostUrl": "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+          "image": "/assets/team/rakesh-ranjan.png"
         }
       ],
       "startupPortfolio": [

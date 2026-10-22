@@ -170,49 +170,49 @@ export const home: HomeContent = {
   ],
   speakersMentors: [
     {
-      name: "Ninad Karpe",
-      title: "Partner, 100X.VC",
-      firm: "Lead Conclave Jury & Veteran Angel Investor",
+      name: "Dhruv Madaan",
+      title: "Venture Partner",
+      firm: "",
       category: "Venture Capital",
       quote:
         "The depth of valuation discipline, cash flow stress-testing, and market diligence displayed by Finlogue cohorts matches what we see in seasoned investment syndicates. They are forging genuine financial minds.",
-      image: "/assets/gallery/summit-keynote.jpg",
-    },
-    {
-      name: "Aman Tekriwal",
-      title: "Angel Investor & PE Specialist",
-      firm: "Strategic Advisor & Private Equity Lead",
-      category: "Angel Investment",
-      quote:
-        "Financial modeling rigor, DCF mastery, and strategic acumen are exceptionally rare at the undergraduate level. Finlogue is setting an institutional benchmark for practical boardroom readiness.",
-      image: "/assets/team/aryan-mittal.jpg",
+      image: "/assets/team/dhruv-madaan.png",
     },
     {
       name: "Krishna Dev Pathak",
       title: "Venture Partner",
-      firm: "Ecosystem Builder & Startup Strategist",
+      firm: "",
       category: "Ecosystem",
       quote:
         "Bridging theoretical finance with high-stakes venture pitching and market simulation is exactly how top-tier analysts are forged. Finlogue's conclaves consistently demonstrate elite institutional standards.",
-      image: "/assets/team/aditya-tiwari.jpg",
+      image: "/assets/team/krishna-dev-pathak.png",
     },
     {
-      name: "Sidharth Pandey",
-      title: "Growth Strategist",
-      firm: "Private Equity Advisory & Corporate Turnarounds",
+      name: "Kumar Saurabh",
+      title: "Venture Professional ",
+      firm: "",
       category: "Strategy",
       quote:
         "The caliber of business problem-solving, unit economic diligence, and corporate restructuring cases tackled by Finlogue analysts reflects remarkable dedication to real-world corporate execution.",
-      image: "/assets/gallery/pitch-session.jpg",
+      image: "/assets/team/kumar-saurabh.png",
     },
     {
       name: "Siddhant Gupta",
-      title: "Venture Founder",
-      firm: "Early Stage Investor & Market Strategist",
+      title: "Venture Founder ",
+      firm: "",
       category: "Startups",
       quote:
         "From pitch defense to capital allocation, the rigorous standards maintained by Finlogue provide student analysts with an undeniable advantage in top consulting firms and investment desks.",
-      image: "/assets/gallery/networking-hall.jpg",
+      image: "/assets/team/siddhant-gupta.png",
+    },
+    {
+      name: "Rakesh Ranjan",
+      title: "Partner at O2 Angels Network",
+      firm: "",
+      category: "Angel Investment",
+      quote:
+        "Cultivating dynamic early-stage ecosystems requires both capital efficiency and sharp founder instinct. Finlogue's cohorts reflect that essential institutional depth.",
+      image: "/assets/team/rakesh-ranjan.png",
     },
   ],
   startups: [

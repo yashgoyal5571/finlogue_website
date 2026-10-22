@@ -282,17 +282,19 @@ export default function EventsPage() {
                         >
                           {inv.name}
                         </h4>
-                        <p
-                          style={{
-                            fontSize: "13px",
-                            color: "var(--ink-body)",
-                            marginTop: "8px",
-                            lineHeight: 1.5,
-                            marginBottom: 0,
-                          }}
-                        >
-                          {inv.credential}
-                        </p>
+                        {inv.credential ? (
+                          <p
+                            style={{
+                              fontSize: "13px",
+                              color: "var(--ink-body)",
+                              marginTop: "8px",
+                              lineHeight: 1.5,
+                              marginBottom: 0,
+                            }}
+                          >
+                            {inv.credential}
+                          </p>
+                        ) : null}
                       </a>
                     </ScrollReveal>
                   ))}

@@ -10,6 +10,7 @@ export interface InvestorMentor {
   role: string;
   linkedInPostUrl?: string;
   initials?: string;
+  image?: string;
 }
 
 export interface StartupLogo {
@@ -105,53 +106,60 @@ export const events: EventsContent = {
 
     investorsMentors: [
       {
-        name: "Ninad Karpe",
-        credential: "Partner, 100X.VC & Veteran Angel Investor",
-        role: "Keynote Jury",
-        initials: "NK",
+        name: "Dhruv Madaan",
+        credential: "",
+        role: "Venture Partner",
+        initials: "DM",
         linkedInPostUrl: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
-      },
-      {
-        name: "Aman Tekriwal",
-        credential: "Angel Investor & Private Equity Specialist",
-        role: "Lead Diligence Panel",
-        initials: "AT",
-        linkedInPostUrl: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+        image: "/assets/team/dhruv-madaan.png",
       },
       {
         name: "Krishna Dev Pathak",
-        credential: "Venture Partner & Ecosystem Builder",
-        role: "Ecosystem Mentor",
+        credential: "",
+        role: "Venture Partner",
         initials: "KP",
         linkedInPostUrl: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+        image: "/assets/team/krishna-dev-pathak.png",
       },
       {
-        name: "Sidharth Pandey",
-        credential: "Growth Strategist & PE Advisory",
-        role: "Corporate Mentor",
-        initials: "SP",
+        name: "Kumar Saurabh",
+        credential: "",
+        role: "Venture Professional & Advisor at O2 VC Fund",
+        initials: "KS",
         linkedInPostUrl: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+        image: "/assets/team/kumar-saurabh.png",
       },
       {
         name: "Siddhant Gupta",
-        credential: "Founder & Early Stage Investor",
-        role: "Startup Mentor",
+        credential: "",
+        role: "Venture Founder & Startup Founder",
         initials: "SG",
         linkedInPostUrl: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+        image: "/assets/team/siddhant-gupta.png",
       },
       {
-        name: "Vartul Jain",
-        credential: "Corporate Finance & M&A Specialist",
-        role: "Valuation Mentor",
-        initials: "VJ",
+        name: "Shivam Lohiya",
+        credential: "",
+        role: "CEO TheFenixLabs",
+        initials: "SL",
         linkedInPostUrl: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+        image: "/assets/team/shivam-lohiya.png",
       },
       {
-        name: "Garima Seth",
-        credential: "Senior Investment Strategist",
-        role: "Jury Member",
-        initials: "GS",
+        name: "Raghav Katta",
+        credential: "",
+        role: "Venture Capitalist",
+        initials: "RK",
         linkedInPostUrl: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+        image: "/assets/team/raghav-katta.png",
+      },
+      {
+        name: "Rakesh Ranjan",
+        credential: "",
+        role: "Partner at O2 Angels Network",
+        initials: "RR",
+        linkedInPostUrl: "https://www.linkedin.com/company/entrepreneuria-lnmiit/posts/?feedView=all",
+        image: "/assets/team/rakesh-ranjan.png",
       },
     ],
 

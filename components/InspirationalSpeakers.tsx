@@ -192,16 +192,18 @@ export default function InspirationalSpeakers({ speakers }: InspirationalSpeaker
                   {speaker.title}
                 </span>
 
-                <span
-                  style={{
-                    fontSize: "10px",
-                    color: "var(--platinum-muted)",
-                    marginTop: "4px",
-                    display: "block",
-                  }}
-                >
-                  {speaker.firm}
-                </span>
+                {speaker.firm ? (
+                  <span
+                    style={{
+                      fontSize: "10px",
+                      color: "var(--platinum-muted)",
+                      marginTop: "4px",
+                      display: "block",
+                    }}
+                  >
+                    {speaker.firm}
+                  </span>
+                ) : null}
               </div>
             );
           })}

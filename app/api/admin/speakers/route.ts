@@ -14,23 +14,38 @@ export interface SpeakerItem {
   image?: string;
 }
 
-const potrMentors: SpeakerItem[] = events.flagship.investorsMentors.map((m, idx) => ({
-  id: `potr-mentor-${idx + 1}`,
-  name: m.name,
-  title: m.role,
-  firm: m.credential,
-  category: "POTR Conclave Jury",
-  quote: "Official diligence & investment panel judge for Pitch on the Rocks Flagship Conclave.",
-  image: "/assets/gallery/summit-keynote.jpg",
-}));
+export function getDynamicSpeakers(): SpeakerItem[] {
+  const potrMentors: SpeakerItem[] = events.flagship.investorsMentors.map((m, idx) => ({
+    id: `potr-mentor-${idx + 1}`,
+    name: m.name,
+    title: m.role,
+    firm: m.credential || "",
+    category: "POTR Conclave Jury",
+    quote: "Official diligence & investment panel judge for Pitch on the Rocks Flagship Conclave.",
+    image: m.image || "/assets/gallery/summit-keynote.jpg",
+  }));
 
-let dynamicSpeakersCache: SpeakerItem[] = [
-  ...home.speakersMentors.map((s, idx) => ({
-    id: `speaker-${idx + 1}`,
-    ...s,
-  })),
-  ...potrMentors,
-];
+  const all = [
+    ...home.speakersMentors.map((s, idx) => ({
+      id: `speaker-${idx + 1}`,
+      ...s,
+    })),
+    ...potrMentors,
+  ];
+
+  const seen = new Set<string>();
+  const deduped: SpeakerItem[] = [];
+  for (const item of all) {
+    const key = item.name.toLowerCase().trim();
+    if (!seen.has(key)) {
+      seen.add(key);
+      deduped.push(item);
+    }
+  }
+  return deduped;
+}
+
+let dynamicSpeakersCache: SpeakerItem[] | null = null;
 
 export async function GET() {
   const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
@@ -55,9 +70,10 @@ export async function GET() {
     }
   }
 
+  const speakers = dynamicSpeakersCache || getDynamicSpeakers();
   return NextResponse.json({
     success: true,
-    speakers: dynamicSpeakersCache,
+    speakers,
     source: "local_cache",
   });
 }
@@ -91,6 +107,9 @@ export async function POST(request: Request) {
       image: speaker.image || "/assets/team/aryan-mittal.jpg",
     };
 
+    if (!dynamicSpeakersCache) {
+      dynamicSpeakersCache = getDynamicSpeakers();
+    }
     const existingIdx = dynamicSpeakersCache.findIndex((s) => s.id === speakerId);
     if (existingIdx >= 0) {
       dynamicSpeakersCache[existingIdx] = normalizedSpeaker;
@@ -137,6 +156,9 @@ export async function DELETE(request: Request) {
       );
     }
 
+    if (!dynamicSpeakersCache) {
+      dynamicSpeakersCache = getDynamicSpeakers();
+    }
     dynamicSpeakersCache = dynamicSpeakersCache.filter((s) => s.id !== id);
 
     const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
