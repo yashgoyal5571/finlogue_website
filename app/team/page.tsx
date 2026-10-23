@@ -49,19 +49,6 @@ export default function TeamPage() {
             >
               COUNCIL · HEADS · CORE ASSOCIATES
             </div>
-
-            {/* Quick jump to recruitment page */}
-            <a
-              href="https://forms.gle/sBAacjaqMbE8e3Bg9"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="pi-recruitment-btn shimmer-sweep"
-              style={{ fontSize: "12px", padding: "7px 16px", textDecoration: "none" }}
-            >
-              <span className="pi-pulse-dot" />
-              <span>Register for PI</span>
-              <span className="btn-arrow">→</span>
-            </a>
           </div>
         </div>
       </section>
